@@ -12,6 +12,7 @@
 <p align="center">
   <a href="https://ceritli.github.io/panoptent/">Documentation</a> ·
   <a href="https://github.com/ceritli/panoptent/releases/latest">Download</a> ·
+  <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="#türkçe">Türkçe</a>
 </p>
 
@@ -89,9 +90,13 @@ Press `F5` in VS Code with this folder open to run the extension in a developmen
 
 Releases are built by GitHub Actions when the version in `package.json` is bumped on `main` (or a `v*` tag is pushed).
 
+## Contributing
+
+**Contributions of every kind are welcome** — bug reports, ideas, docs, translations (an English UI especially), tests and code. Open an [issue](https://github.com/ceritli/panoptent/issues/new/choose) or a pull request; no need to ask first. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
-[MIT](LICENSE) © Fatih Ceritli
+[MIT](LICENSE) © Fatih Ceritli, Alper LÜLE
 
 ---
 
@@ -117,4 +122,6 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 
 Ayrıntılı Türkçe rehber, ekran görüntüleri ve sorun giderme: **https://ceritli.github.io/panoptent/**
 
-**Lisans:** [MIT](LICENSE) © Fatih Ceritli
+**Katkı:** Her türlü katkıya açığız — hata bildirimi, fikir, belge, çeviri, test ve kod. [Issue](https://github.com/ceritli/panoptent/issues/new/choose) ya da pull request açman yeterli; ayrıntılar [CONTRIBUTING.md](CONTRIBUTING.md)'de.
+
+**Lisans:** [MIT](LICENSE) © Fatih Ceritli, Alper LÜLE

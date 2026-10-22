@@ -13,3 +13,4 @@ tsconfig.json
 *.vsix
 CHANGELOG.md
 .gitignore
+CONTRIBUTING.md

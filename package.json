@@ -8,6 +8,11 @@
     "name": "Fatih Ceritli",
     "url": "https://github.com/ceritli"
   },
+  "contributors": [
+    {
+      "name": "Alper LÜLE"
+    }
+  ],
   "license": "MIT",
   "homepage": "https://ceritli.github.io/panoptent/",
   "repository": {
