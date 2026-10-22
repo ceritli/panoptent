@@ -5,6 +5,8 @@
 - **Tidier settings page**: Panoptent's settings are grouped into sections (General, Sending to Claude, Background mode (CLI), Chrome extension, MCP server) in a sensible order, with readable option names (e.g. *Claude Code panel* / *In the background (CLI)* / *Claude Code (MCP)*), an explanation for every permission mode, clickable command links and a note that the CLI settings only apply in background mode
 - The **Settings** links in the Panoptent view and panel now open only Panoptent's settings (`@ext:ceritli.panoptent`)
 - Port settings only accept valid port numbers
+- **Preview panel**: the options under the request box (popover, open source on select, design rules) moved into a collapsible **Options** card with switches, a design-file pill and an **All settings…** link
+- **Get Started view**: one main button (Open Preview); setup, settings and language are compact links instead of a stack of full-width buttons
 
 ## 0.11.0 — 2026-10-22
 

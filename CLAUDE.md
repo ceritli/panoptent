@@ -62,7 +62,7 @@ workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
 - 0.11.1 (settings page grouped into sections with labels/descriptions; settings links open
-  `@ext:ceritli.panoptent`) is in a PR; it releases automatically when merged to `main`.
+  `@ext:ceritli.panoptent`; panel Options card; compact Get Started view) is in PR #10; it releases automatically when merged to `main`.
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
   0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.

@@ -481,16 +481,14 @@ class PreviewPanel {
             <label class="chk" id="contWrap"><input type="checkbox" id="cont" checked> <span id="contLabel">Son konuşmaya ekle</span></label>
             <button id="newSess" class="link" hidden data-i18n="pn.newSess">Yeni oturum</button>
           </div>
-          <div class="composeRow sub">
-            <label class="chk"><input type="checkbox" id="popChk" checked> <span data-i18n="pn.popChk">Seçince öğenin yanında kutu aç</span></label>
-          </div>
-          <div class="composeRow sub">
-            <label class="chk" data-i18n-title="pn.openSrc.title" title="Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır"><input type="checkbox" id="openSrcChk" checked> <span data-i18n="pn.openSrc">Seçince kodunu da yanda aç</span></label>
-          </div>
-          <div class="composeRow sub">
-            <span class="chk" data-i18n-title="pn.design.title" title="Claude değişiklikleri bu dosyadaki tasarım kurallarına göre yapar"><span data-i18n="pn.design">Tasarım kuralları:</span> <button id="designBtn" class="link">—</button></span>
-          </div>
         </div>
+        <details class="opts" id="optsBox" open>
+          <summary data-i18n="pn.opts">Seçenekler</summary>
+          <label class="opt"><span class="optText" data-i18n="pn.popChk">Seçince öğenin yanında kutu aç</span><input type="checkbox" class="switch" id="popChk" checked></label>
+          <label class="opt" data-i18n-title="pn.openSrc.title" title="Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır"><span class="optText" data-i18n="pn.openSrc">Seçince kodunu da yanda aç</span><input type="checkbox" class="switch" id="openSrcChk" checked></label>
+          <div class="opt" data-i18n-title="pn.design.title" title="Claude değişiklikleri bu dosyadaki tasarım kurallarına göre yapar"><span class="optText" data-i18n="pn.design">Tasarım kuralları</span><button id="designBtn" class="pill">—</button></div>
+          <div class="optFoot"><button id="moreSettings" class="link" data-i18n="pn.moreSettings">Tüm ayarlar…</button></div>
+        </details>
       </div>
       <div class="col colLog">
         <div class="sectionHead"><span data-i18n="pn.activity">Etkinlik</span></div>
