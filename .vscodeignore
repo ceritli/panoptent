@@ -13,3 +13,5 @@ tsconfig.json
 *.vsix
 .gitignore
 CONTRIBUTING.md
+store/**
+CLAUDE.md
