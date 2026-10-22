@@ -11,6 +11,7 @@
 
 <p align="center">
   <a href="https://ceritli.github.io/panoptent/">Documentation</a> ·
+  <a href="https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent">Marketplace</a> ·
   <a href="https://github.com/ceritli/panoptent/releases/latest">Download</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="#türkçe">Türkçe</a>
@@ -43,11 +44,9 @@ Works with React / Next.js, Vue / Nuxt, Vite, and plain HTML.
 
 ## Install
 
-Download the latest files from **[Releases](https://github.com/ceritli/panoptent/releases/latest)**.
+**VS Code** — search **Panoptent** in the Extensions panel, or install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent). Updates are automatic. (Offline: `.vsix` from [Releases](https://github.com/ceritli/panoptent/releases/latest) → Extensions → `⋯` → **Install from VSIX…**)
 
-**VS Code** — Extensions panel → `⋯` → **Install from VSIX…** → `panoptent-x.y.z.vsix` → reload the window.
-
-**Chrome** (optional) — unzip `panoptent-chrome-x.y.z.zip` → `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick the folder.
+**Chrome** (optional) — download `panoptent-chrome-x.y.z.zip` from [Releases](https://github.com/ceritli/panoptent/releases/latest), unzip `panoptent-chrome-x.y.z.zip` → `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick the folder.
 
 ## Quick start
 
@@ -119,9 +118,9 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 
 **Kurulum**
 
-1. [Releases](https://github.com/ceritli/panoptent/releases/latest) sayfasından dosyaları indir.
-2. VS Code: Extensions → `⋯` → **Install from VSIX…** → `.vsix` dosyası → pencereyi yenile.
-3. Chrome (isteğe bağlı): zip'i aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.
+1. VS Code: Extensions panelinde **Panoptent** ara ve kur ya da [Marketplace](https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent) sayfasından kur. Güncellemeler otomatik gelir.
+2. Chrome (isteğe bağlı): [Releases](https://github.com/ceritli/panoptent/releases/latest) sayfasından zip'i indir.
+3. Zip'i aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.
 4. Önerilir: Komut Paleti → **Panoptent: code-inspector'ı Otomatik Kur**.
 5. Sol menüdeki göz → **Önizlemeyi Aç**; **Seç**'e bas, öğeye tıkla, isteğini yaz, **Uygula**. Chrome'da: eklenti simgesi → **Bu sekmede Panoptent’i aç**.
 
