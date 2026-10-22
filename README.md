@@ -87,7 +87,7 @@ npm run package:chrome   # → panoptent-chrome-x.y.z.zip
 
 Press `F5` in VS Code with this folder open to run the extension in a development host. Load `chrome/` unpacked after `npm run package:chrome` (it copies the shared overlay into the folder).
 
-Releases are built by GitHub Actions when a `v*` tag is pushed.
+Releases are built by GitHub Actions when the version in `package.json` is bumped on `main` (or a `v*` tag is pushed).
 
 ## License
 

@@ -724,8 +724,8 @@ npm run package:chrome   # → panoptent-chrome-x.y.z.zip</code></pre>
           <tr><td><code>chrome/</code></td><td>Chrome extension (MV3)</td></tr>
         </tbody>
       </table></div>
-      <p lang="tr">Yeni sürüm: <code>package.json</code> ve <code>chrome/manifest.json</code> sürümünü artır, <code>git tag vX.Y.Z &amp;&amp; git push --tags</code>. GitHub Actions iki paketi derleyip Releases'a koyar.</p>
-      <p lang="en">To release: bump the version in <code>package.json</code> and <code>chrome/manifest.json</code>, then <code>git tag vX.Y.Z &amp;&amp; git push --tags</code>. GitHub Actions builds both packages and attaches them to a release.</p>
+      <p lang="tr">Yeni sürüm: <code>package.json</code> ve <code>chrome/manifest.json</code> sürümünü artır, <code>CHANGELOG.md</code>'ye not ekle ve <code>main</code>'e gönder. GitHub Actions iki paketi derleyip <code>vX.Y.Z</code> sürümünü Releases'a koyar (istersen <code>v*</code> etiketi göndermek de çalışır).</p>
+      <p lang="en">To release: bump the version in <code>package.json</code> and <code>chrome/manifest.json</code>, add a <code>CHANGELOG.md</code> entry and push to <code>main</code>. GitHub Actions builds both packages and publishes release <code>vX.Y.Z</code> (pushing a <code>v*</code> tag works too).</p>
     </section>
   </main>
 </div>

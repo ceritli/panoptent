@@ -1,8 +1,13 @@
 name: Release
 
+# Publishes a release when a v* tag is pushed, or when package.json on main
+# carries a version that has no release yet (so bumping the version is enough).
 on:
   push:
     tags: ['v*']
+    branches: [main]
+    paths: ['package.json', '.github/workflows/release.yml']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -16,10 +21,24 @@ jobs:
         with:
           node-version: 20
           cache: npm
-      - run: npm ci
-      - name: Check versions match the tag
+      - name: Resolve version
+        id: v
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then TAG="${GITHUB_REF_NAME#v}"
+          else TAG=$(node -p "require('./package.json').version"); fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          if gh release view "v$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release v$TAG already exists — nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.v.outputs.skip != 'true'
+        run: npm ci
+      - name: Check versions match
+        if: steps.v.outputs.skip != 'true'
+        run: |
+          TAG="${{ steps.v.outputs.tag }}"
           PKG=$(node -p "require('./package.json').version")
           CHR=$(node -p "require('./chrome/manifest.json').version")
           echo "tag=$TAG package.json=$PKG chrome/manifest.json=$CHR"
@@ -27,12 +46,16 @@ jobs:
             echo "::error::Version mismatch. Bump package.json and chrome/manifest.json to $TAG."
             exit 1
           fi
-      - run: npm run typecheck
-      - run: npm run package
-      - run: npm run package:chrome
+      - if: steps.v.outputs.skip != 'true'
+        run: npm run typecheck
+      - if: steps.v.outputs.skip != 'true'
+        run: npm run package
+      - if: steps.v.outputs.skip != 'true'
+        run: npm run package:chrome
       - name: Release notes from CHANGELOG
+        if: steps.v.outputs.skip != 'true'
         run: |
-          TAG="${GITHUB_REF_NAME#v}"
+          TAG="${{ steps.v.outputs.tag }}"
           awk -v v="## $TAG" 'index($0, v)==1 {f=1; next} /^## /{if(f) exit} f' CHANGELOG.md > notes.md
           {
             echo
@@ -44,10 +67,12 @@ jobs:
           } >> notes.md
           cat notes.md
       - name: Create GitHub release
+        if: steps.v.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "Panoptent $GITHUB_REF_NAME" \
+          TAG="v${{ steps.v.outputs.tag }}"
+          gh release create "$TAG" --target "$GITHUB_SHA" \
+            --title "Panoptent $TAG" \
             --notes-file notes.md \
             panoptent-*.vsix panoptent-chrome-*.zip
