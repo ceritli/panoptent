@@ -29,7 +29,7 @@
   kbd { background: #fff; border: 1px solid var(--line); border-bottom-width: 2px; padding: .05em .45em; border-radius: 5px; white-space: nowrap; }
   pre { background: var(--dark); color: #e6e8eb; padding: 16px 18px; border-radius: 12px; overflow-x: auto; font: 13.5px/1.6 var(--mono); margin: 14px 0 18px; }
   pre code { background: none; padding: 0; font-size: inherit; color: inherit; }
-  img { max-width: 100%; display: block; }
+  img { max-width: 100%; height: auto; display: block; }
 
   /* ---------- header ---------- */
   header.top { position: sticky; top: 0; z-index: 20; background: rgba(20,23,28,.92); backdrop-filter: blur(10px); border-bottom: 1px solid var(--dark-line); }
@@ -84,7 +84,17 @@
   .shot { margin: 18px 0 24px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); box-shadow: 0 18px 40px -24px rgba(28,25,23,.35); background: #fff; }
   .shot figcaption, figure figcaption { font-size: 13px; color: var(--muted); padding: 10px 14px; border-top: 1px solid var(--line); background: #fdfcfa; }
   figure { margin: 0; }
-  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .shot img, .hero-shot img { cursor: zoom-in; width: 100%; }
+  .lb { position: fixed; inset: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; padding: 24px; border: 0; background: rgba(12,10,9,.88); display: none; align-items: center; justify-content: center; cursor: zoom-out; z-index: 100; }
+  .lb[open] { display: flex; }
+  .lb::backdrop { background: transparent; }
+  .lb img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 10px; box-shadow: 0 30px 80px rgba(0,0,0,.6); background: #fff; cursor: zoom-out; }
+  .lb.natural { overflow: auto; align-items: flex-start; justify-content: flex-start; }
+  .lb.natural img { max-width: none; max-height: none; margin: auto; }
+  .lb-close { position: fixed; top: 14px; right: 18px; width: 40px; height: 40px; border-radius: 50%; border: 0; background: rgba(255,255,255,.14); color: #fff; font-size: 24px; line-height: 40px; cursor: pointer; }
+  .lb-close:hover { background: rgba(255,255,255,.26); }
+  .lb-hint { position: fixed; bottom: 14px; left: 0; right: 0; text-align: center; color: rgba(255,255,255,.7); font-size: 13px; pointer-events: none; }
   .note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 12px 16px; border-radius: 0 10px 10px 0; margin: 16px 0; color: var(--ink-2); font-size: 15px; }
   .note.ok { border-color: var(--ok); background: #effaf3; }
   .note.warn { border-color: var(--warn); background: #fff8e8; }
@@ -784,6 +794,36 @@ npm run package:chrome   # → panoptent-chrome-x.y.z.zip</code></pre>
   var mb = document.getElementById('menuBtn');
   mb.addEventListener('click', function () { document.body.classList.toggle('toc-open'); });
   links.forEach(function (a) { a.addEventListener('click', function () { document.body.classList.remove('toc-open'); }); });
+})();
+</script>
+<dialog class="lb" id="lb" aria-label="Image">
+  <img alt="">
+  <button class="lb-close" type="button" aria-label="Close">×</button>
+  <div class="lb-hint"><span lang="tr">Gerçek boyut için görsele tıkla · Esc ile kapat</span><span lang="en">Click the image for actual size · Esc to close</span></div>
+</dialog>
+<script>
+(() => {
+  const lb = document.getElementById('lb'), big = lb.querySelector('img');
+  if (!lb.showModal) return;
+  document.querySelectorAll('.shot img, .hero-shot img').forEach(img => {
+    img.tabIndex = 0;
+    img.setAttribute('role', 'button');
+    const open = () => {
+      big.src = img.currentSrc || img.src;
+      big.alt = img.alt;
+      lb.classList.remove('natural');
+      lb.showModal();
+    };
+    img.addEventListener('click', open);
+    img.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); } });
+  });
+  big.addEventListener('click', e => {
+    e.stopPropagation();
+    const fits = big.naturalWidth <= innerWidth - 48 && big.naturalHeight <= innerHeight - 48;
+    if (fits) lb.close(); else lb.classList.toggle('natural');
+  });
+  lb.addEventListener('click', () => lb.close());
+  lb.addEventListener('close', () => { big.removeAttribute('src'); });
 })();
 </script>
 </body>
