@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10.0 — unreleased
+## 0.10.0 — 2026-10-22
 
 - **MCP server**: Panoptent now runs a local MCP server (`http://127.0.0.1:47821/mcp`, Streamable HTTP) so Claude Code CLI, Cursor, Windsurf and other MCP clients can pull context themselves. Tools: `get_selection` (selected elements with source file/line, component chain, selector, computed styles, HTML), `get_queue` (pending queued changes) and `get_page_context` (workspace, page URL, viewport, counts)
 - The VS Code preview and the Chrome extension report their current selection and queue to VS Code (`syncState`); large image data is not sent
