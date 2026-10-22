@@ -8,6 +8,7 @@
   "command.chromeStatus": "Chrome Connection Status",
   "command.forgetChrome": "Remove Chrome Pairings",
   "command.changeLanguage": "Change Language",
+  "command.chooseDesignFile": "Choose Design Rules File",
   "command.connectClaudeCode": "Connect Claude Code (MCP)",
   "command.copyMcpCommand": "Copy MCP Connect Command (Claude Code)",
   "config.language": "Language of the Panoptent interface (preview panel, overlay, Chrome extension, notifications and the prompts sent to Claude).",
@@ -26,6 +27,7 @@
   "config.sendTo.claudePanel": "Hands the request to the Claude Code panel in VS Code (prefilled; you press Enter).",
   "config.sendTo.cli": "Runs the Claude Code CLI in the background; progress shows in the Panoptent panel.",
   "config.sendTo.mcp": "Claude Code reads the changes itself through Panoptent's MCP server: Apply copies a one-line command instead of attaching a request file (or type /mcp__panoptent__apply_queue in Claude Code). Panoptent offers to connect Claude Code the first time.",
+  "config.designFile": "Design rules file Claude should follow for UI changes, relative to the project folder (e.g. `design.md`). Empty: automatic (uses `design.md`, `DESIGN.md` or `docs/design.md` if present). `off`: disabled. Easiest to set with [Panoptent: Choose Design Rules File](command:panoptent.chooseDesignFile).",
   "view.home": "Get Started",
   "view.home.welcome": "Preview your app, click an element, type what you want — Claude Code edits the code.\n[$(eye) Open Preview](command:panoptent.open)\nStart your project's dev server first (e.g. npm run dev).\n[$(wand) Set Up code-inspector Automatically](command:panoptent.setupCodeInspector)\nLinks elements to their exact file and line, so Claude doesn't spend time and tokens searching.\n[$(book) Setup Guide](command:panoptent.setupGuide)\n[$(gear) Settings](command:workbench.action.openSettings?%5B%22panoptent%22%5D)\n[$(globe) Language: English / Türkçe](command:panoptent.changeLanguage)"
 }

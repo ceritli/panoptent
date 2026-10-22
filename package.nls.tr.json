@@ -8,6 +8,7 @@
   "command.chromeStatus": "Chrome Bağlantı Durumu",
   "command.forgetChrome": "Chrome Eşleştirmelerini Sil",
   "command.changeLanguage": "Dili Değiştir",
+  "command.chooseDesignFile": "Tasarım Kuralları Dosyasını Seç",
   "command.connectClaudeCode": "Claude Code'u Bağla (MCP)",
   "command.copyMcpCommand": "MCP Bağlantı Komutunu Kopyala (Claude Code)",
   "config.language": "Panoptent arayüzünün dili (önizleme paneli, sayfa üstü araçlar, Chrome eklentisi, bildirimler ve Claude'a gönderilen istemler).",
@@ -26,6 +27,7 @@
   "config.sendTo.claudePanel": "İsteği VS Code'daki Claude Code paneline aktarır (önceden doldurulur, sen Enter'a basarsın).",
   "config.sendTo.cli": "Claude Code CLI'yı arka planda çalıştırır, ilerleme Panoptent panelinde görünür.",
   "config.sendTo.mcp": "Claude Code değişiklikleri Panoptent'in MCP sunucusundan kendisi okur: Uygula, istek dosyası eklemek yerine tek satırlık bir komut kopyalar (ya da Claude Code'da /mcp__panoptent__apply_queue yaz). İlk seferde Panoptent, Claude Code'u bağlamayı önerir.",
+  "config.designFile": "Arayüz değişikliklerinde Claude’un uyacağı tasarım kuralları dosyası, proje klasörüne göre (ör. `design.md`). Boş: otomatik (varsa `design.md`, `DESIGN.md` veya `docs/design.md`). `off`: kapalı. En kolayı [Panoptent: Tasarım Kuralları Dosyasını Seç](command:panoptent.chooseDesignFile) komutuyla seçmek.",
   "view.home": "Başlarken",
   "view.home.welcome": "Uygulamanı önizle, bir öğeye tıkla, ne istediğini yaz — Claude Code kodu düzenlesin.\n[$(eye) Önizlemeyi Aç](command:panoptent.open)\nÖnce projende dev sunucusunu başlat (ör. npm run dev).\n[$(wand) code-inspector'ı Otomatik Kur](command:panoptent.setupCodeInspector)\nÖğeleri tam dosya ve satıra bağlar; Claude aramaya zaman ve token harcamaz.\n[$(book) Kurulum Rehberi](command:panoptent.setupGuide)\n[$(gear) Ayarlar](command:workbench.action.openSettings?%5B%22panoptent%22%5D)\n[$(globe) Dil: Türkçe / English](command:panoptent.changeLanguage)"
 }

@@ -59,6 +59,12 @@
       'pn.popChk': 'Open a box next to the element on select',
       'pn.openSrc': 'Also open its code on select',
       'pn.openSrc.title': "Opens the selected element's source file in the editor without taking focus from the preview",
+      'pn.design': 'Design rules:',
+      'pn.design.title': "Claude follows the design rules in this file for every change (click to choose another file or turn it off)",
+      'pn.design.auto': '{0} (automatic)',
+      'pn.design.none': 'none — choose a file',
+      'pn.design.off': 'off',
+      'pn.design.missing': '{0} not found — choose again',
       'pn.activity': 'Activity',
       'pn.log.empty': 'Nothing yet.',
       'pn.now.panel': 'Send now',
@@ -193,6 +199,12 @@
       'pn.popChk': 'Seçince öğenin yanında kutu aç',
       'pn.openSrc': 'Seçince kodunu da yanda aç',
       'pn.openSrc.title': 'Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır',
+      'pn.design': 'Tasarım kuralları:',
+      'pn.design.title': 'Claude her değişiklikte bu dosyadaki tasarım kurallarına uyar (başka dosya seçmek ya da kapatmak için tıkla)',
+      'pn.design.auto': '{0} (otomatik)',
+      'pn.design.none': 'yok — dosya seç',
+      'pn.design.off': 'kapalı',
+      'pn.design.missing': '{0} bulunamadı — yeniden seç',
       'pn.activity': 'Etkinlik',
       'pn.log.empty': 'Henüz bir şey yok.',
       'pn.now.panel': 'Hemen aktar',
@@ -395,6 +407,18 @@
   const selCount = $('#selCount');
   const popChk = $('#popChk');
   const openSrcChk = $('#openSrcChk');
+
+  // ---------- tasarım kuralları dosyası ----------
+  const designBtn = $('#designBtn');
+  let design = { mode: 'auto', file: null, missing: false };
+  function renderDesign() {
+    if (!designBtn) return;
+    const d = design;
+    designBtn.textContent = d.mode === 'off' ? t('pn.design.off')
+      : d.file ? (d.mode === 'auto' ? t('pn.design.auto', d.file) : d.file)
+      : d.missing ? t('pn.design.missing', d.setting) : t('pn.design.none');
+  }
+  if (designBtn) designBtn.addEventListener('click', () => vscode.postMessage({ type: 'chooseDesignFile' }));
   let openOnSelect = true;
   openSrcChk.addEventListener('change', () => {
     openOnSelect = openSrcChk.checked;
@@ -885,6 +909,7 @@
     renderWorking();
     renderQueue(); // renderItems'ı da çağırır
     applySendTo(); // gönder düğmesi, etiket ve overlay'e config (lang + nowLabel)
+    renderDesign();
   }
   function setLangFromHost(v) {
     if (langPref !== 'auto') langPref = I18N.norm(v);
@@ -1024,6 +1049,7 @@
         canRollback = !!m.canRollback;
         openOnSelect = m.openOnSelect !== false;
         openSrcChk.checked = openOnSelect;
+        if (m.design) { design = m.design; renderDesign(); }
         applySendTo();
         if (sendTo !== 'cli' && !claudeExt) {
           addLog('err', esc(t('pn.noClaudeExt')));
@@ -1057,6 +1083,10 @@
       case 'session':
         sessionId = m.sessionId;
         applySendTo();
+        break;
+      case 'design':
+        design = m;
+        renderDesign();
         break;
       case 'sendTo':
         sendTo = m.value;

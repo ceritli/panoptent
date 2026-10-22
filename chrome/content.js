@@ -56,6 +56,8 @@
       'cx.ciSetup': 'Set up code-inspector automatically',
       'cx.off': 'Turn off Panoptent on this site',
       'cx.langLbl': 'Language', 'cx.lang.auto': 'VS Code setting (auto)',
+      'cx.designLbl': 'Design rules file', 'cx.design.auto': '{0} (automatic)', 'cx.design.none': 'none', 'cx.design.off': 'off',
+      'cx.design.missing': '{0} not found', 'cx.design.choose': 'Choose in VS Code', 'cx.design.chooseToast': 'A file picker opened in VS Code.',
       'cx.connectFirst': 'Connect to VS Code first.',
       'cx.ciStarted': 'Setup started in VS Code.',
       'cx.pairing': 'Waiting for pairing', 'cx.notFound': 'VS Code not found',
@@ -132,6 +134,8 @@
       'cx.ciSetup': 'code-inspector’ı otomatik kur',
       'cx.off': 'Bu sitede Panoptent’i kapat',
       'cx.langLbl': 'Dil', 'cx.lang.auto': 'VS Code ayarı (otomatik)',
+      'cx.designLbl': 'Tasarım kuralları dosyası', 'cx.design.auto': '{0} (otomatik)', 'cx.design.none': 'yok', 'cx.design.off': 'kapalı',
+      'cx.design.missing': '{0} bulunamadı', 'cx.design.choose': 'VS Code’da seç', 'cx.design.chooseToast': 'VS Code’da dosya seçme penceresi açıldı.',
       'cx.connectFirst': 'Önce VS Code’a bağlan.',
       'cx.ciStarted': 'Kurulum VS Code’da başladı.',
       'cx.pairing': 'Eşleştirme bekliyor', 'cx.notFound': 'VS Code bulunamadı',
@@ -189,7 +193,7 @@
   let viewport = 'full';
   let lastTrusted = 0;
   let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false };
-  let settings = { sendTo: 'claudePanel', openOnSelect: true, claudeExt: true };
+  let settings = { sendTo: 'claudePanel', openOnSelect: true, claudeExt: true, design: null };
   const logs = [];
   // Dil: VS Code ayarı esas; bağlı değilken yerel seçim ('lang') geçici olarak kullanılır.
   let langPref = 'auto'; // ayarlar sekmesindeki seçicinin gösterdiği değer
@@ -610,6 +614,8 @@
         <div class="row"><label><input type="checkbox" id="cont"> ${esc(t('cx.cont'))}</label></div>
         <div class="row"><label><input type="checkbox" id="pop"> ${esc(t('cx.pop'))}</label></div>
         <div class="row"><label><input type="checkbox" id="openSrc"> ${esc(t('cx.openSrc'))}</label></div>
+        <div class="lbl">${esc(t('cx.designLbl'))}</div>
+        <div class="row">${esc(designText())} · <span class="link" id="designBtn">${esc(t('cx.design.choose'))}</span></div>
         <div class="lbl">${esc(t('cx.langLbl'))}</div>
         <div class="row"><select id="langSel">${langOpts}</select></div>
         <div class="lbl">${esc(t('cx.srcLbl'))}</div>${src}
@@ -627,6 +633,7 @@
       g('pop').addEventListener('change', (e) => { ui.popover = e.target.checked; saveUi(); sendConfig(); });
       g('openSrc').addEventListener('change', (e) => { settings.openOnSelect = e.target.checked; bg({ type: 'setOpenOnSelect', value: settings.openOnSelect }); });
       g('offBtn').addEventListener('click', disable);
+      g('designBtn').addEventListener('click', () => { if (!connected()) return toast(t('cx.connectFirst'), 'err'); bg({ type: 'chooseDesignFile' }); toast(t('cx.design.chooseToast'), 'ok'); });
       if (g('pairBtn')) g('pairBtn').addEventListener('click', () => { pairAsked = true; bg({ type: 'pair' }); toast(t('cx.pressAllow'), '', 5000); });
       if (g('ciBtn')) g('ciBtn').addEventListener('click', () => { if (!connected()) return toast(t('cx.connectFirst'), 'err'); bg({ type: 'setupCodeInspector' }); toast(t('cx.ciStarted'), 'ok'); });
       if (g('wsSel')) g('wsSel').addEventListener('change', (e) => bg({ type: 'chooseWorkspace', port: Number(e.target.value) }));
@@ -666,6 +673,14 @@
         queue: queue.map((en) => (en.dataUrl ? Object.assign({}, en, { dataUrl: undefined, hasImageData: true }) : en)),
       });
     }, 250);
+  }
+
+  function designText() {
+    const d = settings.design;
+    if (!d) return '—';
+    if (d.mode === 'off') return t('cx.design.off');
+    if (d.file) return d.mode === 'auto' ? t('cx.design.auto', d.file) : d.file;
+    return d.missing ? t('cx.design.missing', d.setting) : t('cx.design.none');
   }
 
   function render() {
@@ -783,6 +798,7 @@
         settings.sendTo = m.sendTo || settings.sendTo;
         settings.openOnSelect = m.openOnSelect !== false;
         settings.claudeExt = m.claudeExt !== false;
+        if (m.design) settings.design = m.design;
         canRollback = !!m.canRollback;
         if (m.lang) langFromVS(m.lang);
         sendConfig();
@@ -807,6 +823,10 @@
           toast(t('cx.notConnectedQueued'), 'err', 5000);
           if (popPending) { popPending = false; popStatus('err', t('cx.notConnectedShort')); }
         }
+        render();
+        break;
+      case 'design':
+        settings.design = m;
         render();
         break;
       case 'sendTo':

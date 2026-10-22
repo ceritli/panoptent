@@ -422,6 +422,8 @@
       </div>
       <p lang="tr"><b>Açık Claude Code konuşmasına ekle</b> işaretini kaldırırsan her istek yeni bir Claude Code sekmesinde, önceden doldurulmuş olarak açılır.</p>
       <p lang="en">Untick <b>Add to the open Claude Code conversation</b> to open each request in a new, pre-filled Claude Code tab instead.</p>
+      <p lang="tr"><b>Tasarım kuralları.</b> Projede <code>design.md</code> gibi bir tasarım dosyası varsa Panoptent her isteğe "bu dosyadaki kurallara uy" satırını ekler; Claude dosyayı konuşma başına bir kez okur. Dosyayı paneldeki <b>Tasarım kuralları</b> satırından (Chrome'da Ayarlar sekmesinden) seçebilir ya da kapatabilirsin.</p>
+      <p lang="en"><b>Design rules.</b> If the project has a design file such as <code>design.md</code>, Panoptent adds a "follow the rules in this file" line to every request; Claude reads the file once per conversation. Pick another file or turn it off from the <b>Design rules</b> row in the panel (in Chrome: the Settings tab).</p>
       <p lang="tr">Gönderilen tam istem her zaman <b>Output → Panoptent</b> kanalında görünür.</p>
       <p lang="en">The exact prompt is always visible in <b>Output → Panoptent</b>.</p>
 
@@ -623,6 +625,7 @@ export default defineNuxtConfig({
         <tbody>
           <tr><td><code>panoptent.language</code></td><td><code>auto</code></td><td><span lang="tr">Arayüz dili: <code>auto</code> (VS Code'un görüntüleme dilini izler), <code>en</code> veya <code>tr</code>. Claude'a giden istemler de bu dilde yazılır</span><span lang="en">Interface language: <code>auto</code> (follows VS Code's display language), <code>en</code> or <code>tr</code>. Prompts sent to Claude use it too</span></td></tr>
           <tr><td><code>panoptent.sendTo</code></td><td><code>claudePanel</code></td><td><span lang="tr"><code>claudePanel</code> (Claude Code paneli), <code>cli</code> (arka planda) veya <code>mcp</code> (Claude Code, MCP ile)</span><span lang="en"><code>claudePanel</code> (Claude Code panel), <code>cli</code> (background) or <code>mcp</code> (Claude Code over MCP)</span></td></tr>
+          <tr><td><code>panoptent.designFile</code></td><td>—</td><td><span lang="tr">Claude'un uyacağı tasarım kuralları dosyası. Boş: otomatik (<code>design.md</code>, <code>DESIGN.md</code>, <code>docs/design.md</code>), <code>off</code>: kapalı. Paneldeki <b>Tasarım kuralları</b> satırından seçilir</span><span lang="en">Design rules file Claude follows. Empty: automatic (<code>design.md</code>, <code>DESIGN.md</code>, <code>docs/design.md</code>), <code>off</code>: disabled. Pick it from the <b>Design rules</b> row in the panel</span></td></tr>
           <tr><td><code>panoptent.openSourceOnSelect</code></td><td><code>true</code></td><td><span lang="tr">Seçince kaynak dosyayı yanda aç</span><span lang="en">Open the source file beside the preview on select</span></td></tr>
           <tr><td><code>panoptent.defaultUrl</code></td><td><code>http://localhost:3000</code></td><td><span lang="tr">İlk açılışta önerilen adres</span><span lang="en">Suggested URL on first open</span></td></tr>
           <tr><td><code>panoptent.chromeBridge</code></td><td><code>true</code></td><td><span lang="tr">Chrome eklentisi için yerel köprü</span><span lang="en">Local bridge for the Chrome extension</span></td></tr>

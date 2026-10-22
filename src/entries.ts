@@ -73,6 +73,7 @@ addStrings({
     'ext.p.itemMany': '   Elements ({0}):',
     'ext.p.rules': 'Rules:',
     'ext.p.ruleStyle': '- The style values come from live tweaking in the preview; translate them to the project’s styling approach (Tailwind classes, CSS modules, scoped styles, etc.); do not use inline styles.',
+    'ext.p.ruleDesign': '- Follow the project’s design rules in `{0}` (read it first if you have not read it in this conversation).',
     'ext.p.ruleOnly': '- Change only what was asked; do not touch build output (.next, .nuxt, .output, dist, node_modules).',
     'ext.p.ruleShared': '- If the element is in a shared component used in several places, mention it.',
     'ext.p.ruleHmr': '- The dev server updates via hot reload; do not restart it.',
@@ -112,6 +113,7 @@ addStrings({
     'ext.p.itemMany': '   Öğeler ({0}):',
     'ext.p.rules': 'Kurallar:',
     'ext.p.ruleStyle': '- Stil değerleri önizlemedeki canlı denemeden geliyor; bunları projenin stil yaklaşımına (Tailwind sınıfları, CSS modülleri, scoped stil vb.) uygun karşılıklarına çevir, satır içi style kullanma.',
+    'ext.p.ruleDesign': '- Projenin `{0}` dosyasındaki tasarım kurallarına uy (bu konuşmada okumadıysan önce onu oku).',
     'ext.p.ruleOnly': '- Yalnızca istenenleri değiştir; derleme çıktısına (.next, .nuxt, .output, dist, node_modules) dokunma.',
     'ext.p.ruleShared': '- Öğe birden çok yerde kullanılan ortak bir bileşendeyse bunu belirt.',
     'ext.p.ruleHmr': '- Dev sunucusu hot reload ile güncelleniyor; yeniden başlatma.',
@@ -126,6 +128,7 @@ export interface PromptOptions {
   id?: string; // Panoptent işlem kimliği (geri alma için transkriptte aranır)
   pageUrl: string;
   detail: boolean; // CLI için daha fazla bağlam (HTML, stiller)
+  designFile?: string; // projenin tasarım kuralları dosyası (göreli yol), varsa Claude'a hatırlatılır
   resolve: (file: string) => Promise<string | undefined>; // proje köküne göre göreli yol
 }
 
@@ -209,6 +212,7 @@ export async function buildBatchPrompt(entries: Entry[], o: PromptOptions): Prom
 
   L.push('');
   L.push(t('ext.p.rules'));
+  if (o.designFile) L.push(t('ext.p.ruleDesign', o.designFile));
   if (entries.some((e) => e.kind === 'style')) {
     L.push(t('ext.p.ruleStyle'));
   }

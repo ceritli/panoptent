@@ -23,6 +23,15 @@ addStrings({
     'ext.lang.auto': 'Auto',
     'ext.lang.autoDesc': 'Follow VS Code’s display language',
     'ext.lang.current': 'current',
+    'ext.design.title': 'Panoptent: Design Rules File',
+    'ext.design.ph': 'Pick the file Claude should follow for UI changes (e.g. design.md)',
+    'ext.design.auto': 'Automatic',
+    'ext.design.autoDesc': 'Use design.md / DESIGN.md / docs/design.md if the project has one',
+    'ext.design.off': 'Off',
+    'ext.design.offDesc': 'Don’t remind Claude of a design file',
+    'ext.design.browse': 'Choose another file…',
+    'ext.design.outside': 'Pick a file inside this project folder.',
+    'ext.design.set': 'Panoptent: Claude will follow {0} for changes in this project.',
   },
   tr: {
     'ext.bridgeFailed': 'Chrome köprüsü başlatılamadı: {0}',
@@ -38,6 +47,15 @@ addStrings({
     'ext.lang.auto': 'Otomatik',
     'ext.lang.autoDesc': 'VS Code’un görüntüleme dilini izle',
     'ext.lang.current': 'şu anki',
+    'ext.design.title': 'Panoptent: Tasarım Kuralları Dosyası',
+    'ext.design.ph': 'Arayüz değişikliklerinde Claude’un uyacağı dosyayı seç (ör. design.md)',
+    'ext.design.auto': 'Otomatik',
+    'ext.design.autoDesc': 'Projede design.md / DESIGN.md / docs/design.md varsa onu kullan',
+    'ext.design.off': 'Kapalı',
+    'ext.design.offDesc': 'Claude’a tasarım dosyası hatırlatma',
+    'ext.design.browse': 'Başka bir dosya seç…',
+    'ext.design.outside': 'Bu proje klasörünün içinden bir dosya seç.',
+    'ext.design.set': 'Panoptent: Bu projede Claude değişikliklerde {0} dosyasına uyacak.',
   },
 });
 
@@ -99,6 +117,9 @@ export function activate(context: vscode.ExtensionContext) {
       startMcp();
     }),
     vscode.workspace.onDidChangeConfiguration((ev) => {
+      if (ev.affectsConfiguration('panoptent.designFile') && engine) {
+        engine.emit({ type: 'design', ...engine.designState() });
+      }
       if (ev.affectsConfiguration('panoptent.language')) {
         engine?.emit({ type: 'lang', value: uiLang() });
         bridge?.refreshLang();
@@ -171,6 +192,11 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(t('ext.chromeForgotten'));
     }),
     vscode.commands.registerCommand('panoptent.changeLanguage', () => pickLanguage()),
+    vscode.commands.registerCommand('panoptent.chooseDesignFile', () => {
+      const e = getEngine(context);
+      if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
+      return pickDesignFile(e);
+    }),
     vscode.commands.registerCommand('panoptent.connectClaudeCode', async () => {
       if (!mcp?.port) {
         vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
@@ -341,6 +367,9 @@ class PreviewPanel {
       case 'rollback':
         await e.rollback('panel');
         break;
+      case 'chooseDesignFile':
+        vscode.commands.executeCommand('panoptent.chooseDesignFile');
+        break;
       case 'openSettings':
         vscode.commands.executeCommand('workbench.action.openSettings', 'panoptent');
         break;
@@ -458,6 +487,9 @@ class PreviewPanel {
           <div class="composeRow sub">
             <label class="chk" data-i18n-title="pn.openSrc.title" title="Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır"><input type="checkbox" id="openSrcChk" checked> <span data-i18n="pn.openSrc">Seçince kodunu da yanda aç</span></label>
           </div>
+          <div class="composeRow sub">
+            <span class="chk" data-i18n-title="pn.design.title" title="Claude değişiklikleri bu dosyadaki tasarım kurallarına göre yapar"><span data-i18n="pn.design">Tasarım kuralları:</span> <button id="designBtn" class="link">—</button></span>
+          </div>
         </div>
       </div>
       <div class="col colLog">
@@ -482,6 +514,41 @@ function showSetupGuide(context: vscode.ExtensionContext) {
 }
 
 /** Dil seçimi: Otomatik / English / Türkçe. Motor olmasa da çalışır (yalnızca ayarı yazar; yayını config dinleyicisi yapar). */
+/** Tasarım kuralları dosyasını seçtirir; seçim bu çalışma alanının ayarına (`panoptent.designFile`) yazılır. */
+async function pickDesignFile(e: Engine) {
+  const cfg = vscode.workspace.getConfiguration('panoptent');
+  const cur = (cfg.get<string>('designFile') || '').trim();
+  const found = await vscode.workspace.findFiles('**/*.{md,mdx,txt}', '**/{node_modules,.git,dist,build,out,.next,.nuxt,.output,.claude,coverage}/**', 300);
+  const rels = found
+    .map((u) => path.relative(e.root, u.fsPath).split(path.sep).join('/'))
+    .filter((r) => r && !r.startsWith('..'))
+    .sort((a, b) => Number(!/design|style|brand|ui/i.test(a)) - Number(!/design|style|brand|ui/i.test(b)) || a.split('/').length - b.split('/').length || a.localeCompare(b));
+  type Item = vscode.QuickPickItem & { value?: string; browse?: boolean };
+  const items: Item[] = [
+    { value: '', label: '$(sparkle) ' + t('ext.design.auto'), description: t('ext.design.autoDesc') },
+    { value: 'off', label: '$(circle-slash) ' + t('ext.design.off'), description: t('ext.design.offDesc') },
+    { label: '', kind: vscode.QuickPickItemKind.Separator },
+    ...rels.map((r) => ({ value: r, label: '$(file) ' + r })),
+    { label: '', kind: vscode.QuickPickItemKind.Separator },
+    { browse: true, label: '$(folder-opened) ' + t('ext.design.browse') },
+  ];
+  for (const it of items) if (it.value === cur && !it.browse && it.kind !== vscode.QuickPickItemKind.Separator) it.description = (it.description ? it.description + ' · ' : '') + t('ext.lang.current');
+  const pick = await vscode.window.showQuickPick(items, { title: t('ext.design.title'), placeHolder: t('ext.design.ph'), matchOnDescription: true });
+  if (!pick) return;
+  let value = pick.value;
+  if (pick.browse) {
+    const uri = (await vscode.window.showOpenDialog({ defaultUri: vscode.Uri.file(e.root), canSelectMany: false, openLabel: t('ext.design.title') }))?.[0];
+    if (!uri) return;
+    const rel = path.relative(e.root, uri.fsPath);
+    if (!rel || rel.startsWith('..') || path.isAbsolute(rel)) return vscode.window.showWarningMessage(t('ext.design.outside'));
+    value = rel.split(path.sep).join('/');
+  }
+  if (value === undefined || value === cur) return;
+  await cfg.update('designFile', value, vscode.ConfigurationTarget.Workspace);
+  const file = e.designFile();
+  if (file) vscode.window.showInformationMessage(t('ext.design.set', file));
+}
+
 async function pickLanguage() {
   const cfg = vscode.workspace.getConfiguration('panoptent');
   const cur = cfg.get<string>('language') || 'auto';

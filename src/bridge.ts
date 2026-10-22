@@ -240,6 +240,9 @@ export class Bridge {
       case 'setupCodeInspector':
         vscode.commands.executeCommand('panoptent.setupCodeInspector');
         break;
+      case 'chooseDesignFile':
+        vscode.commands.executeCommand('panoptent.chooseDesignFile');
+        break;
       case 'focusVSCode':
         vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
         break;
