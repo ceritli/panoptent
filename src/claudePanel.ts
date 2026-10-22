@@ -5,6 +5,16 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { spawnSync } from 'child_process';
+import { addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.req.header': '# Panoptent request\n\nThis file was created by Panoptent. Apply the changes below.\n\n',
+  },
+  tr: {
+    'ext.req.header': '# Panoptent isteği\n\nBu dosya Panoptent tarafından oluşturuldu. Aşağıdaki değişiklikleri uygula.\n\n',
+  },
+});
 
 export const CLAUDE_EXT_ID = 'anthropic.claude-code';
 
@@ -124,15 +134,15 @@ export async function sendToOpenConversation(root: string, prompt: string, id = 
   if (!fs.existsSync(ignore)) fs.writeFileSync(ignore, '*\n');
   // eski istek dosyalarını temizle (son 20 kalsın)
   try {
-    const old = fs.readdirSync(dir).filter((f) => f.startsWith('istek-')).sort();
+    const old = fs.readdirSync(dir).filter((f) => /^(istek|request)-/.test(f)).sort();
     for (const f of old.slice(0, Math.max(0, old.length - 20))) fs.rmSync(path.join(dir, f), { force: true });
   } catch {
     /* yok say */
   }
   const stamp = id || new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
   const file = path.join(dir, `istek-${stamp}.md`);
-  const body =
-    '# Panoptent isteği\n\nBu dosya Panoptent tarafından oluşturuldu. Aşağıdaki değişiklikleri uygula.\n\n' + prompt + '\n';
+  // Dosya adı dilden bağımsız olarak `istek-<kimlik>.md` kalır (temizlik bu öneki arar).
+  const body = t('ext.req.header') + prompt + '\n';
   fs.writeFileSync(file, body);
 
   const uri = vscode.Uri.file(file);

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.9.0 — 2026-10-22
+
+- **English and Turkish UI** across the VS Code panel, page overlay, Chrome extension, popup and notifications, switchable live: `panoptent.language` setting (`auto` follows VS Code's display language), *Panoptent: Change Language* command and **Language** link in the Panoptent view, language select in the preview toolbar, and a **Language** select in the Chrome drawer's Settings tab (Chrome follows VS Code once connected; otherwise its own choice or the browser language)
+- Prompts sent to Claude Code are written in the UI language, so Claude replies in it
+- Chrome Web Store metadata localized (`_locales/en`, `_locales/tr`)
+- Docs: English screenshots and demo shown when the page is in English; English UI labels throughout; lightbox for screenshots and image aspect-ratio fix
+- Release workflow also publishes to the VS Code Marketplace and Open VSX (when the tokens are configured)
+- Added `CONTRIBUTING.md`
+
 ## 0.8.0 — 2026-10-22
 
 First public release under the name **Panoptent** (previously developed as *Panoptes Edit* / *Visual Edit*).

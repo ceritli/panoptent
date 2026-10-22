@@ -1,0 +1,17 @@
+{
+  "extName": {
+    "message": "Panoptent"
+  },
+  "extDesc": {
+    "message": "Öğeye tıkla, ne istediğini yaz — VS Code’daki Panoptent ve Claude Code kaynağı düzenler."
+  },
+  "actionTitle": {
+    "message": "Panoptent"
+  },
+  "cmdToggleSelect": {
+    "message": "Seçim modunu aç/kapat"
+  },
+  "cmdTogglePanoptent": {
+    "message": "Bu sekmede Panoptent'i aç/kapat"
+  }
+}

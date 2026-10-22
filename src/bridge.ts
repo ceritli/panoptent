@@ -9,6 +9,36 @@ import * as crypto from 'crypto';
 import * as path from 'path';
 import { WebSocketServer, WebSocket } from 'ws';
 import type { Engine } from './engine';
+import { addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.br.ready': 'Chrome bridge ready: ws://127.0.0.1:{0} ({1})',
+    'ext.br.noPort': 'No free port in the range {0}-{1}',
+    'ext.br.error': 'Bridge error: {0}',
+    'ext.br.pairAsk': 'The Panoptent extension in Chrome wants to connect to this workspace ({0}). If you allow it, the elements and requests you select in Chrome will come here.',
+    'ext.br.allow': 'Allow',
+    'ext.br.tipConnected': 'Panoptent: Chrome connected ({0}, port {1})',
+    'ext.br.tipReady': 'Panoptent: Chrome bridge ready (port {0}). Connect from the Chrome extension.',
+    'ext.br.status': 'Panoptent Chrome bridge: port {0}, {1} connected browser(s). Workspace: {2}.',
+    'ext.br.statusOne': 'Panoptent Chrome bridge: port {0}, 1 connected browser. Workspace: {1}.',
+    'ext.br.notRunning': 'Panoptent Chrome bridge is not running.',
+    'ext.br.forget': 'Remove pairings',
+  },
+  tr: {
+    'ext.br.ready': 'Chrome köprüsü hazır: ws://127.0.0.1:{0} ({1})',
+    'ext.br.noPort': '{0}-{1} aralığında boş port yok',
+    'ext.br.error': 'Köprü hatası: {0}',
+    'ext.br.pairAsk': 'Chrome\'daki Panoptent eklentisi bu çalışma alanına ({0}) bağlanmak istiyor. İzin verirsen Chrome\'da seçtiğin öğeler ve istekler buraya gelir.',
+    'ext.br.allow': 'İzin ver',
+    'ext.br.tipConnected': 'Panoptent: Chrome bağlı ({0}, port {1})',
+    'ext.br.tipReady': 'Panoptent: Chrome köprüsü hazır (port {0}). Chrome eklentisinden bağlan.',
+    'ext.br.status': 'Panoptent Chrome köprüsü: port {0}, {1} bağlı tarayıcı. Çalışma alanı: {2}.',
+    'ext.br.statusOne': 'Panoptent Chrome köprüsü: port {0}, 1 bağlı tarayıcı. Çalışma alanı: {1}.',
+    'ext.br.notRunning': 'Panoptent Chrome köprüsü çalışmıyor.',
+    'ext.br.forget': 'Eşleştirmeleri sil',
+  },
+});
 
 interface Conn {
   id: string;
@@ -49,13 +79,13 @@ export class Bridge {
       try {
         await this.listen(p);
         this.port = p;
-        this.output.appendLine(`Chrome köprüsü hazır: ws://127.0.0.1:${p} (${this.workspaceName})`);
+        this.output.appendLine(t('ext.br.ready', p, this.workspaceName));
         break;
       } catch {
         /* port dolu (başka VS Code penceresi) — sıradakini dene */
       }
     }
-    if (!this.port) throw new Error(`${base}-${base + PORT_RANGE - 1} aralığında boş port yok`);
+    if (!this.port) throw new Error(t('ext.br.noPort', base, base + PORT_RANGE - 1));
     this.sub = this.engine.on((msg, to) => this.route(msg, to));
     this.updateStatus();
   }
@@ -123,7 +153,7 @@ export class Bridge {
       } catch {
         return;
       }
-      this.onMessage(c, m).catch((err) => this.output.appendLine('Köprü hatası: ' + err.message));
+      this.onMessage(c, m).catch((err) => this.output.appendLine(t('ext.br.error', err.message)));
     });
     ws.on('close', () => {
       this.conns.delete(c.id);
@@ -138,12 +168,9 @@ export class Bridge {
 
   private async pair(c: Conn) {
     this.send(c, { type: 'pairing' });
-    const pick = await vscode.window.showInformationMessage(
-      `Chrome'daki Panoptent eklentisi bu çalışma alanına (${this.workspaceName}) bağlanmak istiyor. İzin verirsen Chrome'da seçtiğin öğeler ve istekler buraya gelir.`,
-      { modal: true },
-      'İzin ver',
-    );
-    if (pick !== 'İzin ver') {
+    const allow = t('ext.br.allow');
+    const pick = await vscode.window.showInformationMessage(t('ext.br.pairAsk', this.workspaceName), { modal: true }, allow);
+    if (pick !== allow) {
       this.send(c, { type: 'denied' });
       c.ws.close(4003, 'reddedildi');
       return;
@@ -227,6 +254,11 @@ export class Bridge {
     }
   }
 
+  /** Dil değişince durum çubuğu ipucunu yenile. */
+  refreshLang() {
+    this.updateStatus();
+  }
+
   private updateStatus() {
     const n = [...this.conns.values()].filter((c) => c.authed).length;
     if (!this.port) {
@@ -235,20 +267,23 @@ export class Bridge {
     }
     this.status.text = n ? `$(eye) Chrome ${n > 1 ? n : ''}`.trim() : '$(eye)';
     this.status.tooltip = n
-      ? `Panoptent: Chrome bağlı (${this.workspaceName}, port ${this.port})`
-      : `Panoptent: Chrome köprüsü hazır (port ${this.port}). Chrome eklentisinden bağlan.`;
+      ? t('ext.br.tipConnected', this.workspaceName, this.port)
+      : t('ext.br.tipReady', this.port);
     this.status.show();
   }
 
   showStatus() {
     const n = [...this.conns.values()].filter((c) => c.authed).length;
+    const forget = t('ext.br.forget');
     vscode.window.showInformationMessage(
       this.port
-        ? `Panoptent Chrome köprüsü: port ${this.port}, ${n} bağlı tarayıcı. Çalışma alanı: ${this.workspaceName}.`
-        : 'Panoptent Chrome köprüsü çalışmıyor.',
-      'Eşleştirmeleri sil',
+        ? n === 1
+          ? t('ext.br.statusOne', this.port, this.workspaceName)
+          : t('ext.br.status', this.port, n, this.workspaceName)
+        : t('ext.br.notRunning'),
+      forget,
     ).then((p) => {
-      if (p === 'Eşleştirmeleri sil') vscode.commands.executeCommand('panoptent.forgetChrome');
+      if (p === forget) vscode.commands.executeCommand('panoptent.forgetChrome');
     });
   }
 }

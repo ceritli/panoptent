@@ -12,6 +12,156 @@
   if (window.parent === window && !CHROME) return;
   var active = true;
 
+  // ---------- Dil (i18n) ----------
+  // i18n.js overlay.js'ten önce yüklenir; yine de yoksa küçük bir yedek tanımla
+  if (typeof PanoptentI18n === 'undefined') {
+    window.PanoptentI18n = (function () {
+      var d = { en: {} }, lang = 'en', ls = [];
+      function norm(l) { l = String(l || '').toLowerCase().split(/[-_]/)[0]; return l === 'tr' ? 'tr' : 'en'; }
+      try { lang = norm(document.documentElement.getAttribute('data-panoptent-lang') || navigator.language); } catch (e) { /* yok say */ }
+      function t(k) {
+        var s = (d[lang] && d[lang][k]); if (s == null) s = d.en[k]; if (s == null) return k;
+        var a = arguments;
+        return String(s).replace(/\{(\d+)\}/g, function (m, i) { var v = a[+i + 1]; return v == null ? '' : String(v); });
+      }
+      return {
+        add: function (tb) { for (var l in tb) { d[l] = d[l] || {}; for (var k in tb[l]) d[l][k] = tb[l][k]; } },
+        t: t,
+        localize: function (r) {
+          if (!r || !r.querySelectorAll) return;
+          [['data-i18n', 'textContent'], ['data-i18n-title', 'title'], ['data-i18n-ph', 'placeholder']].forEach(function (p) {
+            Array.prototype.forEach.call(r.querySelectorAll('[' + p[0] + ']'), function (el) { el[p[1]] = t(el.getAttribute(p[0])); });
+          });
+        },
+        setLang: function (l) { var n = norm(l); if (n === lang) return false; lang = n; ls.forEach(function (f) { try { f(lang); } catch (e) { /* yok say */ } }); return true; },
+        onChange: function (f) { ls.push(f); },
+        get lang() { return lang; },
+      };
+    })();
+  }
+  var I18N = PanoptentI18n;
+  var t = I18N.t;
+  I18N.add({
+    en: {
+      'ov.act.text': 'Edit text in place (double-click)',
+      'ov.act.textOnly': 'Only for a single element that contains just text',
+      'ov.act.img': 'Replace image',
+      'ov.act.del': 'Delete element',
+      'ov.act.code': 'Open in code',
+      'ov.close': 'Close (Esc)',
+      'ov.tab.ask': 'Request',
+      'ov.tab.style': 'Style',
+      'ov.ask.ph': 'What should change? e.g. make this section two columns',
+      'ov.img.pick': 'Choose file…',
+      'ov.img.urlPh': 'or image URL (https://…)',
+      'ov.img.tooBig': 'File is larger than 8 MB.',
+      'ov.img.fileInfo': '{0} · {1} KB — will be saved to the project when queued',
+      'ov.img.badUrl': 'URL must start with http:// or https://.',
+      'ov.img.urlPreview': 'Previewing image from URL',
+      'ov.now': 'Send now',
+      'ov.now.title': 'Send immediately without waiting for the queue',
+      'ov.queue': 'Add to queue',
+      'ov.hint': '{0}↵ queue · {0}⇧↵ now · Alt+arrows navigate',
+      'ov.multi.one': '1 item selected',
+      'ov.multi.many': '{0} items selected',
+      'ov.crumb.parent': 'Select this parent element',
+      'ov.src.unknown': 'source file unknown',
+      'ov.vp.mobile': 'Only for mobile view (≤390px)',
+      'ov.vp.tablet': 'Only for tablet view (≤1024px)',
+      'ov.st.textColor': 'Text color',
+      'ov.st.bg': 'Background',
+      'ov.st.font': 'Font',
+      'ov.st.align': 'Alignment',
+      'ov.st.padding': 'Padding',
+      'ov.st.margin': 'Margin',
+      'ov.st.radius': 'Radius',
+      'ov.st.border': 'border',
+      'ov.st.opacity': 'Opacity %',
+      'ov.st.addClass': 'Add class',
+      'ov.st.classPh': 'e.g. shadow-lg rounded-xl',
+      'ov.st.reset': 'Reset style changes',
+      'ov.st.transparent': 'transparent',
+      'ov.st.top': 'top',
+      'ov.st.right': 'right',
+      'ov.st.bottom': 'bottom',
+      'ov.st.left': 'left',
+      'ov.fw.300': 'Light',
+      'ov.fw.400': 'Normal',
+      'ov.fw.500': 'Medium',
+      'ov.fw.600': 'Semibold',
+      'ov.fw.700': 'Bold',
+      'ov.fw.800': 'Extra bold',
+      'ov.al.left': 'left',
+      'ov.al.center': 'center',
+      'ov.al.right': 'right',
+      'ov.al.justify': 'justify',
+      'ov.err.empty': 'Write a request, change a style or pick an image first.',
+      'ov.busy.now': 'Sending…',
+      'ov.busy.queue': 'Adding to queue…',
+      'ov.edit.hint': 'Edit text · Enter saves, Esc cancels',
+      'ov.truncated': '…(truncated)',
+    },
+    tr: {
+      'ov.act.text': 'Metni yerinde düzenle (çift tık)',
+      'ov.act.textOnly': 'Yalnızca tek ve sadece metin içeren bir öğede',
+      'ov.act.img': 'Görseli değiştir',
+      'ov.act.del': 'Öğeyi sil',
+      'ov.act.code': 'Kodda aç',
+      'ov.close': 'Kapat (Esc)',
+      'ov.tab.ask': 'İstek',
+      'ov.tab.style': 'Stil',
+      'ov.ask.ph': 'Ne değişsin? Örn: bu bölümü iki sütun yap',
+      'ov.img.pick': 'Dosya seç…',
+      'ov.img.urlPh': 'veya görsel adresi (https://…)',
+      'ov.img.tooBig': 'Dosya 8 MB’tan büyük.',
+      'ov.img.fileInfo': '{0} · {1} KB — kuyruğa eklenince projeye kaydedilecek',
+      'ov.img.badUrl': 'Adres http:// veya https:// ile başlamalı.',
+      'ov.img.urlPreview': 'Adresten görsel önizleniyor',
+      'ov.now': 'Hemen gönder',
+      'ov.now.title': 'Kuyruğu beklemeden hemen gönder',
+      'ov.queue': 'Kuyruğa ekle',
+      'ov.hint': '{0}↵ kuyruğa · {0}⇧↵ hemen · Alt+oklar gezin',
+      'ov.multi.one': '1 öğe seçili',
+      'ov.multi.many': '{0} öğe seçili',
+      'ov.crumb.parent': 'Bu üst öğeyi seç',
+      'ov.src.unknown': 'kaynak dosya bilinmiyor',
+      'ov.vp.mobile': 'Sadece mobil görünüm (≤390px) için',
+      'ov.vp.tablet': 'Sadece tablet görünüm (≤1024px) için',
+      'ov.st.textColor': 'Metin rengi',
+      'ov.st.bg': 'Arka plan',
+      'ov.st.font': 'Yazı',
+      'ov.st.align': 'Hizalama',
+      'ov.st.padding': 'İç boşluk',
+      'ov.st.margin': 'Dış boşluk',
+      'ov.st.radius': 'Köşe',
+      'ov.st.border': 'kenarlık',
+      'ov.st.opacity': 'Opaklık %',
+      'ov.st.addClass': 'Sınıf ekle',
+      'ov.st.classPh': 'örn. shadow-lg rounded-xl',
+      'ov.st.reset': 'Stil değişikliklerini sıfırla',
+      'ov.st.transparent': 'şeffaf',
+      'ov.st.top': 'üst',
+      'ov.st.right': 'sağ',
+      'ov.st.bottom': 'alt',
+      'ov.st.left': 'sol',
+      'ov.fw.300': 'İnce',
+      'ov.fw.400': 'Normal',
+      'ov.fw.500': 'Orta',
+      'ov.fw.600': 'Yarı kalın',
+      'ov.fw.700': 'Kalın',
+      'ov.fw.800': 'Çok kalın',
+      'ov.al.left': 'sol',
+      'ov.al.center': 'orta',
+      'ov.al.right': 'sağ',
+      'ov.al.justify': 'iki yana',
+      'ov.err.empty': 'Önce bir istek yaz, stil değiştir ya da görsel seç.',
+      'ov.busy.now': 'Gönderiliyor…',
+      'ov.busy.queue': 'Kuyruğa ekleniyor…',
+      'ov.edit.hint': 'Metni düzenle · Enter kaydeder, Esc iptal',
+      'ov.truncated': '…(kısaltıldı)',
+    },
+  });
+
   var SRC = 'panoptent';
   var selectMode = false;
   var hoverEl = null;
@@ -106,22 +256,22 @@
     '<div id="pop" class="pop" hidden>' +
     '<div class="popHead"><span class="n" id="popN">1</span><div class="crumbs" id="crumbs"></div>' +
     '<div class="acts">' +
-    '<button class="ic" id="actText" title="Metni yerinde düzenle (çift tık)">' + ICON.text + '</button>' +
-    '<button class="ic" id="actImg" title="Görseli değiştir" hidden>' + ICON.img + '</button>' +
-    '<button class="ic danger" id="actDel" title="Öğeyi sil">' + ICON.del + '</button>' +
-    '<button class="ic" id="actCode" title="Kodda aç">' + ICON.code + '</button>' +
-    '<button class="x" id="popX" title="Kapat (Esc)">×</button></div></div>' +
+    '<button class="ic" id="actText" data-i18n-title="ov.act.text" title="Metni yerinde düzenle (çift tık)">' + ICON.text + '</button>' +
+    '<button class="ic" id="actImg" data-i18n-title="ov.act.img" title="Görseli değiştir" hidden>' + ICON.img + '</button>' +
+    '<button class="ic danger" id="actDel" data-i18n-title="ov.act.del" title="Öğeyi sil">' + ICON.del + '</button>' +
+    '<button class="ic" id="actCode" data-i18n-title="ov.act.code" title="Kodda aç">' + ICON.code + '</button>' +
+    '<button class="x" id="popX" data-i18n-title="ov.close" title="Kapat (Esc)">×</button></div></div>' +
     '<div class="srcline" id="srcline"></div>' +
-    '<div class="tabs"><button data-tab="ask" class="on">İstek</button><button data-tab="style">Stil<span class="dot" id="styleDot" hidden></span></button></div>' +
-    '<div id="tabAsk"><textarea id="popIn" rows="3" placeholder="Ne değişsin? Örn: bu bölümü iki sütun yap"></textarea></div>' +
+    '<div class="tabs"><button data-tab="ask" class="on"><span data-i18n="ov.tab.ask">İstek</span></button><button data-tab="style"><span data-i18n="ov.tab.style">Stil</span><span class="dot" id="styleDot" hidden></span></button></div>' +
+    '<div id="tabAsk"><textarea id="popIn" rows="3" data-i18n-ph="ov.ask.ph" placeholder="Ne değişsin? Örn: bu bölümü iki sütun yap"></textarea></div>' +
     '<div id="tabStyle" hidden></div>' +
-    '<div id="imgBox" class="imgbox" hidden><div class="row"><button class="file" id="imgPick">Dosya seç…</button>' +
-    '<input type="url" id="imgUrl" placeholder="veya görsel adresi (https://…)"></div><div id="imgInfo"></div>' +
+    '<div id="imgBox" class="imgbox" hidden><div class="row"><button class="file" id="imgPick" data-i18n="ov.img.pick">Dosya seç…</button>' +
+    '<input type="url" id="imgUrl" data-i18n-ph="ov.img.urlPh" placeholder="veya görsel adresi (https://…)"></div><div id="imgInfo"></div>' +
     '<input type="file" id="imgFile" accept="image/*" hidden></div>' +
     '<label class="vp" id="vpRow" hidden><input type="checkbox" id="vpOnly"> <span id="vpName"></span></label>' +
     '<div class="popFoot"><span class="hint" id="popHint"></span>' +
-    '<button class="btn sec" id="popNow" title="Kuyruğu beklemeden hemen gönder">Hemen gönder</button>' +
-    '<button class="btn pri" id="popQueue">Kuyruğa ekle</button></div>' +
+    '<button class="btn sec" id="popNow" data-i18n-title="ov.now.title" title="Kuyruğu beklemeden hemen gönder">Hemen gönder</button>' +
+    '<button class="btn pri" id="popQueue" data-i18n="ov.queue">Kuyruğa ekle</button></div>' +
     '<div class="st" id="popSt" hidden></div></div>';
 
   var q = function (id) { return root.getElementById ? root.getElementById(id) : root.querySelector('#' + id); };
@@ -139,7 +289,14 @@
   var viewport = 'full';
   var isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   var MOD = isMac ? '⌘' : 'Ctrl';
-  popHint.textContent = MOD + '↵ kuyruğa · ' + MOD + '⇧↵ hemen · Alt+oklar gezin';
+  var nowLabel = null; // host'tan gelen (zaten çevrilmiş) "hemen" düğmesi etiketi
+  var lastStatus = null; // { state, key } — yerel durum mesajı, dil değişince yeniden çizilir
+  function localizeStatic() {
+    I18N.localize(root);
+    popHint.textContent = t('ov.hint', MOD);
+    popNow.textContent = nowLabel || t('ov.now');
+  }
+  localizeStatic();
 
   function mount() {
     if (!host.isConnected) document.documentElement.appendChild(host);
@@ -305,7 +462,7 @@
     strip(clone);
     if (clone.querySelectorAll) Array.prototype.forEach.call(clone.querySelectorAll('[data-insp-path]'), strip);
     var html = clone.outerHTML || '';
-    return html.length > 1500 ? html.slice(0, 1500) + ' …(kısaltıldı)' : html;
+    return html.length > 1500 ? html.slice(0, 1500) + ' ' + t('ov.truncated') : html;
   }
 
   function describe(el, id) {
@@ -506,7 +663,7 @@
     if (n > 1) {
       var m = document.createElement('span');
       m.className = 'multi';
-      m.textContent = n + ' öğe seçili';
+      m.textContent = n === 1 ? t('ov.multi.one') : t('ov.multi.many', n);
       crumbs.appendChild(m);
     } else {
       var chain = [];
@@ -514,7 +671,7 @@
       chain.forEach(function (a) {
         var b = document.createElement('button');
         b.textContent = shortName(a);
-        b.title = 'Bu üst öğeyi seç';
+        b.title = t('ov.crumb.parent');
         b.addEventListener('click', function () { navigate(a); });
         crumbs.appendChild(b);
         var sep = document.createElement('span');
@@ -528,13 +685,13 @@
       crumbs.scrollLeft = crumbs.scrollWidth;
     }
     var src = findSource(el);
-    srcline.textContent = src ? src.file + (src.line ? ':' + src.line : '') : 'kaynak dosya bilinmiyor';
+    srcline.textContent = src ? src.file + (src.line ? ':' + src.line : '') : t('ov.src.unknown');
     actText.disabled = n > 1 || el.childElementCount > 0 || !(el.textContent || '').trim();
-    actText.title = actText.disabled ? 'Yalnızca tek ve sadece metin içeren bir öğede' : 'Metni yerinde düzenle (çift tık)';
+    actText.title = actText.disabled ? t('ov.act.textOnly') : t('ov.act.text');
     actImg.hidden = !imageEl(el);
     imgBox.hidden = imgBox.hidden || !imageEl(el);
     vpRow.hidden = viewport === 'full';
-    vpName.textContent = viewport === '390' ? 'Sadece mobil görünüm (≤390px) için' : 'Sadece tablet görünüm (≤1024px) için';
+    vpName.textContent = viewport === '390' ? t('ov.vp.mobile') : t('ov.vp.tablet');
   }
 
   var activeTab = 'ask';
@@ -577,7 +734,14 @@
     popAnchor = null;
   }
 
+  // Yerel (çevrilebilir) durum: dil değişince yeniden çizilir. 'edit' = döndürücüsüz bilgi satırı
+  function setLocalStatus(state, key) {
+    setPopStatus(state === 'edit' ? 'busy' : state, t(key));
+    if (state === 'edit') { var sp = popSt.querySelector('.sp'); if (sp) sp.remove(); }
+    lastStatus = { state: state, key: key };
+  }
   function setPopStatus(state, text) {
+    lastStatus = null;
     if (!state) { popSt.hidden = true; popSt.className = 'st'; return; }
     popSt.hidden = false;
     popSt.className = 'st' + (state === 'ok' ? ' ok' : state === 'err' ? ' err' : '');
@@ -652,7 +816,7 @@
       inp.value = c.hex;
       var hx = document.createElement('span');
       hx.className = 'hex';
-      hx.textContent = c.transparent ? 'şeffaf' : c.hex;
+      hx.textContent = c.transparent ? t('ov.st.transparent') : c.hex;
       var from = cs.getPropertyValue(prop);
       inp.addEventListener('input', function () { hx.textContent = inp.value; draftSet(prop, inp.value, from); });
       return [inp, hx];
@@ -708,7 +872,7 @@
       opts.forEach(function (o) {
         var b = document.createElement('button');
         b.textContent = o[1];
-        b.title = o[0];
+        b.title = t('ov.al.' + o[0]);
         if (from === o[0] || (from === 'start' && o[0] === 'left')) b.classList.add('on');
         b.addEventListener('click', function () {
           w.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
@@ -719,37 +883,38 @@
       return w;
     }
 
-    row('Metin rengi', color('color'));
-    row('Arka plan', color('background-color'));
-    var fw = sel('font-weight', [['300', 'İnce'], ['400', 'Normal'], ['500', 'Orta'], ['600', 'Yarı kalın'], ['700', 'Kalın'], ['800', 'Çok kalın']]);
+    row(t('ov.st.textColor'), color('color'));
+    row(t('ov.st.bg'), color('background-color'));
+    var fw = sel('font-weight', ['300', '400', '500', '600', '700', '800'].map(function (w) { return [w, t('ov.fw.' + w)]; }));
     var fs = num('font-size', 'px', 6, 200);
     var fsl = document.createElement('span'); fsl.className = 'hex'; fsl.textContent = 'px';
-    row('Yazı', [fs, fsl, fw]);
-    row('Hizalama', [seg('text-align', [['left', '⇤'], ['center', '↔'], ['right', '⇥'], ['justify', '☰']])]);
-    row('İç boşluk', [box4('padding')]);
-    row('Dış boşluk', [box4('margin')]);
+    row(t('ov.st.font'), [fs, fsl, fw]);
+    row(t('ov.st.align'), [seg('text-align', [['left', '⇤'], ['center', '↔'], ['right', '⇥'], ['justify', '☰']])]);
+    row(t('ov.st.padding'), [box4('padding')]);
+    row(t('ov.st.margin'), [box4('margin')]);
     var subl = document.createElement('div'); subl.className = 'box4 sub';
-    ['üst', 'sağ', 'alt', 'sol'].forEach(function (t) { var s = document.createElement('span'); s.textContent = t; subl.appendChild(s); });
+    ['top', 'right', 'bottom', 'left'].forEach(function (k) { var s = document.createElement('span'); s.textContent = t('ov.st.' + k); subl.appendChild(s); });
     row('', [subl]);
     var bw = num('border-width', 'px', 0, 40);
     bw.addEventListener('input', function () {
       if (+bw.value > 0 && cs.getPropertyValue('border-style').indexOf('none') !== -1) draftSet('border-style', 'solid', cs.getPropertyValue('border-style'));
     });
     var bc = color('border-color');
-    row('Köşe', [num('border-radius', 'px', 0, 999), (function () { var s = document.createElement('span'); s.className = 'hex'; s.textContent = 'kenarlık'; return s; })(), bw, bc[0]]);
-    row('Opaklık %', [num('opacity', '%', 0, 100)]);
+    row(t('ov.st.radius'), [num('border-radius', 'px', 0, 999), (function () { var s = document.createElement('span'); s.className = 'hex'; s.textContent = t('ov.st.border'); return s; })(), bw, bc[0]]);
+    row(t('ov.st.opacity'), [num('opacity', '%', 0, 100)]);
     var cls = document.createElement('input');
     cls.type = 'text';
-    cls.placeholder = 'örn. shadow-lg rounded-xl';
-    var t;
-    cls.addEventListener('input', function () { clearTimeout(t); t = setTimeout(function () { draftClasses(cls.value); }, 250); });
-    row('Sınıf ekle', [cls]);
+    cls.placeholder = t('ov.st.classPh');
+    if (draft && draft.classes) cls.value = draft.classes;
+    var clsTimer;
+    cls.addEventListener('input', function () { clearTimeout(clsTimer); clsTimer = setTimeout(function () { draftClasses(cls.value); }, 250); });
+    row(t('ov.st.addClass'), [cls]);
 
     var foot = document.createElement('div');
     foot.style.cssText = 'display:flex;justify-content:flex-end;margin-top:6px';
     var reset = document.createElement('button');
     reset.className = 'reset';
-    reset.textContent = 'Stil değişikliklerini sıfırla';
+    reset.textContent = t('ov.st.reset');
     reset.addEventListener('click', function () {
       var keepImg = pendingImage;
       pendingImage = null;
@@ -785,18 +950,18 @@
   imgFile.addEventListener('change', function () {
     var f = imgFile.files && imgFile.files[0];
     if (!f) return;
-    if (f.size > 8 * 1024 * 1024) { imgInfo.textContent = 'Dosya 8 MB’tan büyük.'; return; }
+    if (f.size > 8 * 1024 * 1024) { imgInfo.textContent = t('ov.img.tooBig'); return; }
     var rd = new FileReader();
     rd.onload = function () {
-      previewImage({ fileName: f.name, dataUrl: String(rd.result) }, f.name + ' · ' + Math.round(f.size / 1024) + ' KB — kuyruğa eklenince projeye kaydedilecek');
+      previewImage({ fileName: f.name, dataUrl: String(rd.result) }, t('ov.img.fileInfo', f.name, Math.round(f.size / 1024)));
     };
     rd.readAsDataURL(f);
     imgFile.value = '';
   });
   imgUrl.addEventListener('change', function () {
     var v = imgUrl.value.trim();
-    if (!/^https?:\/\//.test(v)) { if (v) imgInfo.textContent = 'Adres http:// veya https:// ile başlamalı.'; return; }
-    previewImage({ url: v }, 'Adresten görsel önizleniyor');
+    if (!/^https?:\/\//.test(v)) { if (v) imgInfo.textContent = t('ov.img.badUrl'); return; }
+    previewImage({ url: v }, t('ov.img.urlPreview'));
   });
 
   // ---------- Kuyruğa ekle / hemen gönder ----------
@@ -830,14 +995,14 @@
     if (editingEl) finishTextEdit(true);
     var entries = buildEntries();
     if (!entries.length) {
-      setPopStatus('err', 'Önce bir istek yaz, stil değiştir ya da görsel seç.');
+      setLocalStatus('err', 'ov.err.empty');
       showTab('ask');
       return;
     }
     popIn.value = '';
     if (activeTab === 'style') buildStylePanel();
     popQueue.disabled = popNow.disabled = true;
-    setPopStatus('busy', mode === 'now' ? 'Gönderiliyor…' : 'Kuyruğa ekleniyor…');
+    setLocalStatus('busy', mode === 'now' ? 'ov.busy.now' : 'ov.busy.queue');
     post({ type: 'commit', mode: mode, entries: entries });
   }
 
@@ -883,8 +1048,7 @@
     actText.classList.add('on');
     el.addEventListener('keydown', onEditKey, true);
     el.addEventListener('blur', onEditBlur, true);
-    setPopStatus('busy', 'Metni düzenle · Enter kaydeder, Esc iptal');
-    popSt.querySelector('.sp') && popSt.querySelector('.sp').remove();
+    setLocalStatus('edit', 'ov.edit.hint');
   }
   function onEditKey(e) {
     e.stopPropagation();
@@ -916,7 +1080,7 @@
       type: 'commit', mode: 'queue',
       entries: [{ token: token, kind: 'text', from: orig.trim().replace(/\s+/g, ' '), to: now.trim(), items: [snap], viewportOnly: null }],
     });
-    setPopStatus('busy', 'Kuyruğa ekleniyor…');
+    setLocalStatus('busy', 'ov.busy.queue');
   }
   actText.addEventListener('click', function () { if (editingEl) finishTextEdit(true); else startTextEdit(); });
 
@@ -1065,6 +1229,17 @@
     }
   }, true);
 
+  // ---------- Dil değişimi: açık kutuyu yeniden çevir ----------
+  function relocalize() {
+    localizeStatic();
+    if (pop.hidden) { tabStyle.dataset.built = ''; return; }
+    popTitle();
+    if (activeTab === 'style' && !tabStyle.hidden) buildStylePanel(); // taslak stiller korunur
+    else tabStyle.dataset.built = '';
+    if (lastStatus && !popSt.hidden) setLocalStatus(lastStatus.state, lastStatus.key);
+  }
+  I18N.onChange(relocalize);
+
   // ---------- Panelden gelen mesajlar ----------
   window.addEventListener('message', function (e) {
     var m = e.data;
@@ -1088,7 +1263,8 @@
           if (!active) { setMode(false, false); selected.clear(); closePopover(); hoverEl = null; }
         }
         if (typeof m.popover === 'boolean') { popEnabled = m.popover; if (!popEnabled) closePopover(); }
-        if (m.nowLabel) popNow.textContent = m.nowLabel;
+        if (m.nowLabel) { nowLabel = m.nowLabel; popNow.textContent = m.nowLabel; }
+        if (m.lang && I18N.setLang(m.lang)) relocalize();
         if (m.viewport) { viewport = String(m.viewport); if (!pop.hidden) popTitle(); }
         break;
       case 'popStatus':

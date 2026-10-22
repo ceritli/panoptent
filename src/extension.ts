@@ -5,7 +5,40 @@ import { DevProxy } from './proxy';
 import { pickCandidate, setupPrompt, runInstall } from './codeInspector';
 import { Engine } from './engine';
 import { Bridge } from './bridge';
-import { uiLang } from './i18n';
+import { uiLang, addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.bridgeFailed': 'Could not start the Chrome bridge: {0}',
+    'ext.openFolder': 'Panoptent: Open your project folder first (File → Open Folder).',
+    'ext.urlPrompt': 'Dev server address (your project should already be running "npm run dev")',
+    'ext.urlScheme': 'Must start with http:// or https://',
+    'ext.urlInvalid': 'Enter a valid address, e.g. http://localhost:3000',
+    'ext.startFailed': 'Panoptent could not start: {0}',
+    'ext.ciNote': 'code-inspector setup ({0}, {1})',
+    'ext.chromeForgotten': 'Panoptent: All Chrome pairings were removed.',
+    'ext.badUrl': 'Panoptent: Invalid address.',
+    'ext.lang.title': 'Panoptent: Change Language',
+    'ext.lang.auto': 'Auto',
+    'ext.lang.autoDesc': 'Follow VS Code’s display language',
+    'ext.lang.current': 'current',
+  },
+  tr: {
+    'ext.bridgeFailed': 'Chrome köprüsü başlatılamadı: {0}',
+    'ext.openFolder': 'Panoptent: Önce proje klasörünü aç (Dosya → Klasör Aç).',
+    'ext.urlPrompt': 'Dev sunucunun adresi (önce projende "npm run dev" çalışıyor olmalı)',
+    'ext.urlScheme': 'http:// veya https:// ile başlamalı',
+    'ext.urlInvalid': 'Geçerli bir adres gir, örn. http://localhost:3000',
+    'ext.startFailed': 'Panoptent başlatılamadı: {0}',
+    'ext.ciNote': 'code-inspector kurulumu ({0}, {1})',
+    'ext.chromeForgotten': 'Panoptent: Tüm Chrome eşleştirmeleri silindi.',
+    'ext.badUrl': 'Panoptent: Geçersiz adres.',
+    'ext.lang.title': 'Panoptent: Dili Değiştir',
+    'ext.lang.auto': 'Otomatik',
+    'ext.lang.autoDesc': 'VS Code’un görüntüleme dilini izle',
+    'ext.lang.current': 'şu anki',
+  },
+});
 
 let current: PreviewPanel | undefined;
 let engine: Engine | undefined;
@@ -40,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
     if (!e || bridge) return;
     if (vscode.workspace.getConfiguration('panoptent').get<boolean>('chromeBridge') === false) return;
     bridge = new Bridge(context, e, getOutput());
-    bridge.start().catch((err) => getOutput().appendLine('Chrome köprüsü başlatılamadı: ' + err.message));
+    bridge.start().catch((err) => getOutput().appendLine(t('ext.bridgeFailed', err.message)));
   };
   startBridge();
   context.subscriptions.push(
@@ -49,6 +82,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.workspace.onDidChangeConfiguration((ev) => {
       if (ev.affectsConfiguration('panoptent.language')) {
         engine?.emit({ type: 'lang', value: uiLang() });
+        bridge?.refreshLang();
       }
       if (!ev.affectsConfiguration('panoptent.chromeBridge') && !ev.affectsConfiguration('panoptent.bridgePort')) return;
       bridge?.stop();
@@ -65,21 +99,21 @@ export function activate(context: vscode.ExtensionContext) {
       }
       const e = getEngine(context);
       if (!e) {
-        vscode.window.showErrorMessage('Panoptent: Önce proje klasörünü aç (Dosya → Klasör Aç).');
+        vscode.window.showErrorMessage(t('ext.openFolder'));
         return;
       }
       const cfg = vscode.workspace.getConfiguration('panoptent');
       const last = context.workspaceState.get<string>('panoptent.lastUrl') || cfg.get<string>('defaultUrl') || 'http://localhost:3000';
       const url = await vscode.window.showInputBox({
         title: 'Panoptent',
-        prompt: 'Dev sunucunun adresi (önce projende "npm run dev" çalışıyor olmalı)',
+        prompt: t('ext.urlPrompt'),
         value: last,
         validateInput: (v) => {
           try {
             const u = new URL(v);
-            return /^https?:$/.test(u.protocol) ? undefined : 'http:// veya https:// ile başlamalı';
+            return /^https?:$/.test(u.protocol) ? undefined : t('ext.urlScheme');
           } catch {
-            return 'Geçerli bir adres gir, örn. http://localhost:3000';
+            return t('ext.urlInvalid');
           }
         },
       });
@@ -89,7 +123,7 @@ export function activate(context: vscode.ExtensionContext) {
         current = await PreviewPanel.create(context, e, url);
         current.onDispose(() => (current = undefined));
       } catch (err: any) {
-        vscode.window.showErrorMessage(`Panoptent başlatılamadı: ${err.message}`);
+        vscode.window.showErrorMessage(t('ext.startFailed', err.message));
       }
     }),
     vscode.commands.registerCommand('panoptent.toggleSelect', () => current?.toggleSelect()),
@@ -100,14 +134,15 @@ export function activate(context: vscode.ExtensionContext) {
       const c = await pickCandidate(e.root);
       if (!c) return;
       if (!c.installed) runInstall(c);
-      await e.sendInstruction(setupPrompt(c), `code-inspector kurulumu (${c.rel}, ${c.framework})`);
+      await e.sendInstruction(setupPrompt(c), t('ext.ciNote', c.rel, c.framework));
     }),
     vscode.commands.registerCommand('panoptent.chromeStatus', () => bridge?.showStatus()),
     vscode.commands.registerCommand('panoptent.forgetChrome', async () => {
       await context.globalState.update('panoptent.chromeTokens', []);
       bridge?.dropAll();
-      vscode.window.showInformationMessage('Panoptent: Tüm Chrome eşleştirmeleri silindi.');
+      vscode.window.showInformationMessage(t('ext.chromeForgotten'));
     }),
+    vscode.commands.registerCommand('panoptent.changeLanguage', () => pickLanguage()),
   );
 }
 
@@ -217,7 +252,7 @@ class PreviewPanel {
           await this.context.workspaceState.update('panoptent.lastUrl', u.toString());
           this.post({ type: 'retarget', target: this.proxy.targetOrigin, path: u.pathname + u.search + u.hash });
         } catch {
-          vscode.window.showWarningMessage('Panoptent: Geçersiz adres.');
+          vscode.window.showWarningMessage(t('ext.badUrl'));
         }
         break;
       }
@@ -289,7 +324,7 @@ class PreviewPanel {
     const nonce = Array.from({ length: 24 }, () => Math.floor(Math.random() * 36).toString(36)).join('');
     const frameOrigin = new URL(this.proxyBase).origin;
     return `<!doctype html>
-<html lang="tr">
+<html lang="${uiLang()}">
 <head>
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; frame-src ${frameOrigin} http://127.0.0.1:* http://localhost:*; style-src ${w.cspSource} 'unsafe-inline'; script-src 'nonce-${nonce}'; img-src ${w.cspSource} data:; font-src ${w.cspSource};">
@@ -300,24 +335,29 @@ class PreviewPanel {
 <body>
 <div id="app">
   <header class="bar">
-    <button id="selBtn" class="tool" aria-pressed="false" title="Seçim modu (Ctrl/Cmd+Shift+E) — Alt basılı tutarak da tıklayabilirsin">
+    <button id="selBtn" class="tool" aria-pressed="false" data-i18n-title="pn.select.title" title="Seçim modu (Ctrl/Cmd+Shift+E) — Alt basılı tutarak da tıklayabilirsin">
       <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M2 2h4v1.5H3.5V6H2V2zm8 0h4v4h-1.5V3.5H10V2zM2 10h1.5v2.5H6V14H2v-4zm5.2-2.6 7 2.6-3 1.1 2.3 2.3-1.1 1.1-2.3-2.3-1.1 3-1.8-7.8z"/></svg>
-      <span>Seç</span>
+      <span data-i18n="pn.select">Seç</span>
     </button>
     <div class="url">
-      <button id="reloadBtn" class="icon" title="Yenile">↻</button>
-      <input id="urlInput" spellcheck="false" aria-label="Sayfa adresi">
+      <button id="reloadBtn" class="icon" data-i18n-title="pn.reload" title="Yenile">↻</button>
+      <input id="urlInput" spellcheck="false" data-i18n-aria="pn.url.aria" aria-label="Sayfa adresi">
     </div>
-    <div class="seg" role="group" aria-label="Ekran genişliği">
-      <button data-vp="full" class="on" title="Tam genişlik">Tam</button>
-      <button data-vp="1024" title="1024 px">Tablet</button>
-      <button data-vp="390" title="390 px">Mobil</button>
+    <div class="seg" role="group" data-i18n-aria="pn.vp.aria" aria-label="Ekran genişliği">
+      <button data-vp="full" class="on" data-i18n-title="pn.vp.full.title" data-i18n="pn.vp.full" title="Tam genişlik">Tam</button>
+      <button data-vp="1024" title="1024 px" data-i18n="pn.vp.tablet">Tablet</button>
+      <button data-vp="390" title="390 px" data-i18n="pn.vp.mobile">Mobil</button>
     </div>
-    <div class="seg dock" role="group" aria-label="Panel konumu">
-      <button data-dock="left" title="Panel solda"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="2" y="3" width="4.5" height="10" fill="currentColor"/></svg></button>
-      <button data-dock="bottom" title="Panel altta"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="2" y="9" width="12" height="4" fill="currentColor"/></svg></button>
-      <button data-dock="right" title="Panel sağda"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="9.5" y="3" width="4.5" height="10" fill="currentColor"/></svg></button>
+    <div class="seg dock" role="group" data-i18n-aria="pn.dock.aria" aria-label="Panel konumu">
+      <button data-dock="left" data-i18n-title="pn.dock.left" title="Panel solda"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="2" y="3" width="4.5" height="10" fill="currentColor"/></svg></button>
+      <button data-dock="bottom" data-i18n-title="pn.dock.bottom" title="Panel altta"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="2" y="9" width="12" height="4" fill="currentColor"/></svg></button>
+      <button data-dock="right" data-i18n-title="pn.dock.right" title="Panel sağda"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="9.5" y="3" width="4.5" height="10" fill="currentColor"/></svg></button>
     </div>
+    <select id="langSel" class="langSel" data-i18n-title="pn.lang.title" data-i18n-aria="pn.lang.title" title="Arayüz dili" aria-label="Arayüz dili">
+      <option value="auto" data-i18n="pn.lang.auto">Otomatik (VS Code)</option>
+      <option value="en">English</option>
+      <option value="tr">Türkçe</option>
+    </select>
     <button id="sideToggle" class="tool square" aria-pressed="true" title="Paneli gizle">
       <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M2 3h12v1.5H2zM2 7.25h12v1.5H2zM2 11.5h8v1.5H2z"/></svg>
       <span id="selCount" class="badge" hidden>0</span>
@@ -325,54 +365,54 @@ class PreviewPanel {
   </header>
   <main id="main" class="dock-right">
     <section class="stage" id="stage">
-      <div class="frameWrap" id="frameWrap"><iframe id="frame" title="Önizleme"></iframe></div>
+      <div class="frameWrap" id="frameWrap"><iframe id="frame" data-i18n-title="pn.frame.title" title="Önizleme"></iframe></div>
       <div class="qbar" id="qbar" hidden>
-        <span class="qinfo" id="qinfo"><span class="qdot"></span><b id="qcount">0</b> değişiklik bekliyor</span>
-        <button class="qb" id="qUndo" title="Geri al (Ctrl/Cmd+Z)">↶</button>
-        <button class="qb" id="qRedo" title="Yinele (Ctrl/Cmd+Shift+Z)">↷</button>
-        <button class="qb" id="qList">Listele</button>
-        <button class="qb" id="qClear">Temizle</button>
+        <span class="qinfo" id="qinfo"><span class="qdot"></span><b id="qcount">0</b> <span id="qinfoText">değişiklik bekliyor</span></span>
+        <button class="qb" id="qUndo" data-i18n-title="pn.q.undo.title" title="Geri al (Ctrl/Cmd+Z)">↶</button>
+        <button class="qb" id="qRedo" data-i18n-title="pn.q.redo.title" title="Yinele (Ctrl/Cmd+Shift+Z)">↷</button>
+        <button class="qb" id="qList" data-i18n="pn.q.list">Listele</button>
+        <button class="qb" id="qClear" data-i18n="pn.q.clear">Temizle</button>
         <button class="qb pri" id="qApply">Uygula</button>
         <span class="qsep" id="qsep" hidden></span>
-        <button class="qb" id="qRollback" hidden title="Son uygulamada yalnızca Panoptent'in ve onun gönderdiği isteğin yaptığı değişiklikleri geri alır">↶ Son uygulamayı geri al</button>
+        <button class="qb" id="qRollback" hidden data-i18n-title="pn.q.rollback.title" data-i18n="pn.q.rollback" title="Son uygulamada yalnızca Panoptent'in ve onun gönderdiği isteğin yaptığı değişiklikleri geri alır">↶ Son uygulamayı geri al</button>
       </div>
     </section>
-    <div class="splitter" id="splitter" title="Sürükle: boyutlandır · Çift tık: gizle"></div>
+    <div class="splitter" id="splitter" data-i18n-title="pn.splitter.title" title="Sürükle: boyutlandır · Çift tık: gizle"></div>
     <aside class="side" id="side">
       <div class="col colSel">
         <div id="support" class="support" hidden></div>
-        <div class="sectionHead" id="queueHead" hidden><span>Kuyruk</span><button class="link" id="qApply2">Hepsini uygula</button></div>
+        <div class="sectionHead" id="queueHead" hidden><span data-i18n="pn.queue">Kuyruk</span><button class="link" id="qApply2" data-i18n="pn.queue.applyAll">Hepsini uygula</button></div>
         <div id="queue" class="queue" hidden></div>
-        <div class="sectionHead"><span>Seçilenler</span><button id="clearBtn" class="link" hidden>Temizle</button></div>
+        <div class="sectionHead"><span data-i18n="pn.selected">Seçilenler</span><button id="clearBtn" class="link" hidden data-i18n="pn.clear">Temizle</button></div>
         <div id="items" class="items"></div>
       </div>
       <div class="col colCompose">
         <div class="compose">
-          <textarea id="prompt" rows="3" placeholder="Ne değişsin? Örn: bu butonu daha büyük yap ve yeşil tonlarına çevir"></textarea>
+          <textarea id="prompt" rows="3" data-i18n-ph="pn.prompt.ph" placeholder="Ne değişsin? Örn: bu butonu daha büyük yap ve yeşil tonlarına çevir"></textarea>
           <div class="composeRow">
-            <select id="sendTo" class="sendTo" title="İstek nereye gitsin?">
-              <option value="claudePanel">Claude Code paneli</option>
-              <option value="cli">Arka planda (CLI)</option>
+            <select id="sendTo" class="sendTo" data-i18n-title="pn.sendTo.title" title="İstek nereye gitsin?">
+              <option value="claudePanel" data-i18n="pn.sendTo.panel">Claude Code paneli</option>
+              <option value="cli" data-i18n="pn.sendTo.cli">Arka planda (CLI)</option>
             </select>
-            <button id="queueBtn" class="secondary" title="Kuyruğa ekle (Ctrl/Cmd+Enter)">Kuyruğa</button>
-            <button id="sendBtn" class="primary" title="Hemen gönder (Ctrl/Cmd+Shift+Enter)">Aktar</button>
-            <button id="stopBtn" class="danger" hidden>Durdur</button>
+            <button id="queueBtn" class="secondary" data-i18n-title="pn.queueBtn.title" data-i18n="pn.queueBtn" title="Kuyruğa ekle (Ctrl/Cmd+Enter)">Kuyruğa</button>
+            <button id="sendBtn" class="primary" data-i18n-title="pn.sendBtn.title" title="Hemen gönder (Ctrl/Cmd+Shift+Enter)">Aktar</button>
+            <button id="stopBtn" class="danger" hidden data-i18n="pn.stop">Durdur</button>
           </div>
           <div class="composeRow sub">
             <label class="chk" id="contWrap"><input type="checkbox" id="cont" checked> <span id="contLabel">Son konuşmaya ekle</span></label>
-            <button id="newSess" class="link" hidden>Yeni oturum</button>
+            <button id="newSess" class="link" hidden data-i18n="pn.newSess">Yeni oturum</button>
           </div>
           <div class="composeRow sub">
-            <label class="chk"><input type="checkbox" id="popChk" checked> Seçince öğenin yanında kutu aç</label>
+            <label class="chk"><input type="checkbox" id="popChk" checked> <span data-i18n="pn.popChk">Seçince öğenin yanında kutu aç</span></label>
           </div>
           <div class="composeRow sub">
-            <label class="chk" title="Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır"><input type="checkbox" id="openSrcChk" checked> Seçince kodunu da yanda aç</label>
+            <label class="chk" data-i18n-title="pn.openSrc.title" title="Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır"><input type="checkbox" id="openSrcChk" checked> <span data-i18n="pn.openSrc">Seçince kodunu da yanda aç</span></label>
           </div>
         </div>
       </div>
       <div class="col colLog">
-        <div class="sectionHead"><span>Etkinlik</span></div>
-        <div id="log" class="log"><div class="muted">Henüz bir şey yok.</div></div>
+        <div class="sectionHead"><span data-i18n="pn.activity">Etkinlik</span></div>
+        <div id="log" class="log"><div class="muted" data-i18n="pn.log.empty">Henüz bir şey yok.</div></div>
       </div>
     </aside>
   </main>
@@ -386,6 +426,22 @@ class PreviewPanel {
 }
 
 function showSetupGuide(context: vscode.ExtensionContext) {
-  const file = path.join(context.extensionPath, 'media', 'SETUP.md');
+  const tr = path.join(context.extensionPath, 'media', 'SETUP.tr.md');
+  const file = uiLang() === 'tr' && fs.existsSync(tr) ? tr : path.join(context.extensionPath, 'media', 'SETUP.md');
   vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(file));
+}
+
+/** Dil seçimi: Otomatik / English / Türkçe. Motor olmasa da çalışır (yalnızca ayarı yazar; yayını config dinleyicisi yapar). */
+async function pickLanguage() {
+  const cfg = vscode.workspace.getConfiguration('panoptent');
+  const cur = cfg.get<string>('language') || 'auto';
+  const opts: (vscode.QuickPickItem & { value: string })[] = [
+    { value: 'auto', label: t('ext.lang.auto'), description: t('ext.lang.autoDesc') },
+    { value: 'en', label: 'English' },
+    { value: 'tr', label: 'Türkçe' },
+  ];
+  for (const o of opts) if (o.value === cur) o.description = (o.description ? o.description + ' · ' : '') + t('ext.lang.current');
+  const pick = await vscode.window.showQuickPick(opts, { title: t('ext.lang.title') });
+  if (!pick || pick.value === cur) return;
+  await cfg.update('language', pick.value, vscode.ConfigurationTarget.Global);
 }

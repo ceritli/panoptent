@@ -181,7 +181,7 @@
       <p class="etym" lang="tr"><b>Panoptent</b> = <b>Panopt</b>es (Yunan mitolojisinde her şeyi gören yüz gözlü dev) + ag<b>ent</b>.</p>
       <p class="etym" lang="en"><b>Panoptent</b> = <b>Panopt</b>es (the all-seeing, hundred-eyed giant of Greek myth) + ag<b>ent</b>.</p>
     </div>
-    <div class="hero-shot"><img src="assets/demo.gif" width="960" height="570" alt="Panoptent demo: selecting a button, changing its color, editing text and queueing a request"></div>
+    <div class="hero-shot"><img src="assets/demo.gif" data-en-src="assets/demo-en.gif" width="960" height="570" alt="Panoptent demo: selecting a button, changing its color, editing text and queueing a request"></div>
   </div>
 </section>
 
@@ -244,11 +244,11 @@
         <div class="box"><b lang="tr">Önizleme</b><b lang="en">Preview</b>
           <span lang="tr">VS Code içinde ya da kendi Chrome'unda. Vurgulama, yanında açılan kutu, stil paneli.</span>
           <span lang="en">Inside VS Code or in your own Chrome. Highlight, popover, style panel.</span></div>
-        <div class="arr">seç / select →<br>← durum / status</div>
+        <div class="arr"><span lang="tr">seç →<br>← durum</span><span lang="en">select →<br>← status</span></div>
         <div class="box"><b>Panoptent</b>
           <span lang="tr">Kuyruk, istem, doğrudan metin yazma, geri alma kaydı.</span>
           <span lang="en">Queue, prompt builder, direct text writes, undo records.</span></div>
-        <div class="arr">@dosya →<br>← dosyalar</div>
+        <div class="arr"><span lang="tr">@dosya →<br>← dosyalar</span><span lang="en">@file →<br>← files</span></div>
         <div class="box"><b>Claude Code</b>
           <span lang="tr">Kaynağı düzenler. Sayfa hot reload ile güncellenir.</span>
           <span lang="en">Edits the source. The page updates via hot reload.</span></div>
@@ -319,19 +319,20 @@
       </ol>
       <ol class="steps" lang="en">
         <li>Open your project in VS Code and start the dev server.</li>
-        <li>Recommended: Command Palette → <b>Panoptent: code-inspector'ı Otomatik Kur</b>, then restart the dev server (<a href="#code-inspector">details</a>).</li>
-        <li>Activity bar eye → <b>Önizlemeyi Aç</b> (Open Preview) → confirm your dev server URL (e.g. <code>http://localhost:3000</code>). <i>Or</i> open your site in Chrome → extension icon → <b>Bu sekmede Panoptent'i aç</b>.</li>
-        <li>Press <b>Seç</b> (Select), click an element, type your request, press <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue it.</li>
-        <li>Press <b>Uygula</b> (Apply) in the bottom bar. The request is added to your open Claude Code conversation — press <kbd>Enter</kbd> there.</li>
+        <li>Recommended: Command Palette → <b>Panoptent: Set Up code-inspector Automatically</b>, then restart the dev server (<a href="#code-inspector">details</a>).</li>
+        <li>Activity bar eye → <b>Open Preview</b> → confirm your dev server URL (e.g. <code>http://localhost:3000</code>). <i>Or</i> open your site in Chrome → extension icon → <b>Turn on Panoptent in this tab</b>.</li>
+        <li>Press <b>Select</b>, click an element, type your request, press <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue it.</li>
+        <li>Press <b>Apply</b> in the bottom bar. The request is added to your open Claude Code conversation — press <kbd>Enter</kbd> there.</li>
       </ol>
-      <div class="note" lang="en"><p>The interface is currently in Turkish. Key labels: <b>Seç</b> = Select, <b>Kuyruğa ekle</b> = Add to queue, <b>Hemen aktar</b> = Send now, <b>Uygula</b> = Apply, <b>Son uygulamayı geri al</b> = Undo last apply, <b>İstek</b> = Request, <b>Stil</b> = Style.</p></div>
+      <div class="note" lang="tr"><p><b>Arayüz dili:</b> Panoptent Türkçe ve İngilizce kullanılabilir. Varsayılan olarak VS Code'un görüntüleme dilini izler (desteklenmiyorsa İngilizce). Değiştirmek için: Komut Paleti → <b>Panoptent: Dili Değiştir</b>, Panoptent görünümündeki <b>Dil</b> bağlantısı, önizleme araç çubuğundaki dil seçimi, Chrome'da <b>Ayarlar</b> sekmesi ya da <code>panoptent.language</code> ayarı. Değişiklik anında uygulanır; Claude'a giden istemler de bu dilde yazılır.</p></div>
+      <div class="note" lang="en"><p><b>Interface language:</b> Panoptent is available in English and Turkish. By default it follows VS Code's display language (English if unsupported). To switch: Command Palette → <b>Panoptent: Change Language</b>, the <b>Language</b> link in the Panoptent view, the language select in the preview toolbar, the <b>Settings</b> tab in Chrome, or the <code>panoptent.language</code> setting. It switches live, and prompts sent to Claude are written in the same language.</p></div>
     </section>
 
     <!-- ===================== KULLANIM ===================== -->
     <section class="s" id="kullanim">
       <h2><span class="n">04</span><span lang="tr">Seçme ve düzenleme</span><span lang="en">Selecting &amp; editing</span></h2>
       <figure class="shot">
-        <img src="assets/hero.webp" alt="" loading="lazy" width="1600" height="950">
+        <img src="assets/hero.webp" data-en-src="assets/hero-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">Başlık seçili: yanında açılan kutuda yol (<code>section.hero › div › h1</code>), kaynak dosya ve istek alanı. Altta kuyrukta 2 değişiklik bekliyor.</figcaption>
         <figcaption lang="en">Heading selected: the popover shows the path (<code>section.hero › div › h1</code>), source file and a request field. Two changes are waiting in the queue below.</figcaption>
       </figure>
@@ -352,15 +353,15 @@
       <div class="tbl" lang="en"><table>
         <thead><tr><th>Goal</th><th>How</th></tr></thead>
         <tbody>
-          <tr><td>Select an element</td><td><b>Seç</b> button, or hold <kbd>Alt</kbd> and click while select mode is off</td></tr>
+          <tr><td>Select an element</td><td><b>Select</b> button, or hold <kbd>Alt</kbd> and click while select mode is off</td></tr>
           <tr><td>Several elements</td><td><kbd>Shift</kbd>-click; the request or style applies to all of them</td></tr>
-          <tr><td>Write a request</td><td><b>İstek</b> tab → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> to send now</td></tr>
+          <tr><td>Write a request</td><td><b>Request</b> tab → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> to send now</td></tr>
           <tr><td>Change text</td><td><b>Double-click</b> the element (or <b>T</b> in the popover), type, <kbd>Enter</kbd>. <kbd>Esc</kbd> cancels</td></tr>
           <tr><td>Delete</td><td>Trash icon. Hidden instantly in the preview, removed from code on Apply</td></tr>
           <tr><td>Replace an image</td><td>Select an <code>&lt;img&gt;</code> → image icon → pick a file (max 8 MB) or paste a URL. Saved under <code>public/panoptent/</code> on Apply</td></tr>
           <tr><td>Parent / child / sibling</td><td>Click a segment of the path in the popover header, or <kbd>Alt</kbd> + arrow keys</td></tr>
           <tr><td>See the code</td><td>Opens beside the preview automatically on select (focus stays in the preview); also <code>‹›</code> in the popover</td></tr>
-          <tr><td>Mobile / tablet only</td><td>In Mobile or Tablet view, tick <b>"Sadece … için"</b> in the popover</td></tr>
+          <tr><td>Mobile / tablet only</td><td>In Mobile or Tablet view, tick <b>"Only for … view"</b> in the popover</td></tr>
         </tbody>
       </table></div>
       <div class="note" lang="tr"><p><b>Sadece mobil için</b> işaretli değişiklikler Claude'a "yalnızca bu genişlikte geçerli olsun, responsive kırılım noktası kullan" notuyla gider. Chrome'da DevTools cihaz modunda pencere 480px altına inince bu seçenek kendiliğinden çıkar.</p></div>
@@ -371,14 +372,14 @@
     <section class="s" id="stil">
       <h2><span class="n">05</span><span lang="tr">Stil paneli</span><span lang="en">Style panel</span></h2>
       <p lang="tr">Kutudaki <b>Stil</b> sekmesi, değerleri önizlemede <b>anında</b> dener; koda henüz hiçbir şey yazılmaz. Beğenince <b>Kuyruğa ekle</b>. Uygula'da Claude, denediğin değerleri projenin kendi yaklaşımına çevirir: Tailwind kullanıyorsan sınıflara, CSS modülü ya da scoped stil kullanıyorsan oraya. Satır içi <code>style</code> yazmaz.</p>
-      <p lang="en">The <b>Stil</b> (Style) tab previews values <b>live</b>; nothing is written to code yet. Happy with it? <b>Add to queue</b>. On Apply, Claude translates the values into your project's own approach — Tailwind classes, CSS modules or scoped styles — never inline <code>style</code>.</p>
+      <p lang="en">The <b>Style</b> tab previews values <b>live</b>; nothing is written to code yet. Happy with it? <b>Add to queue</b>. On Apply, Claude translates the values into your project's own approach — Tailwind classes, CSS modules or scoped styles — never inline <code>style</code>.</p>
       <figure class="shot">
-        <img src="assets/style-panel.webp" alt="" loading="lazy" width="1600" height="950">
+        <img src="assets/style-panel.webp" data-en-src="assets/style-panel-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">Butonun arka planı amber'e çekildi; önizlemede anında görünüyor.</figcaption>
         <figcaption lang="en">The button background changed to amber, previewed instantly.</figcaption>
       </figure>
       <p lang="tr">Ayarlanabilenler: metin rengi, arka plan, yazı boyutu ve kalınlığı, hizalama, dört kenar için iç ve dış boşluk, köşe yuvarlaklığı, kenarlık kalınlığı ve rengi, opaklık ve <b>sınıf ekle</b> (ör. <code>shadow-lg rounded-xl</code>). <b>Stil değişikliklerini sıfırla</b> denemeyi geri alır.</p>
-      <p lang="en">Adjustable: text color, background, font size and weight, alignment, padding and margin per side, corner radius, border width and color, opacity, and <b>add classes</b> (e.g. <code>shadow-lg rounded-xl</code>). <b>Stil değişikliklerini sıfırla</b> resets the trial.</p>
+      <p lang="en">Adjustable: text color, background, font size and weight, alignment, padding and margin per side, corner radius, border width and color, opacity, and <b>Add class</b> (e.g. <code>shadow-lg rounded-xl</code>). <b>Reset style changes</b> resets the trial.</p>
     </section>
 
     <!-- ===================== KUYRUK ===================== -->
@@ -387,7 +388,7 @@
       <p lang="tr">Emergent'teki akışın aynısı: sayfanın birçok yerine değişiklik ekle, kontrol et, sonra tek seferde uygula. Her değişiklik önizlemede görünür ama dosyaya yazılmaz.</p>
       <p lang="en">The same flow as Emergent: add changes across the page, review them, then apply once. Every change is visible in the preview but not written to disk.</p>
       <figure class="shot">
-        <img src="assets/queue.webp" alt="" loading="lazy" width="1600" height="950">
+        <img src="assets/queue.webp" data-en-src="assets/queue-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">Kuyrukta bir stil, bir metin ve bir istek. Her satır tek tek çıkarılabilir.</figcaption>
         <figcaption lang="en">A style, a text and a request in the queue. Each row can be removed individually.</figcaption>
       </figure>
@@ -399,9 +400,9 @@
       </ul>
       <ul lang="en">
         <li><b>↶ / ↷</b> — undo / redo the last queue action (<kbd>Ctrl/⌘</kbd>+<kbd>Z</kbd>, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Z</kbd>)</li>
-        <li><b>Listele</b> (List) — show the queue; remove rows one by one</li>
-        <li><b>Temizle</b> (Clear) — drop everything and restore the preview</li>
-        <li><b>Uygula</b> (Apply) — text edits are written straight to disk <b>without AI</b>; everything else goes to Claude Code as one prompt</li>
+        <li><b>List</b> — show the queue; remove rows one by one</li>
+        <li><b>Clear</b> — drop everything and restore the preview</li>
+        <li><b>Apply</b> — text edits are written straight to disk <b>without AI</b>; everything else goes to Claude Code as one prompt</li>
       </ul>
       <div class="note ok" lang="tr"><p><b>Token tasarrufu:</b> öğe dosya:satır olarak verildiği için Claude arama yapmaz; metinler AI'sız yazılır; stil denemeleri Claude'a gitmez; beş değişiklik beş ayrı mesaj yerine tek mesajda gider.</p></div>
       <div class="note ok" lang="en"><p><b>Token savings:</b> elements arrive as file:line so Claude doesn't search; text edits skip the AI; style trial-and-error never reaches Claude; five changes go in one message instead of five.</p></div>
@@ -421,7 +422,7 @@
         <div class="note" lang="en"><p><b>Background (CLI)</b><br>Runs <code>claude -p</code> in the project folder; progress (read, edited…) streams into the Panoptent panel and Chrome. If <code>claude</code> isn't on PATH, the copy bundled with the Claude Code extension is used. Default permission mode: <code>acceptEdits</code>.</p></div>
       </div>
       <p lang="tr"><b>Açık Claude Code konuşmasına ekle</b> işaretini kaldırırsan her istek yeni bir Claude Code sekmesinde, önceden doldurulmuş olarak açılır.</p>
-      <p lang="en">Untick <b>Açık Claude Code konuşmasına ekle</b> (append to open conversation) to open each request in a new, pre-filled Claude Code tab instead.</p>
+      <p lang="en">Untick <b>Add to the open Claude Code conversation</b> to open each request in a new, pre-filled Claude Code tab instead.</p>
       <p lang="tr">Gönderilen tam istem her zaman <b>Output → Panoptent</b> kanalında görünür.</p>
       <p lang="en">The exact prompt is always visible in <b>Output → Panoptent</b>.</p>
     </section>
@@ -430,7 +431,7 @@
     <section class="s" id="geri-al">
       <h2><span class="n">08</span><span lang="tr">Geri alma</span><span lang="en">Undo</span></h2>
       <p lang="tr"><b>↶ Son uygulamayı geri al</b>, son Uygula'da <b>yalnızca Panoptent'in ve onun gönderdiği isteğin</b> yaptığı değişiklikleri geri alır.</p>
-      <p lang="en"><b>↶ Son uygulamayı geri al</b> (Undo last apply) reverts <b>only</b> what Panoptent and the request it sent changed in the last Apply.</p>
+      <p lang="en"><b>↶ Undo last apply</b> reverts <b>only</b> what Panoptent and the request it sent changed in the last Apply.</p>
       <ol class="steps" lang="tr">
         <li>Her Uygula bir kimlik taşır (<code>PT-…</code>) ve bu kimlik Claude'a giden isteğe yazılır.</li>
         <li>Claude Code her konuşmayı ve her dosya düzenlemesinin tam yamasını kendi kayıt dosyasına yazar. Panoptent kimliği bulur, o istekten bir sonraki mesajına kadarki düzenlemeleri alır.</li>
@@ -465,10 +466,10 @@
       <p lang="tr">Aynı deneyimi <b>kendi Chrome'unda</b> kullanmanı sağlar: giriş yaptığın sayfalar, eklentilerin, DevTools ve gerçek cihaz emülasyonu yanında. Düzenlemeyi yine VS Code'daki Panoptent ve Claude Code yapar.</p>
       <p lang="en">Use the same experience <b>in your own Chrome</b>: logged-in pages, your extensions, DevTools and real device emulation. The editing is still done by Panoptent and Claude Code in VS Code.</p>
       <div class="two">
-        <figure class="shot"><img src="assets/popup.png" alt="" loading="lazy" width="600" height="600">
+        <figure class="shot"><img src="assets/popup.png" data-en-src="assets/popup-en.png" alt="" loading="lazy" width="600" height="600">
           <figcaption lang="tr">Eklenti penceresi: bağlı VS Code pencereleri ve aç/kapat.</figcaption>
           <figcaption lang="en">Popup: connected VS Code windows and on/off.</figcaption></figure>
-        <figure class="shot"><img src="assets/settings.webp" alt="" loading="lazy" width="1600" height="950">
+        <figure class="shot"><img src="assets/settings.webp" data-en-src="assets/settings-en.webp" alt="" loading="lazy" width="1600" height="950">
           <figcaption lang="tr">Sayfadaki çubuk ve Ayarlar sekmesi.</figcaption>
           <figcaption lang="en">In-page bar and the Settings tab.</figcaption></figure>
       </div>
@@ -480,12 +481,15 @@
       </ol>
       <ol class="steps" lang="en">
         <li>Have your project open in VS Code (eye in the status bar = bridge ready).</li>
-        <li>Open your dev site in Chrome → extension icon → <b>Bu sekmede Panoptent'i aç</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>).</li>
-        <li>VS Code asks "Chrome wants to connect" → <b>İzin ver</b> (Allow). Chrome stores a key; later connections are silent.</li>
+        <li>Open your dev site in Chrome → extension icon → <b>Turn on Panoptent in this tab</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>).</li>
+        <li>VS Code asks "Chrome wants to connect" → <b>Allow</b>. Chrome stores a key; later connections are silent.</li>
       </ol>
       <h3 lang="tr">Sayfadaki çubuk</h3><h3 lang="en">The in-page bar</h3>
       <p lang="tr">Bağlantı durumu, <b>Seç</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), kuyruk sayısı, ↶ ↷, <b>Listele</b>, <b>Uygula</b>, <b>Son uygulamayı geri al</b>, ⚙ ayarlar ve <b>–</b> ile küçültme (sağ altta küçük bir göze dönüşür). Logoya basınca Kuyruk / Etkinlik / Ayarlar paneli açılır.</p>
-      <p lang="en">Connection status, <b>Seç</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), queue count, ↶ ↷, <b>Listele</b>, <b>Uygula</b>, <b>Son uygulamayı geri al</b>, ⚙ settings and <b>–</b> to minimize (collapses to a small eye bottom-right). Click the logo for the Queue / Activity / Settings drawer.</p>
+      <p lang="en">Connection status, <b>Select</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), queue count, ↶ ↷, <b>List</b>, <b>Apply</b>, <b>Undo last apply</b>, ⚙ settings and <b>–</b> to minimize (collapses to a small eye bottom-right). Click the logo for the Queue / Activity / Settings drawer.</p>
+      <h3 lang="tr">Dil</h3><h3 lang="en">Language</h3>
+      <p lang="tr">Çekmecedeki <b>Ayarlar</b> sekmesinde <b>Dil</b> seçimi var: <b>VS Code ayarı (otomatik)</b>, English, Türkçe. Bağlıyken Chrome, VS Code'daki <code>panoptent.language</code> ayarını izler (orada değiştirirsen sayfadaki çubuk da anında değişir); bağlı değilken kendi seçimini ya da tarayıcının dilini kullanır. Eklenti penceresi de aynı dili izler.</p>
+      <p lang="en">The drawer's <b>Settings</b> tab has a <b>Language</b> select: <b>VS Code setting (auto)</b>, English, Türkçe. Once connected, Chrome follows the <code>panoptent.language</code> setting in VS Code (change it there and the in-page bar switches instantly); when not connected it uses its own choice or the browser language. The popup follows the same language.</p>
       <h3 lang="tr">Birden fazla VS Code penceresi</h3><h3 lang="en">Several VS Code windows</h3>
       <p lang="tr">Her pencere kendi portunu açar (<code>47811</code>–<code>47820</code>). Chrome, seçtiğin öğenin dosya yoluna bakarak doğru pencereyi kendisi seçer; istersen eklenti penceresinden ya da Ayarlar sekmesinden değiştirebilirsin.</p>
       <p lang="en">Each window opens its own port (<code>47811</code>–<code>47820</code>). Chrome picks the right window from the selected element's file path; you can switch it in the popup or the Settings tab.</p>
@@ -501,7 +505,7 @@
       <p lang="en"><a href="https://github.com/zh-lx/code-inspector">code-inspector-plugin</a> adds an invisible tag like <code>data-insp-path="src/app/page.tsx:17:9:button"</code> to each element during development. Panoptent reads it and tells Claude "this file, this line" — no searching, fewer tokens. <b>Dev mode only</b>; production builds are untouched.</p>
       <h3 lang="tr">Otomatik kurulum</h3><h3 lang="en">Automatic setup</h3>
       <p lang="tr">Komut Paleti → <b>Panoptent: code-inspector'ı Otomatik Kur</b> (ya da paneldeki <b>Otomatik kur</b>). Frontend klasörünü bulur (birden çoksa sorar), paketi doğru paket yöneticisiyle (npm / pnpm / yarn / bun) kurar ve yapılandırmayı Panoptent'le çakışmayacak ayarlarla Claude'a düzenletir. Sonra dev sunucusunu yeniden başlat; "✓ Kaynak eşleştirme aktif" görünmeli.</p>
-      <p lang="en">Command Palette → <b>Panoptent: code-inspector'ı Otomatik Kur</b> (or <b>Otomatik kur</b> in the panel). It finds your frontend folder (asks if there are several), installs the package with the right package manager (npm / pnpm / yarn / bun), and has Claude update the config with Panoptent-friendly options. Restart the dev server; you should see "✓ Kaynak eşleştirme aktif".</p>
+      <p lang="en">Command Palette → <b>Panoptent: Set Up code-inspector Automatically</b> (or <b>Set up automatically</b> in the panel). It finds your frontend folder (asks if there are several), installs the package with the right package manager (npm / pnpm / yarn / bun), and has Claude update the config with Panoptent-friendly options. Restart the dev server; you should see "✓ Source mapping is active".</p>
       <h3 lang="tr">Elle kurulum</h3><h3 lang="en">Manual setup</h3>
       <pre><code>npm i -D code-inspector-plugin</code></pre>
       <div class="tabs" role="tablist" data-tabs="ci">
@@ -562,7 +566,7 @@ export default defineNuxtConfig({
     <section class="s" id="panel">
       <h2><span class="n">11</span><span lang="tr">VS Code paneli</span><span lang="en">The VS Code panel</span></h2>
       <figure class="shot">
-        <img src="assets/vscode-panel.webp" alt="" loading="lazy" width="1600" height="950">
+        <img src="assets/vscode-panel.webp" data-en-src="assets/vscode-panel-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">VS Code içinde önizleme, sağda panel: seçilenler, istek kutusu, gönderme yeri.</figcaption>
         <figcaption lang="en">Preview inside VS Code with the side panel: selection, request box, destination.</figcaption>
       </figure>
@@ -572,16 +576,18 @@ export default defineNuxtConfig({
         <li><b>Gizle/göster:</b> ☰ (rozet bekleyen değişiklik sayısını gösterir).</li>
         <li><b>Ekran genişliği:</b> Tam / Tablet (1024px) / Mobil (390px).</li>
         <li><b>Hızlı metin:</b> seçilenler kartındaki metin kutusu + <b>Kaydet</b> doğrudan dosyaya yazar.</li>
+        <li><b>Dil:</b> araç çubuğundaki dil seçimi (<b>Otomatik (VS Code)</b> / English / Türkçe). Panel, sayfa üstü araçlar ve bağlı Chrome anında değişir.</li>
       </ul>
       <ul lang="en">
         <li><b>Dock:</b> left / bottom / right icons top-right. Docked at the bottom, the panel splits into three columns.</li>
         <li><b>Size:</b> drag the splitter; double-click hides the panel.</li>
         <li><b>Hide/show:</b> ☰ (badge shows pending changes).</li>
         <li><b>Viewport:</b> Full / Tablet (1024px) / Mobile (390px).</li>
-        <li><b>Quick text:</b> the field in a selection card + <b>Kaydet</b> writes straight to the file.</li>
+        <li><b>Quick text:</b> the field in a selection card + <b>Save</b> writes straight to the file.</li>
+        <li><b>Language:</b> the language select in the toolbar (<b>Auto (VS Code)</b> / English / Türkçe). The panel, the page overlay and connected Chrome tabs switch instantly.</li>
       </ul>
       <figure class="shot">
-        <img src="assets/vscode-dock-bottom.webp" alt="" loading="lazy" width="1600" height="950">
+        <img src="assets/vscode-dock-bottom.webp" data-en-src="assets/vscode-dock-bottom-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">Panel altta: önizleme tam genişlik.</figcaption>
         <figcaption lang="en">Panel docked at the bottom: full-width preview.</figcaption>
       </figure>
@@ -595,6 +601,7 @@ export default defineNuxtConfig({
       <div class="tbl"><table>
         <thead><tr><th lang="tr">Ayar</th><th lang="en">Setting</th><th lang="tr">Varsayılan</th><th lang="en">Default</th><th lang="tr">Açıklama</th><th lang="en">Description</th></tr></thead>
         <tbody>
+          <tr><td><code>panoptent.language</code></td><td><code>auto</code></td><td><span lang="tr">Arayüz dili: <code>auto</code> (VS Code'un görüntüleme dilini izler), <code>en</code> veya <code>tr</code>. Claude'a giden istemler de bu dilde yazılır</span><span lang="en">Interface language: <code>auto</code> (follows VS Code's display language), <code>en</code> or <code>tr</code>. Prompts sent to Claude use it too</span></td></tr>
           <tr><td><code>panoptent.sendTo</code></td><td><code>claudePanel</code></td><td><span lang="tr"><code>claudePanel</code> (Claude Code paneli) veya <code>cli</code> (arka planda)</span><span lang="en"><code>claudePanel</code> (Claude Code panel) or <code>cli</code> (background)</span></td></tr>
           <tr><td><code>panoptent.openSourceOnSelect</code></td><td><code>true</code></td><td><span lang="tr">Seçince kaynak dosyayı yanda aç</span><span lang="en">Open the source file beside the preview on select</span></td></tr>
           <tr><td><code>panoptent.defaultUrl</code></td><td><code>http://localhost:3000</code></td><td><span lang="tr">İlk açılışta önerilen adres</span><span lang="en">Suggested URL on first open</span></td></tr>
@@ -643,7 +650,7 @@ export default defineNuxtConfig({
       <ul lang="en">
         <li><b>Everything is local.</b> Panoptent has no server of its own; data moves only between VS Code, Chrome and Claude Code on your machine. What reaches Claude is the same as when you use Claude Code directly.</li>
         <li><b>The bridge listens on <code>127.0.0.1</code> only</b> and accepts connections <b>only from browser-extension origins</b> (<code>chrome-extension://</code>). Regular websites can't connect.</li>
-        <li><b>First connection requires approval.</b> The approved browser gets a key. Remove keys with <b>Panoptent: Chrome Eşleştirmelerini Sil</b>; disable the bridge with <code>panoptent.chromeBridge</code>.</li>
+        <li><b>First connection requires approval.</b> The approved browser gets a key. Remove keys with <b>Panoptent: Remove Chrome Pairings</b>; disable the bridge with <code>panoptent.chromeBridge</code>.</li>
         <li><b>Page scripts can't inject requests.</b> In Chrome, changes are accepted only right after a real click or key press.</li>
         <li><b>No commits.</b> Panoptent never touches git history, branches or the index. Request files live in <code>.claude/panoptent/</code>, git-ignored.</li>
         <li><b>CLI mode</b> defaults to <code>acceptEdits</code>: file edits allowed, other shell commands refused.</li>
@@ -659,7 +666,7 @@ export default defineNuxtConfig({
         <li>VS Code'da bir <b>proje klasörü</b> açık mı? Köprü klasör olmadan başlamaz.</li>
         <li>VS Code'un sağ altında <b>göz</b> simgesi var mı? Tıklayınca port ve bağlı tarayıcı sayısı görünür.</li>
         <li><code>panoptent.chromeBridge</code> kapalı olabilir.</li></ul></details>
-      <details lang="en"><summary>Chrome: "VS Code bulunamadı" (VS Code not found)</summary>
+      <details lang="en"><summary>Chrome: "VS Code not found"</summary>
         <ul><li>Is Panoptent 0.8+ installed and the window reloaded (<b>Developer: Reload Window</b>)?</li>
         <li>Is a <b>project folder</b> open? The bridge doesn't start without one.</li>
         <li>Is there an <b>eye</b> icon in the VS Code status bar? Click it to see the port and connected browsers.</li>
@@ -672,12 +679,12 @@ export default defineNuxtConfig({
 
       <details lang="tr"><summary>"Kaynak eşleştirme yok" uyarısı</summary>
         <p>code-inspector kurulu değil ya da dev sunucusu yeniden başlatılmadı. <a href="#code-inspector">Otomatik kurulum</a>'u çalıştır, sunucuyu yeniden başlat, önizlemede ↻.</p></details>
-      <details lang="en"><summary>"Kaynak eşleştirme yok" (no source mapping) warning</summary>
+      <details lang="en"><summary>"No source mapping" warning</summary>
         <p>code-inspector isn't installed or the dev server wasn't restarted. Run the <a href="#code-inspector">automatic setup</a>, restart the server, press ↻ in the preview.</p></details>
 
       <details lang="tr"><summary>VS Code önizlemesi: "Dev sunucusuna ulaşılamadı"</summary>
         <p>Adresteki portta çalışan bir sunucu yok. Dev sunucusunu başlat; adres çubuğuna doğru adresi yazıp <kbd>Enter</kbd>. Vite genelde <code>5173</code>, Next <code>3000</code>, Nuxt <code>3000</code>, Angular <code>4200</code>.</p></details>
-      <details lang="en"><summary>VS Code preview: "Dev sunucusuna ulaşılamadı" (dev server unreachable)</summary>
+      <details lang="en"><summary>VS Code preview: "Could not reach the dev server"</summary>
         <p>Nothing is listening on that port. Start the dev server, type the right URL in the address bar and press <kbd>Enter</kbd>. Vite usually uses <code>5173</code>, Next <code>3000</code>, Nuxt <code>3000</code>, Angular <code>4200</code>.</p></details>
 
       <details lang="tr"><summary>Giriş yaptığım sayfa VS Code önizlemesinde oturumu kaybediyor</summary>
@@ -736,10 +743,13 @@ npm run package:chrome   # → panoptent-chrome-x.y.z.zip</code></pre>
       </table></div>
       <p lang="tr">Yeni sürüm: <code>package.json</code> ve <code>chrome/manifest.json</code> sürümünü artır, <code>CHANGELOG.md</code>'ye not ekle ve <code>main</code>'e gönder. GitHub Actions iki paketi derleyip <code>vX.Y.Z</code> sürümünü Releases'a koyar (istersen <code>v*</code> etiketi göndermek de çalışır).</p>
       <p lang="en">To release: bump the version in <code>package.json</code> and <code>chrome/manifest.json</code>, add a <code>CHANGELOG.md</code> entry and push to <code>main</code>. GitHub Actions builds both packages and publishes release <code>vX.Y.Z</code> (pushing a <code>v*</code> tag works too).</p>
+      <h3 lang="tr">Yeni dil eklemek</h3><h3 lang="en">Adding a language</h3>
+      <p lang="tr">Metinler kullanıldıkları dosyada durur; İngilizce her eksik anahtar için yedek dildir. Yeni bir dil için: <code>media/i18n.js</code> (çekirdek metinler ve <code>LANGS</code> listesi); <code>media/overlay.js</code>, <code>media/panel.js</code>, <code>chrome/content.js</code> ve <code>chrome/popup.js</code> başındaki <code>PanoptentI18n.add({ en, tr })</code> bloklarına yeni bir blok; <code>src/*.ts</code> içindeki <code>addStrings</code> blokları (ve <code>src/i18n.ts</code>'teki dil listesi); <code>package.nls.&lt;dil&gt;.json</code>; <code>chrome/_locales/&lt;dil&gt;/messages.json</code>; kurulum rehberi için <code>media/SETUP.&lt;dil&gt;.md</code>. Son olarak <code>package.json</code>'daki <code>panoptent.language</code> seçeneklerine ekle.</p>
+      <p lang="en">Strings live next to the code that uses them; English is the fallback for any missing key. For a new language add: <code>media/i18n.js</code> (core strings and the <code>LANGS</code> list); a block in the <code>PanoptentI18n.add({ en, tr })</code> calls at the top of <code>media/overlay.js</code>, <code>media/panel.js</code>, <code>chrome/content.js</code> and <code>chrome/popup.js</code>; the <code>addStrings</code> blocks in <code>src/*.ts</code> (and the language list in <code>src/i18n.ts</code>); <code>package.nls.&lt;lang&gt;.json</code>; <code>chrome/_locales/&lt;lang&gt;/messages.json</code>; and <code>media/SETUP.&lt;lang&gt;.md</code> for the setup guide. Finally add it to the <code>panoptent.language</code> options in <code>package.json</code>.</p>
       <h3 lang="tr">Katkıda bulun</h3>
       <h3 lang="en">Contributing</h3>
-      <p lang="tr"><b>Her türlü katkıya açığız:</b> hata bildirimi, fikir, belge düzeltmesi, çeviri (özellikle İngilizce arayüz), ekran görüntüsü, test ve kod. Önceden izin istemene gerek yok; <a href="https://github.com/ceritli/panoptent/issues/new/choose">issue aç</a> ya da <code>main</code>'e pull request gönder. Ayrıntılar: <a href="https://github.com/ceritli/panoptent/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
-      <p lang="en"><b>Contributions of every kind are welcome:</b> bug reports, ideas, docs fixes, translations (an English UI especially), screenshots, tests and code. No need to ask first — <a href="https://github.com/ceritli/panoptent/issues/new/choose">open an issue</a> or send a pull request against <code>main</code>. Details: <a href="https://github.com/ceritli/panoptent/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+      <p lang="tr"><b>Her türlü katkıya açığız:</b> hata bildirimi, fikir, belge düzeltmesi, yeni dillere çeviri, ekran görüntüsü, test ve kod. Önceden izin istemene gerek yok; <a href="https://github.com/ceritli/panoptent/issues/new/choose">issue aç</a> ya da <code>main</code>'e pull request gönder. Ayrıntılar: <a href="https://github.com/ceritli/panoptent/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
+      <p lang="en"><b>Contributions of every kind are welcome:</b> bug reports, ideas, docs fixes, translations into new languages, screenshots, tests and code. No need to ask first — <a href="https://github.com/ceritli/panoptent/issues/new/choose">open an issue</a> or send a pull request against <code>main</code>. Details: <a href="https://github.com/ceritli/panoptent/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a>.</p>
     </section>
   </main>
 </div>
@@ -755,6 +765,11 @@ npm run package:chrome   # → panoptent-chrome-x.y.z.zip</code></pre>
   function setLang(l) {
     root.setAttribute('data-lang', l);
     root.setAttribute('lang', l);
+    document.querySelectorAll('img[data-en-src]').forEach(function (img) {
+      if (!img.dataset.trSrc) img.dataset.trSrc = img.getAttribute('src');
+      var want = l === 'en' ? img.dataset.enSrc : img.dataset.trSrc;
+      if (img.getAttribute('src') !== want) img.setAttribute('src', want);
+    });
     document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.setLang === l)); });
     try { localStorage.setItem('panoptent-lang', l); } catch (e) {}
   }

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <style>
@@ -27,12 +27,12 @@
 </style>
 </head>
 <body>
-<header><img src="icons/48.png" alt=""><div><b>Panoptent</b><span>Seç &amp; Düzenle · Claude Code</span></div></header>
+<header><img src="icons/48.png" alt=""><div><b>Panoptent</b><span data-i18n="pp.tagline">Select &amp; Edit · Claude Code</span></div></header>
 <main>
-  <div id="conn" class="card">VS Code aranıyor…</div>
-  <button class="pri" id="toggle">Bu sekmede Panoptent’i aç</button>
-  <button class="sec" id="pair" hidden>VS Code’a bağlan</button>
-  <p class="hint">Kısayollar: <kbd>Alt+Shift+P</kbd> aç/kapat · <kbd>Alt+Shift+E</kbd> seçim modu. VS Code’da projen açık ve Panoptent eklentisi kurulu olmalı.</p>
+  <div id="conn" class="card" data-i18n="pp.searching">Looking for VS Code…</div>
+  <button class="pri" id="toggle" data-i18n="pp.turnOn">Turn on Panoptent in this tab</button>
+  <button class="sec" id="pair" data-i18n="pp.pair" hidden>Connect to VS Code</button>
+  <p class="hint" data-i18n-html="pp.hint">Shortcuts: <kbd>Alt+Shift+P</kbd> on/off · <kbd>Alt+Shift+E</kbd> selection mode. Your project must be open in VS Code with the Panoptent extension installed.</p>
 </main>
 <script src="i18n.js"></script>
 <script src="popup.js"></script>

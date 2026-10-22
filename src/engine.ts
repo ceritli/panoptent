@@ -2,7 +2,7 @@
 // VS Code önizleme paneli ve Chrome köprüsü aynı motoru kullanır.
 
 import * as vscode from 'vscode';
-import { uiLang, normLang } from './i18n';
+import { uiLang, normLang, addStrings, t } from './i18n';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ClaudeRunner } from './claude';
@@ -10,6 +10,73 @@ import { resolveFile, openAt, quickEditText } from './source';
 import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClaude, sendToOpenConversation } from './claudePanel';
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
+
+addStrings({
+  en: {
+    'ext.fileNotFound': 'File not found: {0}',
+    'ext.srcUnknown': 'Source file unknown.',
+    'ext.nothingToApply': 'No changes to apply.',
+    'ext.busy': 'Claude is still running the previous job.',
+    'ext.noClaudeExt': 'Claude Code VS Code extension not found. Install it, or switch “Send to” to background (CLI).',
+    'ext.log.direct': 'Written directly: {0} — “{1}” → “{2}”',
+    'ext.log.imgSaved': 'Image saved: {0}',
+    'ext.log.imgFailed': 'Could not save image: {0}',
+    'ext.log.prompt': '──── Prompt ────',
+    'ext.log.appendFailed': 'Could not add to the open conversation: {0}',
+    'ext.log.bundled': '"claude" is not on PATH; using the copy bundled with the extension: {0}',
+    'ext.log.error': 'ERROR: {0}',
+    'ext.panelFailed': 'Could not open the Claude Code panel.',
+    'ext.claudeFailed': 'Claude could not finish the job.',
+    'ext.rb.none': 'There is no apply to undo.',
+    'ext.rb.notRun': 'Claude Code does not seem to have run this request yet (did you press Enter in the panel?). There are no changes to undo.',
+    'ext.rb.noChanges': 'No file changes to undo were found for this apply.',
+    'ext.rb.removeRecord': 'Remove record',
+    'ext.rb.cancel': 'Cancel',
+    'ext.rb.deletedLine': '(created by Panoptent/Claude, will be moved to trash)',
+    'ext.rb.detailOne': 'Only the change made by Panoptent and Claude in this apply will be undone. Your own changes and later conversations are left untouched.',
+    'ext.rb.detailMany': 'Only the {0} changes made by Panoptent and Claude in this apply will be undone. Your own changes and later conversations are left untouched.',
+    'ext.rb.more': '… and {0} more file(s)',
+    'ext.rb.conflicts': 'Cannot be undone (these files will not be touched):',
+    'ext.rb.bash': 'Note: Claude ran {0} terminal command(s) in this request; changes made from the terminal cannot be tracked and will not be undone.',
+    'ext.rb.cannot': 'The apply from {0} could not be undone.',
+    'ext.rb.cannotMsg': 'Could not undo: the changed lines were edited afterwards.',
+    'ext.rb.confirm': 'Undo the apply from {0}?',
+    'ext.rb.undo': 'Undo',
+    'ext.rb.failed': 'Undo failed: {0}',
+  },
+  tr: {
+    'ext.fileNotFound': 'Dosya bulunamadı: {0}',
+    'ext.srcUnknown': 'Kaynak dosya bilinmiyor.',
+    'ext.nothingToApply': 'Uygulanacak değişiklik yok.',
+    'ext.busy': 'Claude hâlâ önceki işi çalıştırıyor.',
+    'ext.noClaudeExt': 'Claude Code VS Code eklentisi bulunamadı. Kur ya da gönderme yerini "Burada çalıştır" yap.',
+    'ext.log.direct': 'Doğrudan yazıldı: {0} — “{1}” → “{2}”',
+    'ext.log.imgSaved': 'Görsel kaydedildi: {0}',
+    'ext.log.imgFailed': 'Görsel kaydedilemedi: {0}',
+    'ext.log.prompt': '──── İstem ────',
+    'ext.log.appendFailed': 'Açık konuşmaya eklenemedi: {0}',
+    'ext.log.bundled': '"claude" PATH\'te yok, eklentideki kopya kullanılıyor: {0}',
+    'ext.log.error': 'HATA: {0}',
+    'ext.panelFailed': 'Claude Code paneli açılamadı.',
+    'ext.claudeFailed': t('ext.claudeFailed'),
+    'ext.rb.none': 'Geri alınacak bir uygulama yok.',
+    'ext.rb.notRun': 'Claude Code bu isteği henüz çalıştırmamış görünüyor (panelde Enter’a bastın mı?). Geri alınacak bir değişiklik yok.',
+    'ext.rb.noChanges': 'Bu uygulamada geri alınacak bir dosya değişikliği bulunamadı.',
+    'ext.rb.removeRecord': 'Kaydı kaldır',
+    'ext.rb.cancel': 'Vazgeç',
+    'ext.rb.deletedLine': '(Panoptent/Claude oluşturmuştu, çöpe taşınır)',
+    'ext.rb.detailOne': 'Yalnızca bu uygulamada Panoptent\'in ve Claude\'un yaptığı 1 değişiklik geri alınır. Senin ve sonraki konuşmaların değişikliklerine dokunulmaz.',
+    'ext.rb.detailMany': 'Yalnızca bu uygulamada Panoptent\'in ve Claude\'un yaptığı {0} değişiklik geri alınır. Senin ve sonraki konuşmaların değişikliklerine dokunulmaz.',
+    'ext.rb.more': '… ve {0} dosya daha',
+    'ext.rb.conflicts': 'Geri alınamayacaklar (bu dosyalara dokunulmayacak):',
+    'ext.rb.bash': 'Not: Claude bu istekte {0} terminal komutu çalıştırdı; terminalle yapılan değişiklikler izlenemediği için geri alınmaz.',
+    'ext.rb.cannot': 'Saat {0} uygulaması geri alınamadı.',
+    'ext.rb.cannotMsg': 'Geri alınamadı: değişen satırlar sonradan düzenlenmiş.',
+    'ext.rb.confirm': 'Saat {0} uygulaması geri alınsın mı?',
+    'ext.rb.undo': 'Geri al',
+    'ext.rb.failed': 'Geri alma başarısız: {0}',
+  },
+});
 
 export type Listener = (msg: any, to?: string) => void;
 
@@ -97,7 +164,7 @@ export class Engine {
     if (!item?.source) return;
     const uri = await resolveFile(this.root, item.source.file);
     if (!uri) {
-      if (!quiet) vscode.window.showWarningMessage(`Dosya bulunamadı: ${item.source.file}`);
+      if (!quiet) vscode.window.showWarningMessage(t('ext.fileNotFound', item.source.file));
       return;
     }
     await openAt(uri, item.source.line, item.source.col, quiet);
@@ -110,9 +177,9 @@ export class Engine {
 
   async quickEdit(item: SelectedItem, newText: string, client?: string) {
     const fail = (message: string) => this.emit({ type: 'quickEditResult', id: item.id, ok: false, message }, client);
-    if (!item.source) return fail('Kaynak dosya bilinmiyor.');
+    if (!item.source) return fail(t('ext.srcUnknown'));
     const uri = await resolveFile(this.root, item.source.file);
-    if (!uri) return fail(`Dosya bulunamadı: ${item.source.file}`);
+    if (!uri) return fail(t('ext.fileNotFound', item.source.file));
     try {
       const r = await quickEditText(uri, item.source.line, item.fullText || item.text, newText);
       this.emit({ type: 'quickEditResult', id: item.id, ok: r.ok, message: r.message, newText }, client);
@@ -155,11 +222,11 @@ export class Engine {
       if (m.type === 'applied') this.emit({ type: 'checkpointState', canRollback: this.canRollback() });
     };
     const fail = (message: string) => emit({ type: 'applied', ok: false, message, tokens, fromQueue, canRollback: this.canRollback() });
-    if (!entries.length) return fail('Uygulanacak değişiklik yok.');
-    if (this.runner.running) return fail('Claude hâlâ önceki işi çalıştırıyor.');
+    if (!entries.length) return fail(t('ext.nothingToApply'));
+    if (this.runner.running) return fail(t('ext.busy'));
     const panelMode = this.sendTo() === 'claudePanel';
     if (panelMode && !claudeExtensionInstalled()) {
-      return fail('Claude Code VS Code eklentisi bulunamadı. Kur ya da gönderme yerini "Burada çalıştır" yap.');
+      return fail(t('ext.noClaudeExt'));
     }
 
     // Kaydedilmemiş dosyalar değişikliklerle çakışmasın
@@ -167,7 +234,7 @@ export class Engine {
 
     // 1) Bu uygulamanın kaydı: geri alma YALNIZCA burada kaydedilen ve bu kimlikle
     //    Claude'a gönderilen isteğin yaptığı değişiklikleri kapsar.
-    const label = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const label = new Date().toLocaleTimeString(uiLang() === 'tr' ? 'tr-TR' : 'en-US', { hour: '2-digit', minute: '2-digit' });
     const rec: ApplyRecord = { id: newApplyId(), label, time: Date.now(), ops: [], cliOps: [], sentToClaude: false };
     const cp = true;
     const pushRecord = () => {
@@ -189,7 +256,7 @@ export class Engine {
             if (r.ok) {
               direct++;
               rec.ops.push({ kind: 'strings', file: uri.fsPath, oldStr: r.original ?? e.from, newStr: e.to, line: r.line, source: 'panoptent' });
-              this.output.appendLine(`Doğrudan yazıldı: ${path.relative(this.root, uri.fsPath)} — “${e.from}” → “${e.to}”`);
+              this.output.appendLine(t('ext.log.direct', path.relative(this.root, uri.fsPath), e.from, e.to));
               continue;
             }
           } catch {
@@ -207,12 +274,12 @@ export class Engine {
       try {
         e.saved = saveImage(this.root, src?.fsPath, e);
         if (e.saved) {
-          this.output.appendLine('Görsel kaydedildi: ' + e.saved.rel);
+          this.output.appendLine(t('ext.log.imgSaved', e.saved.rel));
           const abs = path.join(this.root, e.saved.rel);
           rec.ops.push({ kind: 'image', file: abs, size: fs.statSync(abs).size, source: 'panoptent' });
         }
       } catch (err: any) {
-        this.output.appendLine('Görsel kaydedilemedi: ' + err.message);
+        this.output.appendLine(t('ext.log.imgFailed', err.message));
       }
       e.dataUrl = undefined;
     }
@@ -224,10 +291,10 @@ export class Engine {
     }
 
     // 4) Kalanlar Claude'a
-    const prompt = await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || '(bilinmiyor)', detail: !panelMode, resolve: this.relPath });
+    const prompt = await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: !panelMode, resolve: this.relPath });
     rec.sentToClaude = true;
     pushRecord();
-    this.output.appendLine('──── İstem ────\n' + prompt);
+    this.output.appendLine(t('ext.log.prompt') + '\n' + prompt);
 
     if (panelMode) {
       let ok = true;
@@ -237,7 +304,7 @@ export class Engine {
         try {
           how = await sendToOpenConversation(this.root, prompt, rec.id);
         } catch (err: any) {
-          this.output.appendLine('Açık konuşmaya eklenemedi: ' + err.message);
+          this.output.appendLine(t('ext.log.appendFailed', err.message));
           await vscode.env.clipboard.writeText(prompt);
           how = 'clipboard';
         }
@@ -245,7 +312,7 @@ export class Engine {
         ok = await openInClaudePanel(prompt);
       }
       emit({ type: 'handoff', ok, how });
-      emit({ type: 'applied', ok, direct, sent: rest.length, tokens, fromQueue, checkpoint: !!cp, canRollback: this.canRollback(), message: ok ? undefined : 'Claude Code paneli açılamadı.' });
+      emit({ type: 'applied', ok, direct, sent: rest.length, tokens, fromQueue, checkpoint: !!cp, canRollback: this.canRollback(), message: ok ? undefined : t('ext.panelFailed') });
       return;
     }
 
@@ -255,7 +322,7 @@ export class Engine {
       const bundled = findBundledClaude();
       if (bundled) {
         cliPath = bundled;
-        this.output.appendLine(`"claude" PATH'te yok, eklentideki kopya kullanılıyor: ${bundled}`);
+        this.output.appendLine(t('ext.log.bundled', bundled));
       }
     }
     let result = { ok: false, message: '' };
@@ -274,10 +341,10 @@ export class Engine {
           emit({ type: 'session', sessionId: this.sessionId });
         }
         if (ev.kind === 'error') {
-          this.output.appendLine('HATA: ' + ev.message);
+          this.output.appendLine(t('ext.log.error', ev.message));
           result = { ok: false, message: ev.message.split('\n')[0] };
         }
-        if (ev.kind === 'done') result = { ok: ev.ok, message: ev.ok ? '' : 'Claude işi bitiremedi.' };
+        if (ev.kind === 'done') result = { ok: ev.ok, message: ev.ok ? '' : t('ext.claudeFailed') };
         emit({ type: 'claude', ev });
         if (ev.kind === 'done' && ev.edited.length && cfg.get<boolean>('reloadAfterEdit')) {
           setTimeout(() => emit({ type: 'reload' }), 600);
@@ -295,17 +362,18 @@ export class Engine {
       this.emit({ type: 'rollbackResult', ok, files, message, conflicts, canRollback: this.canRollback() }, client);
       this.emit({ type: 'checkpointState', canRollback: this.canRollback() });
     };
-    if (!rec) return done(false, [], 'Geri alınacak bir uygulama yok.');
+    if (!rec) return done(false, [], t('ext.rb.none'));
 
     const tr = rec.sentToClaude ? opsFromTranscripts(this.root, rec.id, rec.time) : { found: false, ops: [] as RevOp[], bashCount: 0, pending: false };
     const claudeOps = tr.ops.length ? tr.ops : rec.cliOps;
     const ops: RevOp[] = [...rec.ops, ...claudeOps];
     if (!ops.length) {
       const why = rec.sentToClaude && !tr.found
-        ? 'Claude Code bu isteği henüz çalıştırmamış görünüyor (panelde Enter’a bastın mı?). Geri alınacak bir değişiklik yok.'
-        : 'Bu uygulamada geri alınacak bir dosya değişikliği bulunamadı.';
-      const pick = await vscode.window.showInformationMessage(why, 'Kaydı kaldır', 'Vazgeç');
-      if (pick === 'Kaydı kaldır') this.records.pop();
+        ? t('ext.rb.notRun')
+        : t('ext.rb.noChanges');
+      const removeLabel = t('ext.rb.removeRecord');
+      const pick = await vscode.window.showInformationMessage(why, removeLabel, t('ext.rb.cancel'));
+      if (pick === removeLabel) this.records.pop();
       return done(false, [], undefined);
     }
 
@@ -314,20 +382,21 @@ export class Engine {
     const files = [...plan.changed.keys(), ...plan.deleted];
     const lines = [
       ...[...plan.changed.keys()].map((f) => '↺ ' + rel(f)),
-      ...plan.deleted.map((f) => '✕ ' + rel(f) + ' (Panoptent/Claude oluşturmuştu, çöpe taşınır)'),
+      ...plan.deleted.map((f) => '✕ ' + rel(f) + ' ' + t('ext.rb.deletedLine')),
     ];
     const conflictLines = plan.conflicts.map((c) => `⚠ ${rel(c.file)} — ${c.reason}`);
-    let detail = `Yalnızca bu uygulamada Panoptent'in ve Claude'un yaptığı ${plan.count} değişiklik geri alınır. Senin ve sonraki konuşmaların değişikliklerine dokunulmaz.`;
-    if (lines.length) detail += '\n\n' + lines.slice(0, 15).join('\n') + (lines.length > 15 ? `\n… ve ${lines.length - 15} dosya daha` : '');
-    if (conflictLines.length) detail += '\n\nGeri alınamayacaklar (bu dosyalara dokunulmayacak):\n' + conflictLines.join('\n');
-    if (tr.bashCount) detail += `\n\nNot: Claude bu istekte ${tr.bashCount} terminal komutu çalıştırdı; terminalle yapılan değişiklikler izlenemediği için geri alınmaz.`;
+    let detail = plan.count === 1 ? t('ext.rb.detailOne') : t('ext.rb.detailMany', plan.count);
+    if (lines.length) detail += '\n\n' + lines.slice(0, 15).join('\n') + (lines.length > 15 ? '\n' + t('ext.rb.more', lines.length - 15) : '');
+    if (conflictLines.length) detail += '\n\n' + t('ext.rb.conflicts') + '\n' + conflictLines.join('\n');
+    if (tr.bashCount) detail += '\n\n' + t('ext.rb.bash', tr.bashCount);
 
     if (!files.length) {
-      vscode.window.showWarningMessage(`Saat ${rec.label} uygulaması geri alınamadı.`, { modal: true, detail });
-      return done(false, [], 'Geri alınamadı: değişen satırlar sonradan düzenlenmiş.', conflictLines);
+      vscode.window.showWarningMessage(t('ext.rb.cannot', rec.label), { modal: true, detail });
+      return done(false, [], t('ext.rb.cannotMsg'), conflictLines);
     }
-    const pick = await vscode.window.showWarningMessage(`Saat ${rec.label} uygulaması geri alınsın mı?`, { modal: true, detail }, 'Geri al');
-    if (pick !== 'Geri al') return done(false, [], undefined);
+    const undoLabel = t('ext.rb.undo');
+    const pick = await vscode.window.showWarningMessage(t('ext.rb.confirm', rec.label), { modal: true, detail }, undoLabel);
+    if (pick !== undoLabel) return done(false, [], undefined);
 
     try {
       for (const [f, content] of plan.changed) fs.writeFileSync(f, content);
@@ -341,7 +410,7 @@ export class Engine {
       this.records.pop();
       done(true, files.map(rel), undefined, conflictLines);
     } catch (err: any) {
-      done(false, [], 'Geri alma başarısız: ' + err.message);
+      done(false, [], t('ext.rb.failed', err.message));
     }
   }
 

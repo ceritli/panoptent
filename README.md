@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/demo.gif" width="860" alt="Selecting a button, changing its color, editing text inline and queueing a request">
+  <img src="docs/assets/demo-en.gif" width="860" alt="Selecting a button, changing its color, editing text inline and queueing a request">
 </p>
 
 > **Panoptent** = *Panopt*es (the all-seeing giant of Greek myth) + ag*ent*.
@@ -30,6 +30,7 @@
 - **Undo only what Panoptent did.** *Undo last apply* reverses exactly the changes made by that request — your own edits and later conversations are left alone. No git commits are created.
 - **Works where you work.** Inside VS Code (built-in preview) or in your own Chrome via the companion extension — including pages behind a login, with DevTools and real device emulation.
 - **Responsive-aware.** In mobile or tablet view, mark a change as *mobile only* and it's applied with a breakpoint.
+- **English and Turkish UI.** Switch live; prompts to Claude are written in the same language.
 
 Works with React / Next.js, Vue / Nuxt, Vite, and plain HTML.
 
@@ -51,15 +52,17 @@ Download the latest files from **[Releases](https://github.com/ceritli/panoptent
 ## Quick start
 
 1. Open your project in VS Code and start the dev server.
-2. Click the **eye** icon in the activity bar → **Open Preview** (or Command Palette → *Panoptent: Önizlemeyi Aç*).
-3. Press **Seç** (Select), click an element, type what you want, press `Ctrl/⌘+Enter` to queue.
-4. Press **Uygula** (Apply). The request lands in your open Claude Code conversation — press Enter there.
+2. Click the **eye** icon in the activity bar → **Open Preview** (or Command Palette → *Panoptent: Open Preview*).
+3. Press **Select**, click an element, type what you want, press `Ctrl/⌘+Enter` to queue.
+4. Press **Apply**. The request lands in your open Claude Code conversation — press Enter there.
 
-In Chrome: open your dev site → extension icon → **Bu sekmede Panoptent'i aç** (`Alt+Shift+P`) → approve the one-time pairing prompt in VS Code.
+In Chrome: open your dev site → extension icon → **Turn on Panoptent in this tab** (`Alt+Shift+P`) → approve the one-time pairing prompt in VS Code.
 
-**Recommended:** run *Panoptent: code-inspector'ı Otomatik Kur* once. It adds [code-inspector-plugin](https://github.com/zh-lx/code-inspector) (dev-only) so every element maps to its exact file and line, and Claude doesn't spend time or tokens searching.
+**Recommended:** run *Panoptent: Set Up code-inspector Automatically* once. It adds [code-inspector-plugin](https://github.com/zh-lx/code-inspector) (dev-only) so every element maps to its exact file and line, and Claude doesn't spend time or tokens searching.
 
-> The interface is currently in Turkish. English UI is on the roadmap.
+### Language
+
+The UI is available in **English** and **Turkish**. By default it follows VS Code's display language (English if unsupported). Switch it any time, live, with the `panoptent.language` setting (`auto` / `en` / `tr`), the *Panoptent: Change Language* command, the **Language** link in the Panoptent view, the language select in the preview toolbar, or the **Settings** tab of the in-page drawer in Chrome. Chrome follows VS Code once connected. Prompts sent to Claude Code are written in the UI language, so Claude replies in it too.
 
 Full guide, screenshots, settings and troubleshooting: **https://ceritli.github.io/panoptent/**
 
@@ -92,7 +95,7 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 
 ## Contributing
 
-**Contributions of every kind are welcome** — bug reports, ideas, docs, translations (an English UI especially), tests and code. Open an [issue](https://github.com/ceritli/panoptent/issues/new/choose) or a pull request; no need to ask first. See [CONTRIBUTING.md](CONTRIBUTING.md).
+**Contributions of every kind are welcome** — bug reports, ideas, docs, translations into new languages, tests and code. Open an [issue](https://github.com/ceritli/panoptent/issues/new/choose) or a pull request; no need to ask first. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
@@ -112,6 +115,7 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 - **Yalnızca kendi yaptığını geri alır.** *Son uygulamayı geri al*, o istekte yapılan değişiklikleri satır satır tersine çevirir; senin düzenlemelerine ve sonraki konuşmalara dokunmaz. Commit oluşturmaz.
 - **VS Code içinde ya da kendi Chrome'unda.** Giriş gerektiren sayfalarda, DevTools ve gerçek cihaz emülasyonuyla.
 - **Mobil/tablet.** Dar görünümdeyken bir değişikliği *sadece mobil için* işaretleyebilirsin.
+- **Türkçe ve İngilizce arayüz.** Varsayılan olarak VS Code'un dilini izler; `panoptent.language` ayarı, *Panoptent: Dili Değiştir* komutu, önizleme araç çubuğundaki dil seçimi ya da Chrome'da **Ayarlar** sekmesiyle anında değiştirilir. Claude'a giden istemler de seçilen dilde yazılır.
 
 **Kurulum**
 
@@ -119,9 +123,10 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 2. VS Code: Extensions → `⋯` → **Install from VSIX…** → `.vsix` dosyası → pencereyi yenile.
 3. Chrome (isteğe bağlı): zip'i aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.
 4. Önerilir: Komut Paleti → **Panoptent: code-inspector'ı Otomatik Kur**.
+5. Sol menüdeki göz → **Önizlemeyi Aç**; **Seç**'e bas, öğeye tıkla, isteğini yaz, **Uygula**. Chrome'da: eklenti simgesi → **Bu sekmede Panoptent’i aç**.
 
 Ayrıntılı Türkçe rehber, ekran görüntüleri ve sorun giderme: **https://ceritli.github.io/panoptent/**
 
-**Katkı:** Her türlü katkıya açığız — hata bildirimi, fikir, belge, çeviri, test ve kod. [Issue](https://github.com/ceritli/panoptent/issues/new/choose) ya da pull request açman yeterli; ayrıntılar [CONTRIBUTING.md](CONTRIBUTING.md)'de.
+**Katkı:** Her türlü katkıya açığız — hata bildirimi, fikir, belge, yeni dillere çeviri, test ve kod. [Issue](https://github.com/ceritli/panoptent/issues/new/choose) ya da pull request açman yeterli; ayrıntılar [CONTRIBUTING.md](CONTRIBUTING.md)'de.
 
 **Lisans:** [MIT](LICENSE) © Fatih Ceritli, Alper LÜLE

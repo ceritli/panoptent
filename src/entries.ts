@@ -3,6 +3,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { SourceLoc } from './source';
+import { addStrings, t } from './i18n';
 
 export interface SelectedItem {
   id: number;
@@ -38,18 +39,88 @@ export interface Entry {
   raw?: boolean; // prompt: metni olduğu gibi gönder (kurulum talimatları vb.)
 }
 
-const VP_NOTE: Record<string, string> = {
-  '390': 'YALNIZCA mobil görünümde (ekran genişliği ≤ 390px) geçerli olsun; responsive kırılım noktası kullan, daha geniş ekranları değiştirme.',
-  '1024': 'YALNIZCA tablet ve daha dar ekranlarda (≤ 1024px) geçerli olsun; responsive kırılım noktası kullan, masaüstünü değiştirme.',
-};
+addStrings({
+  en: {
+    'ext.p.vp390': 'Apply ONLY on mobile (screen width ≤ 390px); use a responsive breakpoint and do not change wider screens.',
+    'ext.p.vp1024': 'Apply ONLY on tablet and narrower screens (≤ 1024px); use a responsive breakpoint and do not change desktop.',
+    'ext.p.kind.prompt': 'Request',
+    'ext.p.kind.style': 'Style',
+    'ext.p.kind.text': 'Text',
+    'ext.p.kind.delete': 'Delete',
+    'ext.p.kind.image': 'Image',
+    'ext.p.howExact': 'exact location',
+    'ext.p.howVue': 'component file, line unknown',
+    'ext.p.howParent': 'nearest known ancestor',
+    'ext.p.source': 'Source: @{0}{1} ({2})',
+    'ext.p.sourceUnknown': 'Source: unknown — search by text, class or component name',
+    'ext.p.component': 'Component: {0}',
+    'ext.p.selector': 'Selector: {0}',
+    'ext.p.styles': 'Computed styles: {0}',
+    'ext.p.text': 'Change the text “{0}” to “{1}”.',
+    'ext.p.delete': 'Remove this element from the page (delete it in the code; also clean up any code left unused).',
+    'ext.p.imageSaved': 'Replace the image with `{0}`, which I saved in the project (browser URL: `{1}`).',
+    'ext.p.imageUrl': 'Replace the image with the one at this URL: {0}',
+    'ext.p.addClasses': 'add these classes: {0}',
+    'ext.p.style': 'Change the style — {0}',
+    'ext.p.marker': '(Panoptent apply ID: {0} — this line is for tracking only.)',
+    'ext.p.batch': 'Apply the {0} changes I prepared in the preview. Write them all to the real source files in one go.',
+    'ext.p.page': 'Page: {0}',
+    'ext.p.noItemSingle': '(No specific element selected; the request is about this page.)',
+    'ext.p.noItem': '   Element: whole page',
+    'ext.p.selOne': 'The element I selected in the preview:',
+    'ext.p.selMany': 'The {0} elements I selected in the preview:',
+    'ext.p.itemOne': '   Element:',
+    'ext.p.itemMany': '   Elements ({0}):',
+    'ext.p.rules': 'Rules:',
+    'ext.p.ruleStyle': '- The style values come from live tweaking in the preview; translate them to the project’s styling approach (Tailwind classes, CSS modules, scoped styles, etc.); do not use inline styles.',
+    'ext.p.ruleOnly': '- Change only what was asked; do not touch build output (.next, .nuxt, .output, dist, node_modules).',
+    'ext.p.ruleShared': '- If the element is in a shared component used in several places, mention it.',
+    'ext.p.ruleHmr': '- The dev server updates via hot reload; do not restart it.',
+    'ext.p.ruleSummary': '- When done, briefly summarize what you changed.',
+    'ext.p.unknownPage': '(unknown)',
+  },
+  tr: {
+    'ext.p.vp390': 'YALNIZCA mobil görünümde (ekran genişliği ≤ 390px) geçerli olsun; responsive kırılım noktası kullan, daha geniş ekranları değiştirme.',
+    'ext.p.vp1024': 'YALNIZCA tablet ve daha dar ekranlarda (≤ 1024px) geçerli olsun; responsive kırılım noktası kullan, masaüstünü değiştirme.',
+    'ext.p.kind.prompt': 'İstek',
+    'ext.p.kind.style': 'Stil',
+    'ext.p.kind.text': 'Metin',
+    'ext.p.kind.delete': 'Sil',
+    'ext.p.kind.image': 'Görsel',
+    'ext.p.howExact': 'tam konum',
+    'ext.p.howVue': 'bileşen dosyası, satır bilinmiyor',
+    'ext.p.howParent': 'en yakın bilinen üst öğe',
+    'ext.p.source': 'Kaynak: @{0}{1} ({2})',
+    'ext.p.sourceUnknown': 'Kaynak: bilinmiyor — metin, sınıf veya bileşen adıyla ara',
+    'ext.p.component': 'Bileşen: {0}',
+    'ext.p.selector': 'Seçici: {0}',
+    'ext.p.styles': 'Hesaplanmış stiller: {0}',
+    'ext.p.text': 'Metni “{0}” yerine “{1}” yap.',
+    'ext.p.delete': 'Bu öğeyi sayfadan kaldır (kodda sil; gereksiz kalan kodu da temizle).',
+    'ext.p.imageSaved': 'Görseli projeye kaydettiğim `{0}` ile değiştir (tarayıcıdaki adresi: `{1}`).',
+    'ext.p.imageUrl': 'Görseli şu adresteki görselle değiştir: {0}',
+    'ext.p.addClasses': 'şu sınıfları ekle: {0}',
+    'ext.p.style': 'Stili değiştir — {0}',
+    'ext.p.marker': '(Panoptent işlem kimliği: {0} — bu satır yalnızca kayıt içindir.)',
+    'ext.p.batch': 'Önizlemede hazırladığım {0} değişikliği uygula. Hepsini tek seferde gerçek kaynak dosyalara işle.',
+    'ext.p.page': 'Sayfa: {0}',
+    'ext.p.noItemSingle': '(Belirli bir öğe seçilmedi; istek bu sayfayla ilgili.)',
+    'ext.p.noItem': '   Öğe: tüm sayfa',
+    'ext.p.selOne': 'Önizlemede seçtiğim öğe:',
+    'ext.p.selMany': 'Önizlemede seçtiğim {0} öğe:',
+    'ext.p.itemOne': '   Öğe:',
+    'ext.p.itemMany': '   Öğeler ({0}):',
+    'ext.p.rules': 'Kurallar:',
+    'ext.p.ruleStyle': '- Stil değerleri önizlemedeki canlı denemeden geliyor; bunları projenin stil yaklaşımına (Tailwind sınıfları, CSS modülleri, scoped stil vb.) uygun karşılıklarına çevir, satır içi style kullanma.',
+    'ext.p.ruleOnly': '- Yalnızca istenenleri değiştir; derleme çıktısına (.next, .nuxt, .output, dist, node_modules) dokunma.',
+    'ext.p.ruleShared': '- Öğe birden çok yerde kullanılan ortak bir bileşendeyse bunu belirt.',
+    'ext.p.ruleHmr': '- Dev sunucusu hot reload ile güncelleniyor; yeniden başlatma.',
+    'ext.p.ruleSummary': '- Bitince ne değiştirdiğini kısaca Türkçe özetle.',
+    'ext.p.unknownPage': '(bilinmiyor)',
+  },
+});
 
-const KIND_TR: Record<Entry['kind'], string> = {
-  prompt: 'İstek',
-  style: 'Stil',
-  text: 'Metin',
-  delete: 'Sil',
-  image: 'Görsel',
-};
+const VP_KEY: Record<string, string> = { '390': 'ext.p.vp390', '1024': 'ext.p.vp1024' };
 
 export interface PromptOptions {
   id?: string; // Panoptent işlem kimliği (geri alma için transkriptte aranır)
@@ -67,16 +138,16 @@ async function describeItem(it: SelectedItem, o: PromptOptions, indent: string):
     const rel = (await o.resolve(it.source.file)) || it.source.file;
     const mention = /\s/.test(rel) ? `"${rel}"` : rel;
     const loc = it.source.line ? `#${it.source.line}` : '';
-    const how = it.source.exact ? 'tam konum' : it.source.via === 'vue' ? 'bileşen dosyası, satır bilinmiyor' : 'en yakın bilinen üst öğe';
-    L.push(`${indent}  Kaynak: @${mention}${loc} (${how})`);
+    const how = it.source.exact ? t('ext.p.howExact') : it.source.via === 'vue' ? t('ext.p.howVue') : t('ext.p.howParent');
+    L.push(`${indent}  ${t('ext.p.source', mention, loc, how)}`);
   } else {
-    L.push(`${indent}  Kaynak: bilinmiyor — metin, sınıf veya bileşen adıyla ara`);
+    L.push(`${indent}  ${t('ext.p.sourceUnknown')}`);
   }
-  if (it.components?.length) L.push(`${indent}  Bileşen: ${it.components.join(' < ')}`);
-  L.push(`${indent}  Seçici: ${it.selector}`);
+  if (it.components?.length) L.push(`${indent}  ${t('ext.p.component', it.components.join(' < '))}`);
+  L.push(`${indent}  ${t('ext.p.selector', it.selector)}`);
   if (o.detail) {
     const st = Object.entries(it.styles || {}).map(([k, v]) => `${k}: ${v}`).join('; ');
-    if (st) L.push(`${indent}  Hesaplanmış stiller: ${st}`);
+    if (st) L.push(`${indent}  ${t('ext.p.styles', st)}`);
     L.push(`${indent}  HTML: ${it.html.replace(/\s+/g, ' ')}`);
   } else {
     const html = it.html.length > 300 ? it.html.slice(0, 300) + '…' : it.html;
@@ -90,22 +161,27 @@ function changeLine(e: Entry): string {
     case 'prompt':
       return `“${(e.text || '').trim()}”`;
     case 'text':
-      return `Metni “${e.from}” yerine “${e.to}” yap.`;
+      return t('ext.p.text', e.from, e.to);
     case 'delete':
-      return 'Bu öğeyi sayfadan kaldır (kodda sil; gereksiz kalan kodu da temizle).';
+      return t('ext.p.delete');
     case 'image':
-      if (e.saved) return `Görseli projeye kaydettiğim \`${e.saved.rel}\` ile değiştir (tarayıcıdaki adresi: \`${e.saved.url}\`).`;
-      return `Görseli şu adresteki görselle değiştir: ${e.url}`;
+      if (e.saved) return t('ext.p.imageSaved', e.saved.rel, e.saved.url);
+      return t('ext.p.imageUrl', e.url);
     case 'style': {
       const parts = Object.entries(e.diffs || {}).map(([k, v]) => `${k}: ${v.from || '?'} → ${v.to}`);
-      if (e.classes) parts.push(`şu sınıfları ekle: ${e.classes}`);
-      return `Stili değiştir — ${parts.join('; ')}`;
+      if (e.classes) parts.push(t('ext.p.addClasses', e.classes));
+      return t('ext.p.style', parts.join('; '));
     }
   }
 }
 
+/** İşlem kimliği satırı. Geri alma (revert.ts) yalnızca `PT-…` kimliğini arar; dil fark etmez. */
+export function idMarker(id: string): string {
+  return t('ext.p.marker', id);
+}
+
 export async function buildBatchPrompt(entries: Entry[], o: PromptOptions): Promise<string> {
-  const marker = o.id ? `\n\n(Panoptent işlem kimliği: ${o.id} — bu satır yalnızca kayıt içindir.)` : '';
+  const marker = o.id ? `\n\n${idMarker(o.id)}` : '';
   if (entries.length === 1 && entries[0].raw) return (entries[0].text || '').trim() + marker;
   const L: string[] = [];
   const single = entries.length === 1 && entries[0].kind === 'prompt';
@@ -113,33 +189,33 @@ export async function buildBatchPrompt(entries: Entry[], o: PromptOptions): Prom
     L.push((entries[0].text || '').trim());
     L.push('');
   } else {
-    L.push(`Önizlemede hazırladığım ${entries.length} değişikliği uygula. Hepsini tek seferde gerçek kaynak dosyalara işle.`);
+    L.push(t('ext.p.batch', entries.length));
     L.push('');
   }
-  L.push(`Sayfa: ${o.pageUrl}`);
+  L.push(t('ext.p.page', o.pageUrl));
 
   for (const [i, e] of entries.entries()) {
     L.push('');
-    if (!single) L.push(`${i + 1}. [${KIND_TR[e.kind]}] ${changeLine(e)}`);
-    if (e.viewportOnly && VP_NOTE[e.viewportOnly]) L.push(`   (${VP_NOTE[e.viewportOnly]})`);
+    if (!single) L.push(`${i + 1}. [${t('ext.p.kind.' + e.kind)}] ${changeLine(e)}`);
+    if (e.viewportOnly && VP_KEY[e.viewportOnly]) L.push(`   (${t(VP_KEY[e.viewportOnly])})`);
     if (!e.items.length) {
-      L.push(single ? '(Belirli bir öğe seçilmedi; istek bu sayfayla ilgili.)' : '   Öğe: tüm sayfa');
+      L.push(single ? t('ext.p.noItemSingle') : t('ext.p.noItem'));
       continue;
     }
-    if (single) L.push(e.items.length === 1 ? 'Önizlemede seçtiğim öğe:' : `Önizlemede seçtiğim ${e.items.length} öğe:`);
-    else L.push(e.items.length === 1 ? '   Öğe:' : `   Öğeler (${e.items.length}):`);
+    if (single) L.push(e.items.length === 1 ? t('ext.p.selOne') : t('ext.p.selMany', e.items.length));
+    else L.push(e.items.length === 1 ? t('ext.p.itemOne') : t('ext.p.itemMany', e.items.length));
     for (const it of e.items) L.push(...(await describeItem(it, o, single ? '  ' : '     ')));
   }
 
   L.push('');
-  L.push('Kurallar:');
+  L.push(t('ext.p.rules'));
   if (entries.some((e) => e.kind === 'style')) {
-    L.push('- Stil değerleri önizlemedeki canlı denemeden geliyor; bunları projenin stil yaklaşımına (Tailwind sınıfları, CSS modülleri, scoped stil vb.) uygun karşılıklarına çevir, satır içi style kullanma.');
+    L.push(t('ext.p.ruleStyle'));
   }
-  L.push('- Yalnızca istenenleri değiştir; derleme çıktısına (.next, .nuxt, .output, dist, node_modules) dokunma.');
-  L.push('- Öğe birden çok yerde kullanılan ortak bir bileşendeyse bunu belirt.');
-  L.push('- Dev sunucusu hot reload ile güncelleniyor; yeniden başlatma.');
-  L.push('- Bitince ne değiştirdiğini kısaca Türkçe özetle.');
+  L.push(t('ext.p.ruleOnly'));
+  L.push(t('ext.p.ruleShared'));
+  L.push(t('ext.p.ruleHmr'));
+  L.push(t('ext.p.ruleSummary'));
   return L.join('\n') + marker;
 }
 

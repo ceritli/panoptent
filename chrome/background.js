@@ -2,6 +2,27 @@
 // VS Code pencereleriyle (Panoptent köprüsü, ws://127.0.0.1:47811-47820) bağlantıyı yönetir,
 // sekmelerdeki içerik betikleriyle VS Code arasında mesaj taşır.
 
+// Ortak i18n çekirdeği (klasik service worker → importScripts). Dil: yerel seçim ('lang') > VS Code ('vsLang') > tarayıcı.
+importScripts('i18n.js');
+const I18N = self.PanoptentI18n;
+I18N.add({
+  en: { 'bg.overlayFail': 'Couldn’t load the selection layer: {0}' },
+  tr: { 'bg.overlayFail': 'Seçim katmanı yüklenemedi: {0}' },
+});
+const t = I18N.t;
+chrome.storage.local.get(['lang', 'vsLang'], (o) => { if (o.lang || o.vsLang) I18N.setLang(o.lang || o.vsLang); });
+chrome.storage.onChanged.addListener((ch, area) => {
+  if (area !== 'local' || !(ch.lang || ch.vsLang)) return;
+  chrome.storage.local.get(['lang', 'vsLang'], (o) => I18N.setLang(o.lang || o.vsLang || navigator.language));
+});
+/** VS Code'dan gelen dil esas: kaydet, yerel geçici seçimi temizle. */
+function rememberVsLang(l) {
+  if (!l) return;
+  I18N.setLang(l);
+  chrome.storage.local.set({ vsLang: I18N.norm(l) });
+  chrome.storage.local.remove('lang');
+}
+
 const BASE_PORT = 47811;
 const PORT_RANGE = 10;
 
@@ -113,10 +134,15 @@ async function connect(port) {
         return;
       case 'welcome':
         entry.state = 'ready';
-        entry.settings = { sendTo: m.sendTo, openOnSelect: m.openOnSelect, claudeExt: m.claudeExt, canRollback: m.canRollback };
+        entry.settings = { sendTo: m.sendTo, openOnSelect: m.openOnSelect, claudeExt: m.claudeExt, canRollback: m.canRollback, lang: m.lang };
+        rememberVsLang(m.lang);
         broadcastStatus();
         for (const [tabId, p] of tabs) if (pickFor(tabId) === port) send(p, Object.assign({ type: 'welcome' }, entry.settings, { workspace: m.workspace }));
         return;
+    }
+    if (m.type === 'lang') {
+      rememberVsLang(m.value);
+      if (entry.settings) entry.settings.lang = m.value;
     }
     // VS Code'dan gelen olaylar: belirli sekmeye ya da bu pencereyi kullanan tüm sekmelere
     if (m.tab !== null && m.tab !== undefined) {
@@ -171,7 +197,7 @@ chrome.runtime.onConnect.addListener((p) => {
   p.onMessage.addListener(async (m) => {
     switch (m.type) {
       case 'injectOverlay':
-        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['i18n.js', 'overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: 'Seçim katmanı yüklenemedi: ' + e.message }));
+        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['i18n.js', 'overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: t('bg.overlayFail', e.message) }));
         return;
       case 'pair':
         wantPair = true;

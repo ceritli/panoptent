@@ -1,0 +1,17 @@
+{
+  "extName": {
+    "message": "Panoptent"
+  },
+  "extDesc": {
+    "message": "Click an element, say what to change — Panoptent in VS Code and Claude Code edit the source."
+  },
+  "actionTitle": {
+    "message": "Panoptent"
+  },
+  "cmdToggleSelect": {
+    "message": "Toggle selection mode"
+  },
+  "cmdTogglePanoptent": {
+    "message": "Turn Panoptent on/off in this tab"
+  }
+}

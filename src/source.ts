@@ -3,6 +3,26 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import { addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.qe.empty': 'The old text is empty.',
+    'ext.qe.same': 'No change.',
+    'ext.qe.notFound': 'The text was not found verbatim in the source file (it may come from a translation, a variable or data).',
+    'ext.qe.ambiguous': 'The text appears in more than one place in the file; could not be sure which one.',
+    'ext.qe.failed': 'The edit could not be applied.',
+    'ext.qe.saved': 'Saved.',
+  },
+  tr: {
+    'ext.qe.empty': 'Eski metin boş.',
+    'ext.qe.same': 'Değişiklik yok.',
+    'ext.qe.notFound': 'Metin kaynak dosyada birebir bulunamadı (çeviri, değişken veya veriden geliyor olabilir).',
+    'ext.qe.ambiguous': 'Metin dosyada birden fazla yerde geçiyor, emin olamadım.',
+    'ext.qe.failed': 'Düzenleme uygulanamadı.',
+    'ext.qe.saved': 'Kaydedildi.',
+  },
+});
 
 export interface SourceLoc {
   file: string;
@@ -74,8 +94,8 @@ export async function quickEditText(
   newText: string,
 ): Promise<QuickEditResult> {
   oldText = oldText.trim();
-  if (!oldText) return { ok: false, message: 'Eski metin boş.' };
-  if (oldText === newText) return { ok: true, message: 'Değişiklik yok.' };
+  if (!oldText) return { ok: false, message: t('ext.qe.empty') };
+  if (oldText === newText) return { ok: true, message: t('ext.qe.same') };
 
   const doc = await vscode.workspace.openTextDocument(uri);
   const src = doc.getText();
@@ -90,7 +110,7 @@ export async function quickEditText(
     if (matches.length > 50) break;
   }
   if (!matches.length) {
-    return { ok: false, message: 'Metin kaynak dosyada birebir bulunamadı (çeviri, değişken veya veriden geliyor olabilir).' };
+    return { ok: false, message: t('ext.qe.notFound') };
   }
 
   let pick = matches[0];
@@ -101,17 +121,17 @@ export async function quickEditText(
     );
     const pickLine = doc.positionAt(pick.index).line + 1;
     if (Math.abs(pickLine - line) > 40 && matches.length > 1) {
-      return { ok: false, message: 'Metin dosyada birden fazla yerde geçiyor, emin olamadım.' };
+      return { ok: false, message: t('ext.qe.ambiguous') };
     }
   } else if (matches.length > 1) {
-    return { ok: false, message: 'Metin dosyada birden fazla yerde geçiyor, emin olamadım.' };
+    return { ok: false, message: t('ext.qe.ambiguous') };
   }
 
   const range = new vscode.Range(doc.positionAt(pick.index), doc.positionAt(pick.index + pick.length));
   const edit = new vscode.WorkspaceEdit();
   edit.replace(uri, range, newText);
   const applied = await vscode.workspace.applyEdit(edit);
-  if (!applied) return { ok: false, message: 'Düzenleme uygulanamadı.' };
+  if (!applied) return { ok: false, message: t('ext.qe.failed') };
   await doc.save();
-  return { ok: true, message: 'Kaydedildi.', line: range.start.line + 1, original: src.slice(pick.index, pick.index + pick.length) };
+  return { ok: true, message: t('ext.qe.saved'), line: range.start.line + 1, original: src.slice(pick.index, pick.index + pick.length) };
 }

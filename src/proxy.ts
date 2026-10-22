@@ -6,6 +6,22 @@ import * as http from 'http';
 import * as https from 'https';
 import * as net from 'net';
 import * as zlib from 'zlib';
+import { addStrings, t, uiLang } from './i18n';
+
+addStrings({
+  en: {
+    'ext.px.error': 'Proxy error: {0}',
+    'ext.px.title': 'Could not reach the dev server',
+    'ext.px.noServer': 'No server is running at {0}.',
+    'ext.px.hint': 'Run {0} (or the matching command) in your project, then press the ↻ button above.',
+  },
+  tr: {
+    'ext.px.error': 'Proxy hatası: {0}',
+    'ext.px.title': 'Dev sunucusuna ulaşılamadı',
+    'ext.px.noServer': '{0} adresinde çalışan bir sunucu bulunamadı.',
+    'ext.px.hint': 'Projende {0} (veya ilgili komutu) çalıştırıp üstteki ↻ butonuna bas.',
+  },
+});
 
 export const OVERLAY_PATH = '/__panoptent__/overlay.js';
 
@@ -105,7 +121,7 @@ export class DevProxy {
     );
 
     proxyReq.on('error', (err) => {
-      this.log(`Proxy hatası: ${err.message}`);
+      this.log(t('ext.px.error', err.message));
       if (!res.headersSent) {
         res.writeHead(502, { 'content-type': 'text/html; charset=utf-8' });
       }
@@ -218,10 +234,10 @@ export function injectOverlay(html: string): string {
 }
 
 function errorPage(target: string, msg: string): string {
-  return `<!doctype html><meta charset="utf-8"><body style="font-family:system-ui;padding:40px;color:#444">
-<h2 style="margin:0 0 8px">Dev sunucusuna ulaşılamadı</h2>
-<p><code>${escapeHtml(target)}</code> adresinde çalışan bir sunucu bulunamadı.</p>
-<p>Projende <code>npm run dev</code> (veya ilgili komutu) çalıştırıp üstteki ↻ butonuna bas.</p>
+  return `<!doctype html><html lang="${uiLang()}"><meta charset="utf-8"><body style="font-family:system-ui;padding:40px;color:#444">
+<h2 style="margin:0 0 8px">${escapeHtml(t('ext.px.title'))}</h2>
+<p>${t('ext.px.noServer', `<code>${escapeHtml(target)}</code>`)}</p>
+<p>${t('ext.px.hint', '<code>npm run dev</code>')}</p>
 <p style="color:#999;font-size:12px">${escapeHtml(msg)}</p></body>`;
 }
 

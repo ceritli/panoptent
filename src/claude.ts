@@ -2,6 +2,22 @@
 
 import { spawn, ChildProcess } from 'child_process';
 import * as path from 'path';
+import { addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.cli.busy': 'Claude is already running.',
+    'ext.cli.notFound': 'Claude Code CLI not found ("{0}"). Make sure Claude Code is installed, or set its full path in the "panoptent.claudePath" setting.',
+    'ext.cli.notFound2': 'Claude Code CLI not found. Set its full path in the "panoptent.claudePath" setting.',
+    'ext.cli.exit': 'Claude Code exited with code {0}.',
+  },
+  tr: {
+    'ext.cli.busy': 'Claude zaten çalışıyor.',
+    'ext.cli.notFound': 'Claude Code CLI bulunamadı ("{0}"). Claude Code\'un kurulu olduğundan emin ol veya ayarlardaki "panoptent.claudePath" ile tam yolunu belirt.',
+    'ext.cli.notFound2': 'Claude Code CLI bulunamadı. Ayarlardaki "panoptent.claudePath" ile tam yolunu belirt.',
+    'ext.cli.exit': 'Claude Code çıkış kodu {0}.',
+  },
+});
 
 export type ClaudeEvent =
   | { kind: 'start' }
@@ -42,7 +58,7 @@ export class ClaudeRunner {
   }
 
   run(opts: RunOptions, onEvent: (e: ClaudeEvent) => void): Promise<void> {
-    if (this.proc) return Promise.reject(new Error('Claude zaten çalışıyor.'));
+    if (this.proc) return Promise.reject(new Error(t('ext.cli.busy')));
 
     const args = ['-p', '--output-format', 'stream-json', '--verbose', '--permission-mode', opts.permissionMode];
     if (opts.model) args.push('--model', opts.model);
@@ -114,7 +130,7 @@ export class ClaudeRunner {
         this.proc = undefined;
         const message =
           err.code === 'ENOENT'
-            ? `Claude Code CLI bulunamadı ("${opts.cliPath}"). Claude Code'un kurulu olduğundan emin ol veya ayarlardaki "panoptent.claudePath" ile tam yolunu belirt.`
+            ? t('ext.cli.notFound', opts.cliPath)
             : err.message;
         finish({ kind: 'error', message });
         resolve();
@@ -131,8 +147,8 @@ export class ClaudeRunner {
             finish({
               kind: 'error',
               message: notFound
-                ? `Claude Code CLI bulunamadı. Ayarlardaki "panoptent.claudePath" ile tam yolunu belirt.\n${tail}`
-                : `Claude Code çıkış kodu ${code}.${tail ? '\n' + tail : ''}`,
+                ? `${t('ext.cli.notFound2')}\n${tail}`
+                : t('ext.cli.exit', code ?? '?') + (tail ? '\n' + tail : ''),
             });
           }
         }

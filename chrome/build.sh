@@ -8,5 +8,5 @@ cp ../media/i18n.js i18n.js
 VER=$(node -p "require('./manifest.json').version")
 OUT="../panoptent-chrome-$VER.zip"
 rm -f "$OUT"
-zip -qr "$OUT" manifest.json background.js content.js i18n.js overlay.js popup.html popup.js icons
+zip -qr "$OUT" manifest.json background.js content.js i18n.js overlay.js popup.html popup.js icons _locales
 echo "panoptent-chrome-$VER.zip"

@@ -10,6 +10,22 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
+import { addStrings, t } from './i18n';
+
+addStrings({
+  en: {
+    'ext.rv.dirty': 'has unsaved changes in the editor',
+    'ext.rv.gone': 'the file no longer exists',
+    'ext.rv.createdChanged': 'the file Claude created has been modified since',
+    'ext.rv.reedited': 'the changed lines have been edited again since',
+  },
+  tr: {
+    'ext.rv.dirty': 'editörde kaydedilmemiş değişiklik var',
+    'ext.rv.gone': 'dosya artık yok',
+    'ext.rv.createdChanged': 'Claude’un oluşturduğu dosya sonradan değiştirilmiş',
+    'ext.rv.reedited': 'değiştirilen satırlar sonradan yeniden düzenlenmiş',
+  },
+});
 
 export interface Hunk {
   oldStart: number;
@@ -112,6 +128,7 @@ export function opsFromTranscripts(root: string, id: string, since: number): Tra
       } catch {
         continue;
       }
+      // Yalnızca `PT-…` kimliği aranır: Türkçe ya da İngilizce işaret satırı fark etmez.
       if (!raw.includes(id)) continue;
       const lines = raw.split('\n');
       const isSub = file.includes(`${path.sep}subagents${path.sep}`);
@@ -292,7 +309,7 @@ export function planRevert(ops: RevOp[], isDirty: (file: string) => boolean): Re
     const op = ops[i];
     if (failed.has(op.file)) continue; // bir dosyada çakışma varsa o dosyaya dokunma
     if (isDirty(op.file)) {
-      out.conflicts.push({ file: op.file, reason: 'editörde kaydedilmemiş değişiklik var' });
+      out.conflicts.push({ file: op.file, reason: t('ext.rv.dirty') });
       failed.add(op.file);
       continue;
     }
@@ -310,7 +327,7 @@ export function planRevert(ops: RevOp[], isDirty: (file: string) => boolean): Re
       continue;
     }
     if (cur === undefined) {
-      out.conflicts.push({ file: op.file, reason: 'dosya artık yok' });
+      out.conflicts.push({ file: op.file, reason: t('ext.rv.gone') });
       failed.add(op.file);
       continue;
     }
@@ -320,14 +337,14 @@ export function planRevert(ops: RevOp[], isDirty: (file: string) => boolean): Re
         out.changed.delete(op.file);
         out.count++;
       } else {
-        out.conflicts.push({ file: op.file, reason: 'Claude’un oluşturduğu dosya sonradan değiştirilmiş' });
+        out.conflicts.push({ file: op.file, reason: t('ext.rv.createdChanged') });
         failed.add(op.file);
       }
       continue;
     }
     const next = op.kind === 'patch' ? reversePatch(cur, op.hunks) : reverseStrings(cur, op);
     if (next === undefined) {
-      out.conflicts.push({ file: op.file, reason: 'değiştirilen satırlar sonradan yeniden düzenlenmiş' });
+      out.conflicts.push({ file: op.file, reason: t('ext.rv.reedited') });
       failed.add(op.file);
       out.changed.delete(op.file);
       continue;

@@ -6,6 +6,154 @@
   if (window.top !== window || window.__panoptentContent) return;
   window.__panoptentContent = true;
 
+  const I18N = window.PanoptentI18n;
+  I18N.add({
+    en: {
+      'cx.tab.queue': 'Queue', 'cx.tab.log': 'Activity', 'cx.tab.settings': 'Settings',
+      'cx.logoTitle': 'Panoptent — toggle panel',
+      'cx.searching': 'Looking for VS Code…',
+      'cx.selTitle': 'Selection mode (Alt+Shift+E) — you can also hold Alt and click to select',
+      'cx.select': 'Select',
+      'cx.changes.one': 'change', 'cx.changes.many': 'changes',
+      'cx.undoTitle': 'Undo (Ctrl/Cmd+Z)', 'cx.redoTitle': 'Redo (Ctrl/Cmd+Shift+Z)',
+      'cx.list': 'List', 'cx.apply': 'Apply', 'cx.applyN': 'Apply ({0})', 'cx.applying': 'Applying…',
+      'cx.claudeRunning': 'Claude is working…',
+      'cx.rollbackTitle': 'Undo only the changes Panoptent made in the last apply',
+      'cx.rollback': '↶ Undo last apply',
+      'cx.gearTitle': 'Settings', 'cx.minTitle': 'Minimize',
+      'cx.notConnected': 'Not connected to VS Code.',
+      'cx.notConnectedShort': 'Not connected to VS Code',
+      'cx.notConnectedLong': 'Not connected to VS Code. Your project must be open in VS Code with Panoptent installed.',
+      'cx.notConnectedQueued': 'Not connected to VS Code; your changes are waiting in the queue.',
+      'cx.rollbackConfirm': 'A confirmation dialog opened in VS Code.',
+      'cx.busy': 'A previous operation is still running.',
+      'cx.logQueue.one': 'Queue · {0} change', 'cx.logQueue.many': 'Queue · {0} changes',
+      'cx.logQuick': 'Quick box', 'cx.logAuto': 'Automatic',
+      'cx.kind.prompt': 'Request', 'cx.kind.style': 'Style', 'cx.kind.text': 'Text', 'cx.kind.delete': 'Delete', 'cx.kind.image': 'Image',
+      'cx.vp.390': 'mobile', 'cx.vp.1024': 'tablet',
+      'cx.wholePage': 'Whole page', 'cx.removeEl': 'Remove element', 'cx.newImage': 'New image: {0}',
+      'cx.tool.Edit': '✎ Edited', 'cx.tool.MultiEdit': '✎ Edited', 'cx.tool.Write': '✎ Wrote', 'cx.tool.Read': '◦ Read',
+      'cx.tool.Grep': '⌕ Searched', 'cx.tool.Glob': '⌕ Searched files', 'cx.tool.Bash': '$ Command',
+      'cx.emptyQueue': 'Press <b>Select</b> (or hold <kbd>Alt</kbd> and click) and click an element on the page. In the box that opens next to it you can write a request, change its style, double-click its text to edit it, or delete it. <kbd>Ctrl/⌘+Enter</kbd> adds to the queue, <kbd>Ctrl/⌘+Shift+Enter</kbd> sends right away.',
+      'cx.clear': 'Clear', 'cx.applyAll': 'Apply all',
+      'cx.emptyLog': 'Nothing yet.', 'cx.stop': 'Stop',
+      'cx.connOk': '✓ Connected to VS Code: <b>{0}</b>',
+      'cx.connFound': 'Found the <b>{0}</b> window in VS Code.',
+      'cx.pressAllow': 'Click <b>Allow</b> in the dialog that opened in VS Code.',
+      'cx.connect': 'Connect',
+      'cx.connNone': 'VS Code not found. Your project must be open in VS Code with the <b>Panoptent</b> extension installed.',
+      'cx.workspace': 'Workspace',
+      'cx.sendToLbl': 'Where requests go',
+      'cx.sendTo.panel': 'Claude Code panel in VS Code',
+      'cx.sendTo.cli': 'In the background (Claude Code CLI)',
+      'cx.cont': 'Add to the open Claude Code conversation',
+      'cx.pop': 'Open a box next to the element on select',
+      'cx.openSrc': 'Open its code in VS Code on select',
+      'cx.srcLbl': 'Source mapping',
+      'cx.srcOk': '✓ Source mapping is active: elements are linked to file and line.',
+      'cx.srcNone': 'No source mapping; Claude finds the element by searching.',
+      'cx.ciSetup': 'Set up code-inspector automatically',
+      'cx.off': 'Turn off Panoptent on this site',
+      'cx.langLbl': 'Language', 'cx.lang.auto': 'VS Code setting (auto)',
+      'cx.connectFirst': 'Connect to VS Code first.',
+      'cx.ciStarted': 'Setup started in VS Code.',
+      'cx.pairing': 'Waiting for pairing', 'cx.notFound': 'VS Code not found',
+      'cx.sendNow': 'Send now', 'cx.runNow': 'Run now',
+      'cx.queued': 'Added to queue · {0} total',
+      'cx.askPair': 'VS Code is asking for connection permission: click <b>Allow</b> in the dialog that opened in VS Code.',
+      'cx.direct.one': '✓ {0} text change was written directly to the file without AI.',
+      'cx.direct.many': '✓ {0} text changes were written directly to the file without AI.',
+      'cx.directToast': '✓ Written directly to the file', 'cx.directPop': 'Written directly to the file',
+      'cx.failed': 'Could not apply.',
+      'cx.ho.mention': 'Added to your Claude Code conversation — press Enter in VS Code',
+      'cx.ho.mentionLong': 'The request was added to the open Claude Code conversation in VS Code. Press <b>Enter</b> there; the changes will show up on this page automatically.',
+      'cx.ho.clipboard': 'Copied to clipboard — paste it into the Claude Code box',
+      'cx.ho.clipboardLong': 'The prompt was <b>copied to the clipboard</b>; paste it into the Claude Code box in VS Code and press <b>Enter</b>.',
+      'cx.ho.newTab': 'Opened in a new Claude Code tab in VS Code — press Enter',
+      'cx.ho.newTabLong': 'The prompt is ready in a new Claude Code tab in VS Code; press <b>Enter</b>.',
+      'cx.panelFail': 'Couldn’t open the Claude Code panel', 'cx.panelFailLog': 'Couldn’t open the Claude Code panel.',
+      'cx.done': '✓ Done', 'cx.changedFiles': 'Changed: {0}', 'cx.noFiles': ' · no files changed',
+      'cx.claudeFail': 'Claude couldn’t finish the job.', 'cx.claudeFailShort': 'Claude couldn’t finish the job',
+      'cx.doneShort': 'Done', 'cx.claudeDone': '✓ Claude finished',
+      'cx.changed': '✎ Changed',
+      'cx.rolledBack': '↶ Panoptent’s changes were reverted: {0}', 'cx.rolledBackToast': '↶ Reverted',
+      'cx.untouched': 'Left untouched:',
+    },
+    tr: {
+      'cx.tab.queue': 'Kuyruk', 'cx.tab.log': 'Etkinlik', 'cx.tab.settings': 'Ayarlar',
+      'cx.logoTitle': 'Panoptent — paneli aç/kapat',
+      'cx.searching': 'VS Code aranıyor…',
+      'cx.selTitle': 'Seçim modu (Alt+Shift+E) — Alt basılıyken tıklayarak da seçebilirsin',
+      'cx.select': 'Seç',
+      'cx.changes.one': 'değişiklik', 'cx.changes.many': 'değişiklik',
+      'cx.undoTitle': 'Geri al (Ctrl/Cmd+Z)', 'cx.redoTitle': 'Yinele (Ctrl/Cmd+Shift+Z)',
+      'cx.list': 'Listele', 'cx.apply': 'Uygula', 'cx.applyN': 'Uygula ({0})', 'cx.applying': 'Uygulanıyor…',
+      'cx.claudeRunning': 'Claude çalışıyor…',
+      'cx.rollbackTitle': "Son uygulamada yalnızca Panoptent'in yaptığı değişiklikleri geri al",
+      'cx.rollback': '↶ Son uygulamayı geri al',
+      'cx.gearTitle': 'Ayarlar', 'cx.minTitle': 'Küçült',
+      'cx.notConnected': 'VS Code’a bağlı değil.',
+      'cx.notConnectedShort': 'VS Code’a bağlı değil',
+      'cx.notConnectedLong': 'VS Code’a bağlı değil. VS Code’da proje açık ve Panoptent kurulu olmalı.',
+      'cx.notConnectedQueued': 'VS Code’a bağlı değil; değişiklikler kuyrukta bekliyor.',
+      'cx.rollbackConfirm': 'Onay penceresi VS Code’da açıldı.',
+      'cx.busy': 'Önceki işlem hâlâ sürüyor.',
+      'cx.logQueue.one': 'Kuyruk · {0} değişiklik', 'cx.logQueue.many': 'Kuyruk · {0} değişiklik',
+      'cx.logQuick': 'Hızlı kutu', 'cx.logAuto': 'Otomatik',
+      'cx.kind.prompt': 'İstek', 'cx.kind.style': 'Stil', 'cx.kind.text': 'Metin', 'cx.kind.delete': 'Sil', 'cx.kind.image': 'Görsel',
+      'cx.vp.390': 'mobil', 'cx.vp.1024': 'tablet',
+      'cx.wholePage': 'Tüm sayfa', 'cx.removeEl': 'Öğeyi kaldır', 'cx.newImage': 'Yeni görsel: {0}',
+      'cx.tool.Edit': '✎ Düzenledi', 'cx.tool.MultiEdit': '✎ Düzenledi', 'cx.tool.Write': '✎ Yazdı', 'cx.tool.Read': '◦ Okudu',
+      'cx.tool.Grep': '⌕ Aradı', 'cx.tool.Glob': '⌕ Dosya aradı', 'cx.tool.Bash': '$ Komut',
+      'cx.emptyQueue': "<b>Seç</b>'e bas (veya <kbd>Alt</kbd> basılıyken tıkla) ve sayfada bir öğeye tıkla. Yanında açılan kutudan istek yazabilir, stilini değiştirebilir, metnine çift tıklayıp düzenleyebilir ya da silebilirsin. <kbd>Ctrl/⌘+Enter</kbd> kuyruğa ekler, <kbd>Ctrl/⌘+Shift+Enter</kbd> hemen gönderir.",
+      'cx.clear': 'Temizle', 'cx.applyAll': 'Hepsini uygula',
+      'cx.emptyLog': 'Henüz bir şey yok.', 'cx.stop': 'Durdur',
+      'cx.connOk': '✓ VS Code’a bağlı: <b>{0}</b>',
+      'cx.connFound': 'VS Code’daki <b>{0}</b> penceresi bulundu.',
+      'cx.pressAllow': 'VS Code’da çıkan pencerede <b>İzin ver</b>’e bas.',
+      'cx.connect': 'Bağlan',
+      'cx.connNone': 'VS Code bulunamadı. Projen VS Code’da açık ve <b>Panoptent</b> eklentisi kurulu olmalı.',
+      'cx.workspace': 'Çalışma alanı',
+      'cx.sendToLbl': 'İstek nereye gitsin',
+      'cx.sendTo.panel': 'VS Code’daki Claude Code paneli',
+      'cx.sendTo.cli': 'Arka planda (Claude Code CLI)',
+      'cx.cont': 'Açık Claude Code konuşmasına ekle',
+      'cx.pop': 'Seçince öğenin yanında kutu aç',
+      'cx.openSrc': 'Seçince kodunu VS Code’da aç',
+      'cx.srcLbl': 'Kaynak eşleştirme',
+      'cx.srcOk': '✓ Kaynak eşleştirme aktif: öğeler dosya ve satıra bağlanıyor.',
+      'cx.srcNone': 'Kaynak eşleştirme yok; Claude öğeyi arayarak bulur.',
+      'cx.ciSetup': 'code-inspector’ı otomatik kur',
+      'cx.off': 'Bu sitede Panoptent’i kapat',
+      'cx.langLbl': 'Dil', 'cx.lang.auto': 'VS Code ayarı (otomatik)',
+      'cx.connectFirst': 'Önce VS Code’a bağlan.',
+      'cx.ciStarted': 'Kurulum VS Code’da başladı.',
+      'cx.pairing': 'Eşleştirme bekliyor', 'cx.notFound': 'VS Code bulunamadı',
+      'cx.sendNow': 'Hemen aktar', 'cx.runNow': 'Hemen çalıştır',
+      'cx.queued': 'Kuyruğa eklendi · toplam {0}',
+      'cx.askPair': 'VS Code bağlantı izni istiyor: VS Code’da çıkan pencerede <b>İzin ver</b>’e bas.',
+      'cx.direct.one': '✓ {0} metin değişikliği AI kullanmadan doğrudan dosyaya yazıldı.',
+      'cx.direct.many': '✓ {0} metin değişikliği AI kullanmadan doğrudan dosyaya yazıldı.',
+      'cx.directToast': '✓ Doğrudan dosyaya yazıldı', 'cx.directPop': 'Doğrudan dosyaya yazıldı',
+      'cx.failed': 'Uygulanamadı.',
+      'cx.ho.mention': 'Claude Code konuşmana eklendi — VS Code’da Enter’a bas',
+      'cx.ho.mentionLong': 'İstek, VS Code’daki açık Claude Code konuşmasına eklendi. Orada <b>Enter</b>’a bas; değişiklikler bu sayfaya otomatik yansır.',
+      'cx.ho.clipboard': 'Panoya kopyalandı — Claude Code kutusuna yapıştır',
+      'cx.ho.clipboardLong': 'İstem <b>panoya kopyalandı</b>; VS Code’daki Claude Code kutusuna yapıştırıp <b>Enter</b>’a bas.',
+      'cx.ho.newTab': 'VS Code’da yeni Claude Code sekmesinde açıldı — Enter’a bas',
+      'cx.ho.newTabLong': 'İstem VS Code’da yeni bir Claude Code sekmesinde hazır; <b>Enter</b>’a bas.',
+      'cx.panelFail': 'Claude Code paneli açılamadı', 'cx.panelFailLog': 'Claude Code paneli açılamadı.',
+      'cx.done': '✓ Tamamlandı', 'cx.changedFiles': 'Değişen: {0}', 'cx.noFiles': ' · dosya değişmedi',
+      'cx.claudeFail': 'Claude işi bitiremedi.', 'cx.claudeFailShort': 'Claude işi bitiremedi',
+      'cx.doneShort': 'Tamamlandı', 'cx.claudeDone': '✓ Claude tamamladı',
+      'cx.changed': '✎ Değişti',
+      'cx.rolledBack': '↶ Panoptent’in değişiklikleri geri alındı: {0}', 'cx.rolledBackToast': '↶ Geri alındı',
+      'cx.untouched': 'Dokunulmadı:',
+    },
+  });
+  const t = I18N.t;
+  const plural = (n, key) => t(key + (n === 1 ? '.one' : '.many'), n);
+
   const SRC = 'panoptent';
   const KEY_ON = 'on:' + location.origin;
   const KEY_Q = 'queue:' + location.origin;
@@ -33,6 +181,8 @@
   let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false };
   let settings = { sendTo: 'claudePanel', openOnSelect: true, claudeExt: true };
   const logs = [];
+  // Dil: VS Code ayarı esas; bağlı değilken yerel seçim ('lang') geçici olarak kullanılır.
+  let langPref = 'auto'; // ayarlar sekmesindeki seçicinin gösterdiği değer
 
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const baseName = (p) => String(p).split(/[\\/]/).pop();
@@ -148,31 +298,53 @@
   <div class="wrap" id="wrap">
     <div id="toasts"></div>
     <div class="drawer" id="drawer" hidden>
-      <div class="tabs"><button data-tab="queue">Kuyruk</button><button data-tab="log">Etkinlik</button><button data-tab="settings">Ayarlar</button></div>
+      <div class="tabs"><button data-tab="queue" data-i18n="cx.tab.queue">Queue</button><button data-tab="log" data-i18n="cx.tab.log">Activity</button><button data-tab="settings" data-i18n="cx.tab.settings">Settings</button></div>
       <div class="body" id="dbody"></div>
       <div class="foot" id="dfoot"></div>
     </div>
     <div class="bar" id="bar">
-      <button class="b logo" id="logo" title="Panoptent — paneli aç/kapat">${EYE}</button>
-      <span class="dot" id="dot"></span><span class="ws" id="ws">VS Code aranıyor…</span>
+      <button class="b logo" id="logo" data-i18n-title="cx.logoTitle">${EYE}</button>
+      <span class="dot" id="dot"></span><span class="ws" id="ws" data-i18n="cx.searching">Looking for VS Code…</span>
       <span class="sep"></span>
-      <button class="b sel" id="sel" aria-pressed="false" title="Seçim modu (Alt+Shift+E) — Alt basılıyken tıklayarak da seçebilirsin">${SEL}<span>Seç</span></button>
+      <button class="b sel" id="sel" aria-pressed="false" data-i18n-title="cx.selTitle">${SEL}<span data-i18n="cx.select">Select</span></button>
       <span class="sep" id="qsep" hidden></span>
-      <span class="qn" id="qn" hidden><span class="qdot"></span><b id="qc">0</b> değişiklik</span>
-      <button class="b" id="undo" title="Geri al (Ctrl/Cmd+Z)" hidden>↶</button>
-      <button class="b" id="redo" title="Yinele (Ctrl/Cmd+Shift+Z)" hidden>↷</button>
-      <button class="b" id="list" hidden>Listele</button>
-      <button class="b pri" id="apply" hidden>Uygula</button>
+      <span class="qn" id="qn" hidden><span class="qdot"></span><b id="qc">0</b> <span id="qcl">changes</span></span>
+      <button class="b" id="undo" data-i18n-title="cx.undoTitle" hidden>↶</button>
+      <button class="b" id="redo" data-i18n-title="cx.redoTitle" hidden>↷</button>
+      <button class="b" id="list" data-i18n="cx.list" hidden>List</button>
+      <button class="b pri" id="apply" data-i18n="cx.apply" hidden>Apply</button>
       <span class="sep" id="rsep" hidden></span>
-      <button class="b" id="rollback" hidden title="Son uygulamada yalnızca Panoptent'in yaptığı değişiklikleri geri al">↶ Son uygulamayı geri al</button>
+      <button class="b" id="rollback" hidden data-i18n-title="cx.rollbackTitle" data-i18n="cx.rollback">↶ Undo last apply</button>
       <span class="sep"></span>
-      <button class="b" id="gear" title="Ayarlar">⚙</button>
-      <button class="b" id="minBtn" title="Küçült">–</button>
+      <button class="b" id="gear" data-i18n-title="cx.gearTitle">⚙</button>
+      <button class="b" id="minBtn" data-i18n-title="cx.minTitle">–</button>
     </div>
   </div>
   <button class="mini" id="mini" hidden title="Panoptent">${EYE}<span class="n" id="miniN" hidden>0</span></button>`;
   const $ = (id) => root.getElementById(id);
   const wrap = $('wrap'), bar = $('bar'), drawer = $('drawer'), dbody = $('dbody'), dfoot = $('dfoot'), toasts = $('toasts');
+
+  // ---------- dil ----------
+  function nowLabel() { return settings.sendTo === 'cli' ? t('cx.runNow') : t('cx.sendNow'); }
+  function markLang() {
+    // seçim katmanının i18n çekirdeği yüklenirken bu özniteliği okur
+    document.documentElement.setAttribute('data-panoptent-lang', I18N.lang);
+  }
+  function relocalize() {
+    markLang();
+    I18N.localize(root);
+    render();
+    toOverlay({ type: 'config', lang: I18N.lang, nowLabel: nowLabel() });
+  }
+  I18N.onChange(relocalize);
+  /** VS Code'dan gelen dil (esas kaynak). Yerel geçici seçimi siler. */
+  function langFromVS(l) {
+    if (!l) return;
+    try { chrome.storage.local.remove('lang'); } catch (e) { /* eklenti yeniden yüklendi */ }
+    if (!I18N.setLang(l)) markLang();
+  }
+  markLang();
+  I18N.localize(root);
 
   function mountUI() {
     if (!host.isConnected) document.documentElement.appendChild(host);
@@ -202,6 +374,7 @@
     enabled = true;
     if (persist) chrome.storage.local.set({ [KEY_ON]: true });
     document.documentElement.setAttribute('data-panoptent-host', 'chrome');
+    markLang();
     mountUI();
     if (!document.querySelector('panoptent-overlay')) bg({ type: 'injectOverlay' });
     else toOverlay({ type: 'config', active: true });
@@ -219,7 +392,11 @@
     host.remove();
   }
 
-  chrome.storage.local.get([KEY_ON, KEY_Q, KEY_UI], (o) => {
+  chrome.storage.local.get([KEY_ON, KEY_Q, KEY_UI, 'lang', 'vsLang', 'langPref'], (o) => {
+    if (o.langPref) langPref = o.langPref;
+    const l = o.lang || o.vsLang;
+    if (l) I18N.setLang(l);
+    markLang();
     if (Array.isArray(o[KEY_Q])) queue = o[KEY_Q];
     if (o[KEY_UI]) Object.assign(ui, o[KEY_UI]);
     if (o[KEY_ON]) enable(false);
@@ -236,17 +413,18 @@
   function sendConfig() {
     const w = window.innerWidth;
     viewport = w <= 480 ? '390' : w <= 1100 ? '1024' : 'full';
-    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, nowLabel: settings.sendTo === 'cli' ? 'Hemen çalıştır' : 'Hemen aktar' });
+    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, lang: I18N.lang, nowLabel: nowLabel() });
   }
   let rz;
   window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(sendConfig, 200); });
 
   // ---------- kuyruk ----------
-  const KIND = { prompt: 'İstek', style: 'Stil', text: 'Metin', delete: 'Sil', image: 'Görsel' };
-  const VP = { '390': 'mobil', '1024': 'tablet' };
+  const KINDS = ['prompt', 'style', 'text', 'delete', 'image'];
+  const kindLabel = (k) => (KINDS.indexOf(k) !== -1 ? t('cx.kind.' + k) : k);
+  const vpLabel = (v) => (v === '390' || v === '1024' ? t('cx.vp.' + v) : v);
   function targetLabel(en) {
     const it = (en.items || [])[0];
-    if (!it) return 'Tüm sayfa';
+    if (!it) return t('cx.wholePage');
     const cls = it.classes ? '.' + it.classes.trim().split(/\s+/)[0] : '';
     const loc = it.source ? ' · ' + baseName(it.source.file) + (it.source.line ? ':' + it.source.line : '') : '';
     return `<${it.tag}${cls}>${loc}${en.items.length > 1 ? ` +${en.items.length - 1}` : ''}`;
@@ -255,8 +433,8 @@
     switch (en.kind) {
       case 'prompt': return en.text;
       case 'text': return `“${en.from}” → “${en.to}”`;
-      case 'delete': return 'Öğeyi kaldır';
-      case 'image': return en.fileName ? `Yeni görsel: ${en.fileName}` : `Yeni görsel: ${en.url}`;
+      case 'delete': return t('cx.removeEl');
+      case 'image': return t('cx.newImage', en.fileName || en.url);
       case 'style': {
         const parts = Object.keys(en.diffs || {}).map((k) => `${k}: ${en.diffs[k].to}`);
         if (en.classes) parts.push(`+ ${en.classes}`);
@@ -311,9 +489,9 @@
   $('apply').addEventListener('click', () => applyQueue());
   $('list').addEventListener('click', () => openDrawer('queue'));
   $('rollback').addEventListener('click', () => {
-    if (!connected()) return toast('VS Code’a bağlı değil.', 'err');
+    if (!connected()) return toast(t('cx.notConnected'), 'err');
     bg({ type: 'rollback' });
-    toast('Onay penceresi VS Code’da açıldı.', '', 2500);
+    toast(t('cx.rollbackConfirm'), '', 2500);
   });
   $('logo').addEventListener('click', () => (ui.drawer ? closeDrawer() : openDrawer(ui.tab)));
   $('gear').addEventListener('click', () => openDrawer('settings'));
@@ -331,18 +509,20 @@
   }
   function dispatch(entries, fromQueue) {
     if (!connected()) {
-      toast('VS Code’a bağlı değil. VS Code’da proje açık ve Panoptent kurulu olmalı.', 'err', 5000);
-      if (popPending) { popPending = false; popStatus('err', 'VS Code’a bağlı değil'); }
+      toast(t('cx.notConnectedLong'), 'err', 5000);
+      if (popPending) { popPending = false; popStatus('err', t('cx.notConnectedShort')); }
       return false;
     }
     if (running || applying) {
-      toast('Önceki işlem hâlâ sürüyor.', 'err');
-      if (popPending) { popPending = false; popStatus('err', 'Önceki işlem hâlâ sürüyor.'); }
+      toast(t('cx.busy'), 'err');
+      if (popPending) { popPending = false; popStatus('err', t('cx.busy')); }
       return false;
     }
     applying = true;
-    const lines = entries.map((en) => `• ${KIND[en.kind]}: ${summary(en)}`).join('\n');
-    addLog('user', `<span class="meta">${fromQueue ? `Kuyruk · ${entries.length} değişiklik` : 'Hızlı kutu'}</span>${esc(lines)}`);
+    addLog('user', () => {
+      const lines = entries.map((en) => `• ${kindLabel(en.kind)}: ${summary(en)}`).join('\n');
+      return `<span class="meta">${fromQueue ? plural(entries.length, 'cx.logQueue') : t('cx.logQuick')}</span>${esc(lines)}`;
+    });
     bg({ type: 'applyEntries', entries, fromQueue, pageUrl: location.href, continueSession: settings.sendTo === 'claudePanel' ? ui.cont : false });
     render();
     return true;
@@ -357,35 +537,39 @@
   }
   function closeDrawer() { ui.drawer = false; render(); }
 
+  /** html: dize ya da (dil değişince yeniden üretilebilmesi için) dize döndüren fonksiyon */
   function addLog(cls, html) {
     logs.push({ cls, html });
     if (logs.length > 120) logs.shift();
     if (ui.drawer && ui.tab === 'log') renderDrawer();
   }
+  const logHtml = (l) => (typeof l.html === 'function' ? l.html() : l.html);
   const mdLite = (s) => esc(s).replace(/`([^`\n]+)`/g, '<code>$1</code>').replace(/\*\*([^*\n]+)\*\*/g, '<b>$1</b>');
-  const TOOL_TR = { Edit: '✎ Düzenledi', MultiEdit: '✎ Düzenledi', Write: '✎ Yazdı', Read: '◦ Okudu', Grep: '⌕ Aradı', Glob: '⌕ Dosya aradı', Bash: '$ Komut' };
+  const TOOLS = ['Edit', 'MultiEdit', 'Write', 'Read', 'Grep', 'Glob', 'Bash'];
+  const toolLabel = (n) => (TOOLS.indexOf(n) !== -1 ? t('cx.tool.' + n) : n);
+  const fileLinks = (files) => files.map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ');
 
   function renderDrawer() {
     root.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === ui.tab));
     dfoot.innerHTML = '';
     if (ui.tab === 'queue') {
       dbody.innerHTML = queue.length
-        ? queue.map((en) => `<div class="qi" data-token="${esc(en.token)}"><span class="qk k-${esc(en.kind)}">${esc(KIND[en.kind] || en.kind)}</span>
-            <div class="qm"><div class="qt">${esc(targetLabel(en))}${en.viewportOnly ? `<span class="vp">${esc(VP[en.viewportOnly] || en.viewportOnly)}</span>` : ''}</div>
+        ? queue.map((en) => `<div class="qi" data-token="${esc(en.token)}"><span class="qk k-${esc(en.kind)}">${esc(kindLabel(en.kind))}</span>
+            <div class="qm"><div class="qt">${esc(targetLabel(en))}${en.viewportOnly ? `<span class="vp">${esc(vpLabel(en.viewportOnly))}</span>` : ''}</div>
             <div class="qs" title="${esc(summary(en))}">${esc(summary(en))}</div></div><button class="x" data-del>×</button></div>`).join('')
-        : `<div class="empty"><b>Seç</b>'e bas (veya <kbd>Alt</kbd> basılıyken tıkla) ve sayfada bir öğeye tıkla. Yanında açılan kutudan istek yazabilir, stilini değiştirebilir, metnine çift tıklayıp düzenleyebilir ya da silebilirsin. <kbd>Ctrl/⌘+Enter</kbd> kuyruğa ekler, <kbd>Ctrl/⌘+Shift+Enter</kbd> hemen gönderir.</div>`;
+        : `<div class="empty">${t('cx.emptyQueue')}</div>`;
       if (queue.length) {
-        dfoot.innerHTML = '<button class="btn2" id="dclear">Temizle</button><button class="b pri" id="dapply">Hepsini uygula</button>';
+        dfoot.innerHTML = `<button class="btn2" id="dclear">${esc(t('cx.clear'))}</button><button class="b pri" id="dapply">${esc(t('cx.applyAll'))}</button>`;
         root.getElementById('dclear').addEventListener('click', qClear);
         root.getElementById('dapply').addEventListener('click', () => applyQueue());
       }
       dbody.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', () => qRemove(b.closest('.qi').dataset.token)));
     } else if (ui.tab === 'log') {
-      dbody.innerHTML = logs.length ? logs.map((l) => `<div class="ev ${l.cls}">${l.html}</div>`).join('') + (running ? '<div class="ev"><span class="spin"></span>Claude çalışıyor…</div>' : '') : '<div class="empty">Henüz bir şey yok.</div>';
+      dbody.innerHTML = logs.length ? logs.map((l) => `<div class="ev ${l.cls}">${logHtml(l)}</div>`).join('') + (running ? `<div class="ev"><span class="spin"></span>${esc(t('cx.claudeRunning'))}</div>` : '') : `<div class="empty">${esc(t('cx.emptyLog'))}</div>`;
       dbody.querySelectorAll('[data-file]').forEach((a) => a.addEventListener('click', () => bg({ type: 'openFile', file: a.dataset.file })));
       dbody.scrollTop = dbody.scrollHeight;
       if (running) {
-        dfoot.innerHTML = '<button class="btn2" id="dstop">Durdur</button>';
+        dfoot.innerHTML = `<button class="btn2" id="dstop">${esc(t('cx.stop'))}</button>`;
         root.getElementById('dstop').addEventListener('click', () => bg({ type: 'stop' }));
       }
     } else {
@@ -393,27 +577,33 @@
       const waiting = workspaces.filter((w) => w.state === 'needPair' || w.state === 'pairing');
       let conn;
       if (connected()) {
-        conn = `<div class="card ok">✓ VS Code’a bağlı: <b>${esc((workspaces.find((w) => w.port === activePort) || {}).name)}</b></div>`;
+        conn = `<div class="card ok">${t('cx.connOk', esc((workspaces.find((w) => w.port === activePort) || {}).name))}</div>`;
       } else if (waiting.length) {
-        conn = `<div class="card warn">VS Code’daki <b>${esc(waiting[0].name)}</b> penceresi bulundu. ${waiting.some((w) => w.state === 'pairing') ? 'VS Code’da çıkan pencerede <b>İzin ver</b>’e bas.' : '<span class="link" id="pairBtn">Bağlan</span>'}</div>`;
+        conn = `<div class="card warn">${t('cx.connFound', esc(waiting[0].name))} ${waiting.some((w) => w.state === 'pairing') ? t('cx.pressAllow') : `<span class="link" id="pairBtn">${esc(t('cx.connect'))}</span>`}</div>`;
       } else {
-        conn = '<div class="card warn">VS Code bulunamadı. Projen VS Code’da açık ve <b>Panoptent</b> eklentisi kurulu olmalı.</div>';
+        conn = `<div class="card warn">${t('cx.connNone')}</div>`;
       }
       const wsSel = ready.length > 1
-        ? `<div class="lbl">Çalışma alanı</div><div class="row"><select id="wsSel">${ready.map((w) => `<option value="${w.port}" ${w.port === activePort ? 'selected' : ''}>${esc(w.name)}</option>`).join('')}</select></div>`
+        ? `<div class="lbl">${esc(t('cx.workspace'))}</div><div class="row"><select id="wsSel">${ready.map((w) => `<option value="${w.port}" ${w.port === activePort ? 'selected' : ''}>${esc(w.name)}</option>`).join('')}</select></div>`
         : '';
       const src = supportKind === 'code-inspector' || supportKind === 'react'
-        ? '<div class="card ok">✓ Kaynak eşleştirme aktif: öğeler dosya ve satıra bağlanıyor.</div>'
-        : `<div class="card warn">Kaynak eşleştirme yok; Claude öğeyi arayarak bulur. <span class="link" id="ciBtn">code-inspector’ı otomatik kur</span></div>`;
+        ? `<div class="card ok">${esc(t('cx.srcOk'))}</div>`
+        : `<div class="card warn">${esc(t('cx.srcNone'))} <span class="link" id="ciBtn">${esc(t('cx.ciSetup'))}</span></div>`;
+      const langOpts = [`<option value="auto">${esc(t('cx.lang.auto'))}</option>`]
+        .concat(I18N.LANGS.map((l) => `<option value="${l.code}">${esc(l.name)}</option>`)).join('');
       dbody.innerHTML = conn + wsSel + `
-        <div class="lbl">İstek nereye gitsin</div>
-        <div class="row"><select id="sendTo"><option value="claudePanel">VS Code’daki Claude Code paneli</option><option value="cli">Arka planda (Claude Code CLI)</option></select></div>
-        <div class="row"><label><input type="checkbox" id="cont"> Açık Claude Code konuşmasına ekle</label></div>
-        <div class="row"><label><input type="checkbox" id="pop"> Seçince öğenin yanında kutu aç</label></div>
-        <div class="row"><label><input type="checkbox" id="openSrc"> Seçince kodunu VS Code’da aç</label></div>
-        <div class="lbl">Kaynak eşleştirme</div>${src}
-        <div class="row"><span class="link" id="offBtn">Bu sitede Panoptent’i kapat</span></div>`;
+        <div class="lbl">${esc(t('cx.sendToLbl'))}</div>
+        <div class="row"><select id="sendTo"><option value="claudePanel">${esc(t('cx.sendTo.panel'))}</option><option value="cli">${esc(t('cx.sendTo.cli'))}</option></select></div>
+        <div class="row"><label><input type="checkbox" id="cont"> ${esc(t('cx.cont'))}</label></div>
+        <div class="row"><label><input type="checkbox" id="pop"> ${esc(t('cx.pop'))}</label></div>
+        <div class="row"><label><input type="checkbox" id="openSrc"> ${esc(t('cx.openSrc'))}</label></div>
+        <div class="lbl">${esc(t('cx.langLbl'))}</div>
+        <div class="row"><select id="langSel">${langOpts}</select></div>
+        <div class="lbl">${esc(t('cx.srcLbl'))}</div>${src}
+        <div class="row"><span class="link" id="offBtn">${esc(t('cx.off'))}</span></div>`;
       const g = (id) => root.getElementById(id);
+      g('langSel').value = langPref === I18N.lang ? langPref : 'auto'; // VS Code başka dil gönderdiyse seçim geçersiz
+      g('langSel').addEventListener('change', (e) => setLangPref(e.target.value));
       g('sendTo').value = settings.sendTo;
       g('cont').checked = ui.cont;
       g('cont').disabled = settings.sendTo !== 'claudePanel';
@@ -424,9 +614,29 @@
       g('pop').addEventListener('change', (e) => { ui.popover = e.target.checked; saveUi(); sendConfig(); });
       g('openSrc').addEventListener('change', (e) => { settings.openOnSelect = e.target.checked; bg({ type: 'setOpenOnSelect', value: settings.openOnSelect }); });
       g('offBtn').addEventListener('click', disable);
-      if (g('pairBtn')) g('pairBtn').addEventListener('click', () => { pairAsked = true; bg({ type: 'pair' }); toast('VS Code’da çıkan pencerede <b>İzin ver</b>’e bas.', '', 5000); });
-      if (g('ciBtn')) g('ciBtn').addEventListener('click', () => { if (!connected()) return toast('Önce VS Code’a bağlan.', 'err'); bg({ type: 'setupCodeInspector' }); toast('Kurulum VS Code’da başladı.', 'ok'); });
+      if (g('pairBtn')) g('pairBtn').addEventListener('click', () => { pairAsked = true; bg({ type: 'pair' }); toast(t('cx.pressAllow'), '', 5000); });
+      if (g('ciBtn')) g('ciBtn').addEventListener('click', () => { if (!connected()) return toast(t('cx.connectFirst'), 'err'); bg({ type: 'setupCodeInspector' }); toast(t('cx.ciStarted'), 'ok'); });
       if (g('wsSel')) g('wsSel').addEventListener('change', (e) => bg({ type: 'chooseWorkspace', port: Number(e.target.value) }));
+    }
+  }
+
+  /** Ayarlar sekmesindeki dil seçimi: bağlıyken VS Code ayarını değiştirir, değilse yalnızca yerelde. */
+  function setLangPref(v) {
+    langPref = v;
+    chrome.storage.local.set({ langPref: v });
+    if (connected()) {
+      bg({ type: 'setLang', value: v });
+      if (v !== 'auto') I18N.setLang(v); // VS Code 'lang' ile onaylayacak
+      return;
+    }
+    if (v === 'auto') {
+      chrome.storage.local.remove('lang');
+      chrome.storage.local.get('vsLang', (o) => {
+        if (!I18N.setLang(o.vsLang || navigator.language)) render();
+      });
+    } else {
+      chrome.storage.local.set({ lang: v });
+      I18N.setLang(v);
     }
   }
 
@@ -437,16 +647,17 @@
     const w = workspaces.find((x) => x.port === activePort);
     const dot = $('dot');
     if (connected()) { dot.className = 'dot ok'; $('ws').textContent = w.name; }
-    else if (workspaces.some((x) => x.state === 'pairing' || x.state === 'needPair')) { dot.className = 'dot wait'; $('ws').textContent = 'Eşleştirme bekliyor'; }
-    else { dot.className = 'dot off'; $('ws').textContent = 'VS Code bulunamadı'; }
+    else if (workspaces.some((x) => x.state === 'pairing' || x.state === 'needPair')) { dot.className = 'dot wait'; $('ws').textContent = t('cx.pairing'); }
+    else { dot.className = 'dot off'; $('ws').textContent = t('cx.notFound'); }
     $('qsep').hidden = $('qn').hidden = $('list').hidden = $('apply').hidden = !n;
     $('undo').hidden = !n && !undoStack.length;
     $('redo').hidden = !n && !redoStack.length;
     $('undo').disabled = !undoStack.length;
     $('redo').disabled = !redoStack.length;
     $('qc').textContent = String(n);
+    $('qcl').textContent = t(n === 1 ? 'cx.changes.one' : 'cx.changes.many');
     $('apply').disabled = applying || running;
-    $('apply').textContent = applying ? 'Uygulanıyor…' : running ? 'Claude çalışıyor…' : `Uygula (${n})`;
+    $('apply').textContent = applying ? t('cx.applying') : running ? t('cx.claudeRunning') : t('cx.applyN', n);
     $('rollback').hidden = $('rsep').hidden = !canRollback;
     drawer.hidden = !ui.drawer;
     bar.hidden = ui.min;
@@ -508,7 +719,7 @@
         if (!userJustActed()) return; // sayfa betiklerinden gelen sahte istekleri yok say
         if (m.mode === 'queue') {
           qAdd(m.entries);
-          popStatus('ok', `Kuyruğa eklendi · toplam ${queue.length}`, 1100);
+          popStatus('ok', t('cx.queued', queue.length), 1100);
         } else {
           popPending = true;
           if (!dispatch(m.entries, false)) toOverlay({ type: 'revert', tokens: m.entries.map((x) => x.token) });
@@ -517,7 +728,7 @@
       case 'openSourceReq':
         if (!userJustActed()) return;
         if (connected()) bg({ type: 'openSource', item: m.item, quiet: false });
-        else toast('VS Code’a bağlı değil.', 'err');
+        else toast(t('cx.notConnected'), 'err');
         break;
     }
   }
@@ -531,7 +742,7 @@
         if (enabled && !connected() && !pairAsked && workspaces.some((w) => w.state === 'needPair')) {
           pairAsked = true;
           bg({ type: 'pair' });
-          toast('VS Code bağlantı izni istiyor: VS Code’da çıkan pencerede <b>İzin ver</b>’e bas.', '', 7000);
+          toast(t('cx.askPair'), '', 7000);
         }
         render();
         break;
@@ -541,8 +752,12 @@
         settings.openOnSelect = m.openOnSelect !== false;
         settings.claudeExt = m.claudeExt !== false;
         canRollback = !!m.canRollback;
+        if (m.lang) langFromVS(m.lang);
         sendConfig();
         render();
+        break;
+      case 'lang':
+        langFromVS(m.value);
         break;
       case 'toggleEnabled':
         if (enabled) disable(); else enable(true);
@@ -557,8 +772,8 @@
       case 'notConnected':
         applying = false;
         if (m.for === 'applyEntries') {
-          toast('VS Code’a bağlı değil; değişiklikler kuyrukta bekliyor.', 'err', 5000);
-          if (popPending) { popPending = false; popStatus('err', 'VS Code’a bağlı değil'); }
+          toast(t('cx.notConnectedQueued'), 'err', 5000);
+          if (popPending) { popPending = false; popStatus('err', t('cx.notConnectedShort')); }
         }
         render();
         break;
@@ -576,7 +791,7 @@
         render();
         break;
       case 'note':
-        addLog('user', `<span class="meta">Otomatik</span>${esc(m.text)}`);
+        addLog('user', () => `<span class="meta">${esc(t('cx.logAuto'))}</span>${esc(m.text)}`);
         break;
       case 'applied': {
         applying = false;
@@ -589,45 +804,42 @@
         }
         if (m.ok) pendingApplied = pendingApplied.concat(tokens);
         if (typeof m.canRollback === 'boolean') canRollback = m.canRollback;
-        if (m.direct) addLog('done', `✓ ${m.direct} metin değişikliği AI kullanmadan doğrudan dosyaya yazıldı.`);
+        if (m.direct) { const nd = m.direct; addLog('done', () => esc(plural(nd, 'cx.direct'))); }
         if (m.ok && !m.sent) {
-          toast('✓ Doğrudan dosyaya yazıldı', 'ok');
-          if (popPending) { popPending = false; popStatus('ok', 'Doğrudan dosyaya yazıldı', 1600); }
+          toast(esc(t('cx.directToast')), 'ok');
+          if (popPending) { popPending = false; popStatus('ok', t('cx.directPop'), 1600); }
         }
         if (!m.ok) {
-          if (!m.reported) addLog('err', esc(m.message || 'Uygulanamadı.'));
-          toast(esc(m.message || 'Uygulanamadı.'), 'err', 5000);
-          if (popPending) { popPending = false; popStatus('err', m.message || 'Uygulanamadı.'); }
+          const msg = m.message;
+          if (!m.reported) addLog('err', () => esc(msg || t('cx.failed')));
+          toast(esc(msg || t('cx.failed')), 'err', 5000);
+          if (popPending) { popPending = false; popStatus('err', msg || t('cx.failed')); }
         }
         render();
         break;
       }
       case 'handoff': {
-        const msgs = {
-          mention: ['Claude Code konuşmana eklendi — VS Code’da Enter’a bas', 'İstek, VS Code’daki açık Claude Code konuşmasına eklendi. Orada <b>Enter</b>’a bas; değişiklikler bu sayfaya otomatik yansır.'],
-          clipboard: ['Panoya kopyalandı — Claude Code kutusuna yapıştır', 'İstem <b>panoya kopyalandı</b>; VS Code’daki Claude Code kutusuna yapıştırıp <b>Enter</b>’a bas.'],
-          newTab: ['VS Code’da yeni Claude Code sekmesinde açıldı — Enter’a bas', 'İstem VS Code’da yeni bir Claude Code sekmesinde hazır; <b>Enter</b>’a bas.'],
-        };
-        const t = msgs[m.how] || msgs.newTab;
-        if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? t[0] : 'Claude Code paneli açılamadı', 2600); }
+        const how = m.how === 'mention' || m.how === 'clipboard' ? m.how : 'newTab';
+        const short = () => t('cx.ho.' + how);
+        if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? short() : t('cx.panelFail'), 2600); }
         if (m.ok) {
-          addLog('handoff', '<b>→ Claude Code.</b> ' + t[1]);
-          toast('→ ' + t[0], 'ok', 4000);
-        } else addLog('err', 'Claude Code paneli açılamadı.');
+          addLog('handoff', () => '<b>→ Claude Code.</b> ' + t('cx.ho.' + how + 'Long'));
+          toast('→ ' + esc(short()), 'ok', 4000);
+        } else addLog('err', () => esc(t('cx.panelFailLog')));
         break;
       }
       case 'claude': {
         const ev = m.ev;
-        if (ev.kind === 'start') { running = true; if (popPending) popStatus('busy', 'Claude çalışıyor…'); }
+        if (ev.kind === 'start') { running = true; if (popPending) popStatus('busy', t('cx.claudeRunning')); }
         else if (ev.kind === 'text') addLog('text', mdLite(ev.text));
-        else if (ev.kind === 'tool') addLog('tool' + (/Edit|Write/.test(ev.name) ? ' edit' : ''), `<b>${esc(TOOL_TR[ev.name] || ev.name)}</b> ${esc(ev.detail)}`);
+        else if (ev.kind === 'tool') addLog('tool' + (/Edit|Write/.test(ev.name) ? ' edit' : ''), () => `<b>${esc(toolLabel(ev.name))}</b> ${esc(ev.detail)}`);
         else if (ev.kind === 'done') {
           running = false;
-          const files = (ev.edited || []).map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ');
-          if (ev.ok) addLog('done', `✓ Tamamlandı${files ? '\nDeğişen: ' + files : ' · dosya değişmedi'}`);
-          else addLog('err', 'Claude işi bitiremedi.');
-          if (popPending) { popPending = false; popStatus(ev.ok ? 'ok' : 'err', ev.ok ? 'Tamamlandı' : 'Claude işi bitiremedi', 2500); }
-          toast(ev.ok ? '✓ Claude tamamladı' : 'Claude işi bitiremedi', ev.ok ? 'ok' : 'err');
+          const files = fileLinks(ev.edited || []);
+          if (ev.ok) addLog('done', () => esc(t('cx.done')) + (files ? '\n' + t('cx.changedFiles', files) : esc(t('cx.noFiles'))));
+          else addLog('err', () => esc(t('cx.claudeFail')));
+          if (popPending) { popPending = false; popStatus(ev.ok ? 'ok' : 'err', ev.ok ? t('cx.doneShort') : t('cx.claudeFailShort'), 2500); }
+          toast(esc(ev.ok ? t('cx.claudeDone') : t('cx.claudeFailShort')), ev.ok ? 'ok' : 'err');
         } else if (ev.kind === 'error') {
           running = false;
           addLog('err', esc(ev.message));
@@ -638,7 +850,8 @@
       }
       case 'filesChanged':
         if (m.files && m.files.length) {
-          addLog('tool edit', `<b>✎ Değişti</b> ${m.files.slice(0, 4).map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ')}`);
+          const fl = fileLinks(m.files.slice(0, 4));
+          addLog('tool edit', () => `<b>${esc(t('cx.changed'))}</b> ${fl}`);
         }
         if (supportKind === 'none') {
           // hot reload olmayan sayfa: kuyruk korunur, önizleme yeniden uygulanır
@@ -654,13 +867,14 @@
       case 'rollbackResult':
         canRollback = !!m.canRollback;
         if (m.ok) {
-          addLog('done', `↶ Panoptent’in değişiklikleri geri alındı: ${(m.files || []).map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ')}`);
-          toast('↶ Geri alındı', 'ok');
+          const fl = fileLinks(m.files || []);
+          addLog('done', () => t('cx.rolledBack', fl));
+          toast(esc(t('cx.rolledBackToast')), 'ok');
         } else if (m.message) {
           addLog('err', esc(m.message));
           toast(esc(m.message), 'err', 5000);
         }
-        if (m.conflicts && m.conflicts.length) addLog('err', 'Dokunulmadı:\n' + m.conflicts.map(esc).join('\n'));
+        if (m.conflicts && m.conflicts.length) { const cf = m.conflicts.map(esc).join('\n'); addLog('err', () => esc(t('cx.untouched')) + '\n' + cf); }
         render();
         break;
       case 'quickEditResult':
