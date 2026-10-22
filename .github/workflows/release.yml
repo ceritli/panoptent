@@ -4,7 +4,7 @@ name: Release
 # 1. Creates GitHub release vX.Y.Z (with .vsix + Chrome .zip) if it doesn't exist yet.
 # 2. Publishes the .vsix to the VS Code Marketplace (secret VSCE_PAT) and
 #    Open VSX (secret OVSX_PAT), and the Chrome zip to the Chrome Web Store
-#    (secrets CWS_SA_KEY = service account JSON key, CWS_PUBLISHER_ID, CWS_EXTENSION_ID).
+#    (secrets CWS_SA_KEY = service account JSON key, CWS_PUBLISHER_ID).
 #    Each step is skipped when its secrets are missing, and a version that is
 #    already published is treated as success.
 on:
@@ -25,7 +25,7 @@ jobs:
       OVSX_PAT: ${{ secrets.OVSX_PAT }}
       CWS_SA_KEY: ${{ secrets.CWS_SA_KEY }}
       CWS_PUBLISHER_ID: ${{ secrets.CWS_PUBLISHER_ID }}
-      CWS_EXTENSION_ID: ${{ secrets.CWS_EXTENSION_ID }}
+      CWS_EXTENSION_ID: kmikbnmoacgjjigohbcbmppccjidmacc
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
