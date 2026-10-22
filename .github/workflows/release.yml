@@ -1,7 +1,10 @@
 name: Release
 
-# Publishes a release when a v* tag is pushed, or when package.json on main
-# carries a version that has no release yet (so bumping the version is enough).
+# Runs when a v* tag is pushed, when package.json changes on main, or by hand.
+# 1. Creates GitHub release vX.Y.Z (with .vsix + Chrome .zip) if it doesn't exist yet.
+# 2. Publishes the .vsix to the VS Code Marketplace (secret VSCE_PAT) and
+#    Open VSX (secret OVSX_PAT) — each step is skipped when its secret is missing,
+#    and a version that is already published is treated as success.
 on:
   push:
     tags: ['v*']
@@ -15,6 +18,9 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,13 +36,11 @@ jobs:
           else TAG=$(node -p "require('./package.json').version"); fi
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           if gh release view "v$TAG" -R "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
-            echo "Release v$TAG already exists — nothing to do."
-            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "GitHub release v$TAG already exists."
+            echo "exists=true" >> "$GITHUB_OUTPUT"
           fi
-      - if: steps.v.outputs.skip != 'true'
-        run: npm ci
+      - run: npm ci
       - name: Check versions match
-        if: steps.v.outputs.skip != 'true'
         run: |
           TAG="${{ steps.v.outputs.tag }}"
           PKG=$(node -p "require('./package.json').version")
@@ -46,28 +50,25 @@ jobs:
             echo "::error::Version mismatch. Bump package.json and chrome/manifest.json to $TAG."
             exit 1
           fi
-      - if: steps.v.outputs.skip != 'true'
-        run: npm run typecheck
-      - if: steps.v.outputs.skip != 'true'
-        run: npm run package
-      - if: steps.v.outputs.skip != 'true'
-        run: npm run package:chrome
+      - run: npm run typecheck
+      - run: npm run package
+      - run: npm run package:chrome
       - name: Release notes from CHANGELOG
-        if: steps.v.outputs.skip != 'true'
+        if: steps.v.outputs.exists != 'true'
         run: |
           TAG="${{ steps.v.outputs.tag }}"
           awk -v v="## $TAG" 'index($0, v)==1 {f=1; next} /^## /{if(f) exit} f' CHANGELOG.md > notes.md
           {
             echo
             echo "### Kurulum / Install"
-            echo "- **VS Code:** Extensions → ⋯ → *Install from VSIX…* → \`panoptent-$TAG.vsix\`"
+            echo "- **VS Code:** Marketplace'te *Panoptent* ara / search *Panoptent* in Extensions — or *Install from VSIX…* → \`panoptent-$TAG.vsix\`"
             echo "- **Chrome:** unzip \`panoptent-chrome-$TAG.zip\` → \`chrome://extensions\` → Developer mode → *Load unpacked*"
             echo
             echo "Rehber / Guide: https://ceritli.github.io/panoptent/"
           } >> notes.md
           cat notes.md
       - name: Create GitHub release
-        if: steps.v.outputs.skip != 'true'
+        if: steps.v.outputs.exists != 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -76,3 +77,22 @@ jobs:
             --title "Panoptent $TAG" \
             --notes-file notes.md \
             panoptent-*.vsix panoptent-chrome-*.zip
+      - name: Publish to VS Code Marketplace
+        if: env.VSCE_PAT != ''
+        run: |
+          VSIX="panoptent-${{ steps.v.outputs.tag }}.vsix"
+          if out=$(npx vsce publish --packagePath "$VSIX" 2>&1); then echo "$out"
+          else
+            echo "$out"
+            echo "$out" | grep -qi "already exists" && echo "Already on the Marketplace — OK." || exit 1
+          fi
+      - name: Publish to Open VSX (Cursor, Windsurf, VSCodium…)
+        if: env.OVSX_PAT != ''
+        run: |
+          VSIX="panoptent-${{ steps.v.outputs.tag }}.vsix"
+          npx --yes ovsx create-namespace ceritli -p "$OVSX_PAT" 2>/dev/null || true
+          if out=$(npx --yes ovsx publish "$VSIX" -p "$OVSX_PAT" 2>&1); then echo "$out"
+          else
+            echo "$out"
+            echo "$out" | grep -qi "already" && echo "Already on Open VSX — OK." || exit 1
+          fi

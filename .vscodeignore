@@ -11,6 +11,5 @@ tsconfig.json
 .vscode/**
 *.zip
 *.vsix
-CHANGELOG.md
 .gitignore
 CONTRIBUTING.md

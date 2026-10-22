@@ -45,8 +45,11 @@
     "nuxt",
     "inspector",
     "emergent",
-    "lovable",
-    "click to edit"
+    "click to edit",
+    "visual editor",
+    "webview",
+    "tailwind",
+    "vite"
   ],
   "main": "./dist/extension.js",
   "activationEvents": [
@@ -193,5 +196,6 @@
     "typescript": "^5.4.0",
     "ws": "^8.22.0",
     "@vscode/vsce": "^3.2.0"
-  }
+  },
+  "preview": true
 }
