@@ -53,7 +53,7 @@ protocol (`{source:'panoptent', type, ...}`) and e2e tests depend on them.
 2. Push to `main`. `.github/workflows/release.yml` then:
    - creates GitHub release `vX.Y.Z` with the `.vsix` and Chrome `.zip` (if it doesn't exist yet),
    - publishes to the VS Code Marketplace (secret `VSCE_PAT`, Azure DevOps PAT, Marketplace: Manage, expires ~Oct 2027),
-   - publishes to Open VSX if `OVSX_PAT` is set (not set yet),
+   - publishes to Open VSX (secret `OVSX_PAT`, namespace `ceritli`),
    - uploads + publishes to the Chrome Web Store if `CWS_SA_KEY` (service-account JSON) and `CWS_PUBLISHER_ID` are set.
 3. `pages.yml` redeploys `docs/` on every push touching it. `ci.yml` builds every push/PR.
 
@@ -61,8 +61,8 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
-  0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
+- 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub, VS Code Marketplace and Open VSX
+  (first Open VSX publish 2026-10-22, namespace `ceritli` not verified yet); 0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.
 - Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
   description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
