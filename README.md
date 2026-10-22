@@ -96,6 +96,10 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 
 **Contributions of every kind are welcome** — bug reports, ideas, docs, translations into new languages, tests and code. Open an [issue](https://github.com/ceritli/panoptent/issues/new/choose) or a pull request; no need to ask first. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Privacy
+
+Panoptent collects no data: no servers, no analytics. The Chrome extension only talks to VS Code on your own computer (`127.0.0.1`). [Privacy policy](https://ceritli.github.io/panoptent/privacy.html)
+
 ## License
 
 [MIT](LICENSE) © Fatih Ceritli, Alper LÜLE

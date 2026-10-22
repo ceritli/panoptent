@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.9.1 — 2026-10-22
+
+- Chrome: no longer requests the broad `tabs` permission (`activeTab` is enough)
+- Privacy policy page (docs/privacy.html)
+- Release workflow can publish to the Chrome Web Store
+- README: install from the VS Code Marketplace
+
 ## 0.9.0 — 2026-10-22
 
 - **English and Turkish UI** across the VS Code panel, page overlay, Chrome extension, popup and notifications, switchable live: `panoptent.language` setting (`auto` follows VS Code's display language), *Panoptent: Change Language* command and **Language** link in the Panoptent view, language select in the preview toolbar, and a **Language** select in the Chrome drawer's Settings tab (Chrome follows VS Code once connected; otherwise its own choice or the browser language)

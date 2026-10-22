@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panoptent Privacy Policy</title>
+<meta name="description" content="Privacy policy for the Panoptent VS Code and Chrome extensions. No data is collected; everything stays on your computer.">
+<link rel="icon" href="assets/logo.png">
+<style>
+  :root { --bg:#fbf9f6; --ink:#1c1917; --ink-2:#44403c; --muted:#78716c; --line:#e7e5e4; --accent:#f97316; --accent-ink:#c2410c; --code-bg:#f5f3f0; --dark:#14171c; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.7 Inter, system-ui, -apple-system, "Segoe UI", sans-serif; }
+  html[data-lang="tr"] [lang="en"]:not(html), html[data-lang="en"] [lang="tr"]:not(html) { display:none !important; }
+  header { background:var(--dark); }
+  .bar { max-width:820px; margin:0 auto; padding:0 20px; height:60px; display:flex; align-items:center; gap:12px; }
+  .brand { display:flex; align-items:center; gap:10px; color:#fff; text-decoration:none; font-weight:800; font-size:18px; }
+  .brand img { width:28px; height:28px; border-radius:7px; }
+  .lang { margin-left:auto; display:flex; gap:4px; }
+  .lang button { all:unset; cursor:pointer; color:#cbd2da; font-size:13px; font-weight:600; padding:6px 10px; border-radius:8px; }
+  .lang button[aria-pressed="true"] { background:var(--accent); color:#fff; }
+  main { max-width:820px; margin:0 auto; padding:40px 20px 80px; }
+  h1 { font-size:34px; letter-spacing:-.02em; margin:0 0 6px; }
+  h2 { font-size:20px; margin:34px 0 8px; }
+  p, li { color:var(--ink-2); }
+  .muted { color:var(--muted); font-size:14px; }
+  code { background:var(--code-bg); padding:.1em .4em; border-radius:5px; font-size:.88em; }
+  a { color:var(--accent-ink); }
+  .box { background:#fff; border:1px solid var(--line); border-radius:14px; padding:18px 22px; margin:22px 0; }
+</style>
+</head>
+<body>
+<header><div class="bar">
+  <a class="brand" href="./"><img src="assets/logo.png" alt="">Panoptent</a>
+  <div class="lang"><button type="button" data-set-lang="tr">TR</button><button type="button" data-set-lang="en">EN</button></div>
+</div></header>
+<main>
+  <div lang="en">
+    <h1>Privacy Policy</h1>
+    <p class="muted">Panoptent VS Code extension and Chrome extension · Last updated: 22 October 2026</p>
+    <div class="box"><p><b>Short version:</b> Panoptent does not collect, sell or send your data anywhere. It has no servers, no accounts, no analytics and no tracking. Everything happens on your own computer.</p></div>
+
+    <h2>What the Chrome extension does</h2>
+    <ul>
+      <li>It runs on your <b>local development sites</b> (<code>localhost</code>, <code>127.0.0.1</code>, <code>*.localhost</code>), and on another site only when you turn it on for that tab yourself.</li>
+      <li>When you select an element, it reads information about that element (tag, classes, text, source file and line, styles) so it can describe your change.</li>
+      <li>It sends that information <b>only to Panoptent in VS Code on the same computer</b>, over a local connection to <code>127.0.0.1</code> (ports 47811–47820). The first connection must be approved by you in VS Code.</li>
+    </ul>
+
+    <h2>What is stored</h2>
+    <ul>
+      <li>In Chrome's local extension storage: your on/off choice per site, the pending change queue, panel preferences, language choice and a random pairing token for VS Code. This never leaves your browser.</li>
+      <li>In VS Code: pairing tokens, panel layout and settings, and short request files under <code>.claude/panoptent/</code> in your project (git-ignored).</li>
+    </ul>
+
+    <h2>Claude Code</h2>
+    <p>When you press <b>Apply</b>, Panoptent hands your request to <b>Claude Code</b>, which you installed and signed in to yourself. What Claude Code does with it is covered by Anthropic's terms and privacy policy, not by Panoptent. Panoptent itself does not contact Anthropic or any other online service.</p>
+
+    <h2>What we do not do</h2>
+    <ul>
+      <li>No personal data, browsing history, cookies or credentials are collected or transmitted.</li>
+      <li>No data is sold or shared with third parties.</li>
+      <li>No remote code is loaded; all code ships inside the extension.</li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>Questions or concerns: <a href="https://github.com/ceritli/panoptent/issues">github.com/ceritli/panoptent/issues</a></p>
+  </div>
+
+  <div lang="tr">
+    <h1>Gizlilik Politikası</h1>
+    <p class="muted">Panoptent VS Code ve Chrome eklentileri · Son güncelleme: 22 Ekim 2026</p>
+    <div class="box"><p><b>Kısaca:</b> Panoptent verilerini toplamaz, satmaz, hiçbir yere göndermez. Sunucusu, hesap sistemi, analitiği ya da takibi yoktur. Her şey kendi bilgisayarında olur.</p></div>
+
+    <h2>Chrome eklentisi ne yapar</h2>
+    <ul>
+      <li><b>Yerel geliştirme sitelerinde</b> (<code>localhost</code>, <code>127.0.0.1</code>, <code>*.localhost</code>) çalışır; başka bir sitede yalnızca o sekme için sen açarsan çalışır.</li>
+      <li>Bir öğe seçtiğinde, değişikliği tarif edebilmek için o öğenin bilgilerini (etiket, sınıflar, metin, kaynak dosya ve satır, stiller) okur.</li>
+      <li>Bu bilgiyi <b>yalnızca aynı bilgisayardaki VS Code'da çalışan Panoptent'e</b>, <code>127.0.0.1</code> üzerinden yerel bir bağlantıyla (port 47811–47820) gönderir. İlk bağlantıyı VS Code'da senin onaylaman gerekir.</li>
+    </ul>
+
+    <h2>Neler saklanır</h2>
+    <ul>
+      <li>Chrome'un yerel eklenti deposunda: site bazında aç/kapat tercihin, bekleyen değişiklik kuyruğu, panel tercihleri, dil seçimi ve VS Code ile eşleşme için rastgele bir anahtar. Bunlar tarayıcından çıkmaz.</li>
+      <li>VS Code'da: eşleşme anahtarları, panel yerleşimi ve ayarlar, projende <code>.claude/panoptent/</code> altında kısa istek dosyaları (git'te yok sayılır).</li>
+    </ul>
+
+    <h2>Claude Code</h2>
+    <p><b>Uygula</b>'ya bastığında Panoptent isteğini kendi kurduğun ve giriş yaptığın <b>Claude Code</b>'a iletir. Claude Code'un bununla ne yaptığı Panoptent'in değil, Anthropic'in koşulları ve gizlilik politikasının kapsamındadır. Panoptent'in kendisi Anthropic'e ya da başka bir çevrim içi hizmete bağlanmaz.</p>
+
+    <h2>Yapmadıklarımız</h2>
+    <ul>
+      <li>Kişisel veri, tarama geçmişi, çerez ya da kimlik bilgisi toplanmaz veya gönderilmez.</li>
+      <li>Veriler satılmaz, üçüncü kişilerle paylaşılmaz.</li>
+      <li>Uzaktan kod yüklenmez; tüm kod eklentinin içindedir.</li>
+    </ul>
+
+    <h2>İletişim</h2>
+    <p>Soru ve görüşler: <a href="https://github.com/ceritli/panoptent/issues">github.com/ceritli/panoptent/issues</a></p>
+  </div>
+</main>
+<script>
+(function () {
+  var root = document.documentElement;
+  function setLang(l) {
+    root.setAttribute('data-lang', l); root.setAttribute('lang', l);
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.setLang === l)); });
+    try { localStorage.setItem('panoptent-lang', l); } catch (e) {}
+  }
+  var saved = null; try { saved = localStorage.getItem('panoptent-lang'); } catch (e) {}
+  var q = new URLSearchParams(location.search).get('lang');
+  setLang(q === 'en' || q === 'tr' ? q : saved || ((navigator.language || '').toLowerCase().indexOf('tr') === 0 ? 'tr' : 'en'));
+  document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.addEventListener('click', function () { setLang(b.dataset.setLang); }); });
+})();
+</script>
+</body>
+</html>
