@@ -61,10 +61,12 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub, VS Code Marketplace and Open VSX
-  (first Open VSX publish 2026-10-22, namespace `ceritli` not verified yet); 0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
+- 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
+  0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.
 - Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
   description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
+- Open VSX (#4): 0.11.0 uploaded 2026-10-22 but INACTIVE — namespace `ceritli` exists in another
+  gallery, so it stays hidden until the ownership claim ("Claim Ownership" on open-vsx.org) is approved.
 - Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.
 - Open tasks and ideas are tracked as GitHub issues (label `roadmap`).
