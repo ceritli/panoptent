@@ -161,7 +161,32 @@ export class Engine {
       claudeExt: claudeExtensionInstalled(),
       canRollback: this.canRollback(),
       lang: uiLang(),
+      design: this.designState(),
     };
+  }
+
+  /**
+   * Tasarım kuralları dosyası (göreli yol). `panoptent.designFile`: boş = otomatik
+   * (design.md / DESIGN.md / docs/design.md), "off" = kapalı, aksi hâlde seçilen dosya.
+   */
+  designFile(): string | undefined {
+    const v = (this.cfg().get<string>('designFile') || '').trim();
+    if (v === 'off') return undefined;
+    const has = (rel: string) => {
+      try {
+        return fs.statSync(path.join(this.root, rel)).isFile();
+      } catch {
+        return false;
+      }
+    };
+    if (v) return has(v) ? v.split(path.sep).join('/') : undefined;
+    return ['design.md', 'DESIGN.md', 'Design.md', 'docs/design.md', 'docs/DESIGN.md'].find(has);
+  }
+
+  designState() {
+    const v = (this.cfg().get<string>('designFile') || '').trim();
+    const file = this.designFile() || null;
+    return { mode: v === 'off' ? 'off' : v ? 'file' : 'auto', setting: v, file, missing: !!v && v !== 'off' && !file };
   }
 
   /** Panel / Chrome seçim ve kuyruk değiştikçe son halini bildirir (`syncState`). */
@@ -385,7 +410,7 @@ export class Engine {
     if (mcpMode) {
       // İstem kimliği (PT-…) kullanıcı mesajında geçtiği için geri alma aynı şekilde çalışır
       const prompt =
-        (await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: true, resolve: this.relPath })) +
+        (await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: true, designFile: this.designFile(), resolve: this.relPath })) +
         '\n\n' + t('ext.mcp.markDone', rec.id);
       rec.sentToClaude = true;
       pushRecord();
@@ -410,7 +435,7 @@ export class Engine {
     }
 
     // 4) Kalanlar Claude'a
-    const prompt = await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: !panelMode, resolve: this.relPath });
+    const prompt = await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: !panelMode, designFile: this.designFile(), resolve: this.relPath });
     rec.sentToClaude = true;
     pushRecord();
     this.output.appendLine(t('ext.log.prompt') + '\n' + prompt);

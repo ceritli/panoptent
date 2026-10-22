@@ -31,6 +31,7 @@
 - **Undo only what Panoptent did.** *Undo last apply* reverses exactly the changes made by that request — your own edits and later conversations are left alone. No git commits are created.
 - **Works where you work.** Inside VS Code (built-in preview) or in your own Chrome via the companion extension — including pages behind a login, with DevTools and real device emulation.
 - **Responsive-aware.** In mobile or tablet view, mark a change as *mobile only* and it's applied with a breakpoint.
+- **Follows your design rules.** Keep a `design.md` (or pick any file) and every request reminds Claude to follow it — no need to mention it yourself.
 - **English and Turkish UI.** Switch live; prompts to Claude are written in the same language.
 
 Works with React / Next.js, Vue / Nuxt, Vite, and plain HTML.
@@ -129,6 +130,7 @@ Panoptent collects no data: no servers, no analytics. The Chrome extension only 
 - **Kuyruğa al, tek seferde uygula.** Değişiklikler sayfada anında görünür ama koda yazılmaz. Geri al/yinele, sonra **Uygula** ile hepsi tek istekte Claude Code'a gider. Metin değişiklikleri AI kullanılmadan doğrudan dosyaya yazılır.
 - **Yalnızca kendi yaptığını geri alır.** *Son uygulamayı geri al*, o istekte yapılan değişiklikleri satır satır tersine çevirir; senin düzenlemelerine ve sonraki konuşmalara dokunmaz. Commit oluşturmaz.
 - **VS Code içinde ya da kendi Chrome'unda.** Giriş gerektiren sayfalarda, DevTools ve gerçek cihaz emülasyonuyla.
+- **Tasarım kurallarına uyar.** Projede `design.md` varsa (ya da istediğin dosyayı seçersen) her istekte Claude'a ona uymasını Panoptent kendisi hatırlatır; senin ayrıca yazmana gerek kalmaz. Paneldeki **Tasarım kuralları** satırından ya da *Panoptent: Tasarım Kuralları Dosyasını Seç* komutuyla seçilir.
 - **Mobil/tablet.** Dar görünümdeyken bir değişikliği *sadece mobil için* işaretleyebilirsin.
 - **Türkçe ve İngilizce arayüz.** Varsayılan olarak VS Code'un dilini izler; `panoptent.language` ayarı, *Panoptent: Dili Değiştir* komutu, önizleme araç çubuğundaki dil seçimi ya da Chrome'da **Ayarlar** sekmesiyle anında değiştirilir. Claude'a giden istemler de seçilen dilde yazılır.
 

@@ -233,13 +233,15 @@ export class McpHost {
         description:
           'Where the user is looking: the workspace root, and for each connected page (VS Code preview or Chrome tab) its URL, ' +
           'viewport, how many elements are selected and how many changes are queued. Use it to check that Panoptent is ' +
-          'connected to the same project you are editing.',
+          'connected to the same project you are editing. `designRules` names the project\'s design rules file, if any: ' +
+          'read it before making UI changes.',
         inputSchema: {},
         annotations: { readOnlyHint: true },
       },
       async () =>
         this.text({
           workspace: this.engine.root,
+          designRules: this.engine.designFile() || undefined,
           pages: this.engine.pageStates().map((p) => ({
             page: p.pageUrl,
             via: p.via,

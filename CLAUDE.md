@@ -61,7 +61,8 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.10.0 (MCP server + `sendTo: mcp`, PR #6) released on GitHub and VS Code Marketplace. Next for #3:
+- 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
+  0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.
 - Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
   description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.

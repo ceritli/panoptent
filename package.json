@@ -2,7 +2,7 @@
   "name": "panoptent",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.10.0",
+  "version": "0.11.0",
   "publisher": "ceritli",
   "author": {
     "name": "Fatih Ceritli",
@@ -94,6 +94,11 @@
         "category": "Panoptent"
       },
       {
+        "command": "panoptent.chooseDesignFile",
+        "title": "%command.chooseDesignFile%",
+        "category": "Panoptent"
+      },
+      {
         "command": "panoptent.connectClaudeCode",
         "title": "%command.connectClaudeCode%",
         "category": "Panoptent"
@@ -149,6 +154,12 @@
           ],
           "default": "claudePanel",
           "description": "%config.sendTo%"
+        },
+        "panoptent.designFile": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "markdownDescription": "%config.designFile%"
         },
         "panoptent.openSourceOnSelect": {
           "type": "boolean",
