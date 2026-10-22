@@ -2,7 +2,7 @@
   "name": "panoptent",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "publisher": "ceritli",
   "author": {
     "name": "Fatih Ceritli",
@@ -117,104 +117,165 @@
         "when": "activeWebviewPanelId == panoptent.preview"
       }
     ],
-    "configuration": {
-      "title": "Panoptent",
-      "properties": {
-        "panoptent.language": {
-          "type": "string",
-          "enum": [
-            "auto",
-            "en",
-            "tr"
-          ],
-          "enumDescriptions": [
-            "%config.language.auto%",
-            "English",
-            "Türkçe"
-          ],
-          "default": "auto",
-          "description": "%config.language%"
-        },
-        "panoptent.defaultUrl": {
-          "type": "string",
-          "default": "http://localhost:3000",
-          "description": "%config.defaultUrl%"
-        },
-        "panoptent.sendTo": {
-          "type": "string",
-          "enum": [
-            "claudePanel",
-            "cli",
-            "mcp"
-          ],
-          "enumDescriptions": [
-            "%config.sendTo.claudePanel%",
-            "%config.sendTo.cli%",
-            "%config.sendTo.mcp%"
-          ],
-          "default": "claudePanel",
-          "description": "%config.sendTo%"
-        },
-        "panoptent.designFile": {
-          "type": "string",
-          "default": "",
-          "scope": "resource",
-          "markdownDescription": "%config.designFile%"
-        },
-        "panoptent.openSourceOnSelect": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.openSourceOnSelect%"
-        },
-        "panoptent.claudePath": {
-          "type": "string",
-          "default": "claude",
-          "description": "%config.claudePath%"
-        },
-        "panoptent.permissionMode": {
-          "type": "string",
-          "enum": [
-            "acceptEdits",
-            "default",
-            "plan",
-            "auto",
-            "bypassPermissions"
-          ],
-          "default": "acceptEdits",
-          "description": "%config.permissionMode%"
-        },
-        "panoptent.model": {
-          "type": "string",
-          "default": "",
-          "description": "%config.model%"
-        },
-        "panoptent.reloadAfterEdit": {
-          "type": "boolean",
-          "default": false,
-          "description": "%config.reloadAfterEdit%"
-        },
-        "panoptent.chromeBridge": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.chromeBridge%"
-        },
-        "panoptent.bridgePort": {
-          "type": "number",
-          "default": 47811,
-          "description": "%config.bridgePort%"
-        },
-        "panoptent.mcpServer": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.mcpServer%"
-        },
-        "panoptent.mcpPort": {
-          "type": "number",
-          "default": 47821,
-          "description": "%config.mcpPort%"
+    "configuration": [
+      {
+        "title": "%config.section.general%",
+        "order": 1,
+        "properties": {
+          "panoptent.language": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "en",
+              "tr"
+            ],
+            "enumDescriptions": [
+              "%config.language.auto%",
+              "English",
+              "Türkçe"
+            ],
+            "default": "auto",
+            "enumItemLabels": [
+              "%config.language.autoLabel%",
+              "English",
+              "Türkçe"
+            ],
+            "order": 1,
+            "markdownDescription": "%config.language%"
+          },
+          "panoptent.defaultUrl": {
+            "type": "string",
+            "default": "http://localhost:3000",
+            "order": 2,
+            "markdownDescription": "%config.defaultUrl%"
+          },
+          "panoptent.openSourceOnSelect": {
+            "type": "boolean",
+            "default": true,
+            "order": 3,
+            "markdownDescription": "%config.openSourceOnSelect%"
+          }
+        }
+      },
+      {
+        "title": "%config.section.sending%",
+        "order": 2,
+        "properties": {
+          "panoptent.sendTo": {
+            "type": "string",
+            "enum": [
+              "claudePanel",
+              "cli",
+              "mcp"
+            ],
+            "enumDescriptions": [
+              "%config.sendTo.claudePanel%",
+              "%config.sendTo.cli%",
+              "%config.sendTo.mcp%"
+            ],
+            "default": "claudePanel",
+            "enumItemLabels": [
+              "%config.sendTo.claudePanelLabel%",
+              "%config.sendTo.cliLabel%",
+              "%config.sendTo.mcpLabel%"
+            ],
+            "order": 1,
+            "markdownDescription": "%config.sendTo%"
+          },
+          "panoptent.designFile": {
+            "type": "string",
+            "default": "",
+            "scope": "resource",
+            "order": 2,
+            "markdownDescription": "%config.designFile%"
+          }
+        }
+      },
+      {
+        "title": "%config.section.cli%",
+        "order": 3,
+        "properties": {
+          "panoptent.claudePath": {
+            "type": "string",
+            "default": "claude",
+            "order": 1,
+            "markdownDescription": "%config.claudePath%"
+          },
+          "panoptent.permissionMode": {
+            "type": "string",
+            "enum": [
+              "acceptEdits",
+              "default",
+              "plan",
+              "auto",
+              "bypassPermissions"
+            ],
+            "default": "acceptEdits",
+            "enumDescriptions": [
+              "%config.permissionMode.acceptEdits%",
+              "%config.permissionMode.default%",
+              "%config.permissionMode.plan%",
+              "%config.permissionMode.auto%",
+              "%config.permissionMode.bypassPermissions%"
+            ],
+            "order": 2,
+            "markdownDescription": "%config.permissionMode%"
+          },
+          "panoptent.model": {
+            "type": "string",
+            "default": "",
+            "order": 3,
+            "markdownDescription": "%config.model%"
+          },
+          "panoptent.reloadAfterEdit": {
+            "type": "boolean",
+            "default": false,
+            "order": 4,
+            "markdownDescription": "%config.reloadAfterEdit%"
+          }
+        }
+      },
+      {
+        "title": "%config.section.chrome%",
+        "order": 4,
+        "properties": {
+          "panoptent.chromeBridge": {
+            "type": "boolean",
+            "default": true,
+            "order": 1,
+            "markdownDescription": "%config.chromeBridge%"
+          },
+          "panoptent.bridgePort": {
+            "type": "integer",
+            "default": 47811,
+            "minimum": 1024,
+            "maximum": 65526,
+            "order": 2,
+            "markdownDescription": "%config.bridgePort%"
+          }
+        }
+      },
+      {
+        "title": "%config.section.mcp%",
+        "order": 5,
+        "properties": {
+          "panoptent.mcpServer": {
+            "type": "boolean",
+            "default": true,
+            "order": 1,
+            "markdownDescription": "%config.mcpServer%"
+          },
+          "panoptent.mcpPort": {
+            "type": "integer",
+            "default": 47821,
+            "minimum": 1024,
+            "maximum": 65526,
+            "order": 2,
+            "markdownDescription": "%config.mcpPort%"
+          }
         }
       }
-    },
+    ],
     "viewsContainers": {
       "activitybar": [
         {

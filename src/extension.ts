@@ -371,7 +371,7 @@ class PreviewPanel {
         vscode.commands.executeCommand('panoptent.chooseDesignFile');
         break;
       case 'openSettings':
-        vscode.commands.executeCommand('workbench.action.openSettings', 'panoptent');
+        vscode.commands.executeCommand('workbench.action.openSettings', '@ext:ceritli.panoptent');
         break;
       case 'setupGuide':
         showSetupGuide(this.context);

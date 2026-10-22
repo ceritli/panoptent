@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.11.1 — 2026-10-22
+
+- **Tidier settings page**: Panoptent's settings are grouped into sections (General, Sending to Claude, Background mode (CLI), Chrome extension, MCP server) in a sensible order, with readable option names (e.g. *Claude Code panel* / *In the background (CLI)* / *Claude Code (MCP)*), an explanation for every permission mode, clickable command links and a note that the CLI settings only apply in background mode
+- The **Settings** links in the Panoptent view and panel now open only Panoptent's settings (`@ext:ceritli.panoptent`)
+- Port settings only accept valid port numbers
+
 ## 0.11.0 — 2026-10-22
 
 - **Design rules file**: if the project has a design file (`design.md`, `DESIGN.md` or `docs/design.md`, or any file you pick), every request Panoptent sends to Claude, whether through the panel, CLI or MCP, adds a rule to follow it, and Claude reads it once per conversation. Choose it from the new **Design rules** row in the VS Code panel, the Chrome drawer's Settings tab, or *Panoptent: Choose Design Rules File*; setting `panoptent.designFile` (empty = automatic, `off` = disabled)
