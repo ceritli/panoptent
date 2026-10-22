@@ -1,0 +1,15 @@
+src/**
+node_modules/**
+docs/**
+chrome/**
+scripts/**
+.github/**
+build.mjs
+tsconfig.json
+**/*.map
+**/*.ts
+.vscode/**
+*.zip
+*.vsix
+CHANGELOG.md
+.gitignore

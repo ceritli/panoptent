@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: dark; }
+  [hidden] { display: none !important; }
+  body { margin: 0; width: 300px; background: #1f2329; color: #e6e8eb; font: 13px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  header { display: flex; align-items: center; gap: 10px; padding: 14px 14px 10px; }
+  header img { width: 28px; height: 28px; }
+  header b { font-size: 14px; }
+  header span { display: block; color: #8a93a0; font-size: 11.5px; }
+  main { padding: 0 14px 14px; }
+  .card { padding: 9px 10px; border-radius: 8px; border: 1px solid #2f343c; background: #191c21; margin-bottom: 10px; }
+  .card.ok { border-color: rgba(34,197,94,.45); }
+  .card.warn { border-color: rgba(245,158,11,.5); background: rgba(245,158,11,.08); }
+  .ws { display: flex; align-items: center; gap: 8px; padding: 4px 0; }
+  .dot { width: 8px; height: 8px; border-radius: 4px; background: #6b7380; flex-shrink: 0; }
+  .dot.ready { background: #22c55e; } .dot.needPair, .dot.pairing { background: #f59e0b; } .dot.denied { background: #ef4444; }
+  .ws small { color: #8a93a0; margin-left: auto; }
+  .ws input { accent-color: #f97316; margin: 0; }
+  button { all: unset; cursor: pointer; box-sizing: border-box; display: block; width: 100%; text-align: center; padding: 9px 12px; border-radius: 8px; font-weight: 600; }
+  .pri { background: #f97316; color: #fff; } .pri:hover { background: #ea6a0c; }
+  .sec { background: #2c3138; color: #e6e8eb; margin-top: 8px; font-weight: 500; } .sec:hover { background: #363c44; }
+  p.hint { color: #8a93a0; font-size: 11.5px; margin: 10px 0 0; }
+  kbd { font: 11px ui-monospace, Menlo, monospace; padding: 0 4px; border: 1px solid #3a3f47; border-radius: 3px; background: #15181c; }
+</style>
+</head>
+<body>
+<header><img src="icons/48.png" alt=""><div><b>Panoptent</b><span>Seç &amp; Düzenle · Claude Code</span></div></header>
+<main>
+  <div id="conn" class="card">VS Code aranıyor…</div>
+  <button class="pri" id="toggle">Bu sekmede Panoptent’i aç</button>
+  <button class="sec" id="pair" hidden>VS Code’a bağlan</button>
+  <p class="hint">Kısayollar: <kbd>Alt+Shift+P</kbd> aç/kapat · <kbd>Alt+Shift+E</kbd> seçim modu. VS Code’da projen açık ve Panoptent eklentisi kurulu olmalı.</p>
+</main>
+<script src="popup.js"></script>
+</body>
+</html>

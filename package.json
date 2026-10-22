@@ -1,0 +1,192 @@
+{
+  "name": "panoptent",
+  "displayName": "Panoptent — Seç & Düzenle (Claude Code)",
+  "description": "Click any element in your running app, say what to change — Claude Code edits the source. Emergent-style visual editing for VS Code and Chrome. (Seç & Düzenle)",
+  "version": "0.8.0",
+  "publisher": "ceritli",
+  "author": {
+    "name": "Fatih Ceritli",
+    "url": "https://github.com/ceritli"
+  },
+  "license": "MIT",
+  "homepage": "https://ceritli.github.io/panoptent/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ceritli/panoptent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ceritli/panoptent/issues"
+  },
+  "icon": "media/icon.png",
+  "galleryBanner": {
+    "color": "#14171c",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "AI"
+  ],
+  "keywords": [
+    "visual edit",
+    "claude",
+    "claude code",
+    "ai",
+    "react",
+    "vue",
+    "next",
+    "nuxt",
+    "inspector",
+    "emergent",
+    "lovable",
+    "click to edit"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "panoptent.open",
+        "title": "Panoptent: Önizlemeyi Aç",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "panoptent.toggleSelect",
+        "title": "Panoptent: Seçim Modunu Aç/Kapat"
+      },
+      {
+        "command": "panoptent.setupGuide",
+        "title": "Panoptent: Kaynak Eşleştirme Kurulumu (code-inspector-plugin)"
+      },
+      {
+        "command": "panoptent.setupCodeInspector",
+        "title": "Panoptent: code-inspector'ı Otomatik Kur"
+      },
+      {
+        "command": "panoptent.chromeStatus",
+        "title": "Panoptent: Chrome Bağlantı Durumu"
+      },
+      {
+        "command": "panoptent.forgetChrome",
+        "title": "Panoptent: Chrome Eşleştirmelerini Sil"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "panoptent.toggleSelect",
+        "key": "ctrl+shift+e",
+        "mac": "cmd+shift+e",
+        "when": "activeWebviewPanelId == panoptent.preview"
+      }
+    ],
+    "configuration": {
+      "title": "Panoptent",
+      "properties": {
+        "panoptent.defaultUrl": {
+          "type": "string",
+          "default": "http://localhost:3000",
+          "description": "Önizlemenin açılacağı dev sunucu adresi."
+        },
+        "panoptent.sendTo": {
+          "type": "string",
+          "enum": [
+            "claudePanel",
+            "cli"
+          ],
+          "enumDescriptions": [
+            "İsteği VS Code'daki Claude Code paneline aktarır (önceden doldurulur, sen Enter'a basarsın).",
+            "Claude Code CLI'yı arka planda çalıştırır, ilerleme Panoptent panelinde görünür."
+          ],
+          "default": "claudePanel",
+          "description": "Seçilen öğe ve istek nereye gönderilsin."
+        },
+        "panoptent.openSourceOnSelect": {
+          "type": "boolean",
+          "default": true,
+          "description": "Önizlemede bir öğe seçince kaynak dosyasını ilgili satırda, odağı önizlemeden almadan editörde aç."
+        },
+        "panoptent.claudePath": {
+          "type": "string",
+          "default": "claude",
+          "description": "Claude Code CLI komutu ya da tam yolu."
+        },
+        "panoptent.permissionMode": {
+          "type": "string",
+          "enum": [
+            "acceptEdits",
+            "default",
+            "plan",
+            "auto",
+            "bypassPermissions"
+          ],
+          "default": "acceptEdits",
+          "description": "Claude Code izin modu. acceptEdits: dosya düzenlemelerine izin verir, diğer terminal komutlarını reddeder (önerilen)."
+        },
+        "panoptent.model": {
+          "type": "string",
+          "default": "",
+          "description": "İsteğe bağlı model adı (ör. sonnet, opus). Boş bırakılırsa Claude Code varsayılanı kullanılır."
+        },
+        "panoptent.reloadAfterEdit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Claude işini bitirince önizlemeyi tamamen yenile. Hot reload olan projelerde (Vite, Next, Nuxt) gerekmez."
+        },
+        "panoptent.chromeBridge": {
+          "type": "boolean",
+          "default": true,
+          "description": "Chrome eklentisinin bu VS Code penceresine bağlanabilmesi için yerel köprüyü aç (yalnızca 127.0.0.1, ilk bağlantıda onay ister)."
+        },
+        "panoptent.bridgePort": {
+          "type": "number",
+          "default": 47811,
+          "description": "Chrome köprüsünün ilk deneyeceği port (doluysa sonraki 9 port denenir)."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "panoptent",
+          "title": "Panoptent",
+          "icon": "media/activity.svg"
+        }
+      ]
+    },
+    "views": {
+      "panoptent": [
+        {
+          "id": "panoptent.home",
+          "name": "Başlarken",
+          "icon": "media/activity.svg"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "panoptent.home",
+        "contents": "Uygulamanı önizle, bir öğeye tıkla, ne istediğini yaz — Claude Code kodu düzenlesin.\n[$(eye) Önizlemeyi Aç](command:panoptent.open)\nÖnce projende dev sunucusunu başlat (ör. npm run dev).\n[$(wand) code-inspector'ı Otomatik Kur](command:panoptent.setupCodeInspector)\nÖğeleri tam dosya ve satıra bağlar; Claude aramaya zaman ve token harcamaz.\n[$(book) Kurulum Rehberi](command:panoptent.setupGuide)\n[$(gear) Ayarlar](command:workbench.action.openSettings?%5B%22panoptent%22%5D)"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc -p .",
+    "package": "npm run build && vsce package --no-dependencies",
+    "package:chrome": "sh chrome/build.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "@types/ws": "^8.18.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.4.0",
+    "ws": "^8.22.0",
+    "@vscode/vsce": "^3.2.0"
+  }
+}

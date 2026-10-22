@@ -1,0 +1,35 @@
+name: Hata bildir / Bug report
+description: Bir şey beklendiği gibi çalışmıyor / Something isn't working
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ne oldu? / What happened?
+      description: Ne yaptın, ne bekliyordun, ne oldu? / What did you do, expect, and see?
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Nerede? / Where?
+      options:
+        - VS Code önizlemesi / VS Code preview
+        - Chrome eklentisi / Chrome extension
+        - İkisi de / Both
+  - type: input
+    id: versions
+    attributes:
+      label: Sürümler / Versions
+      placeholder: "Panoptent 0.8.0, VS Code 1.10x, Claude Code 2.x, Chrome 14x, macOS / Windows"
+  - type: input
+    id: stack
+    attributes:
+      label: Proje / Project stack
+      placeholder: "Next.js 15 + Tailwind, Nuxt 3, Vite + React…"
+  - type: textarea
+    id: log
+    attributes:
+      label: Output → Panoptent
+      description: VS Code'da View → Output → "Panoptent" çıktısı / the "Panoptent" output channel
+      render: text

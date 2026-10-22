@@ -1,0 +1,53 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Check versions match the tag
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(node -p "require('./package.json').version")
+          CHR=$(node -p "require('./chrome/manifest.json').version")
+          echo "tag=$TAG package.json=$PKG chrome/manifest.json=$CHR"
+          if [ "$TAG" != "$PKG" ] || [ "$TAG" != "$CHR" ]; then
+            echo "::error::Version mismatch. Bump package.json and chrome/manifest.json to $TAG."
+            exit 1
+          fi
+      - run: npm run typecheck
+      - run: npm run package
+      - run: npm run package:chrome
+      - name: Release notes from CHANGELOG
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          awk -v v="## $TAG" 'index($0, v)==1 {f=1; next} /^## /{if(f) exit} f' CHANGELOG.md > notes.md
+          {
+            echo
+            echo "### Kurulum / Install"
+            echo "- **VS Code:** Extensions → ⋯ → *Install from VSIX…* → \`panoptent-$TAG.vsix\`"
+            echo "- **Chrome:** unzip \`panoptent-chrome-$TAG.zip\` → \`chrome://extensions\` → Developer mode → *Load unpacked*"
+            echo
+            echo "Rehber / Guide: https://ceritli.github.io/panoptent/"
+          } >> notes.md
+          cat notes.md
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --title "Panoptent $GITHUB_REF_NAME" \
+            --notes-file notes.md \
+            panoptent-*.vsix panoptent-chrome-*.zip

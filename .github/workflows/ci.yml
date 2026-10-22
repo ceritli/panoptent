@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Type check
+        run: npm run typecheck
+      - name: Syntax check (browser scripts)
+        run: |
+          for f in media/*.js chrome/*.js; do
+            node -e "new Function(require('fs').readFileSync('$f','utf8'))" && echo "ok  $f"
+          done
+      - name: Package VS Code extension
+        run: npm run package
+      - name: Package Chrome extension
+        run: npm run package:chrome
+      - uses: actions/upload-artifact@v4
+        with:
+          name: panoptent-packages
+          path: |
+            *.vsix
+            panoptent-chrome-*.zip
+          retention-days: 14
