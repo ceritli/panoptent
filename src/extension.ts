@@ -84,10 +84,12 @@ export function activate(context: vscode.ExtensionContext) {
     if (vscode.workspace.getConfiguration('panoptent').get<boolean>('mcpServer') === false) return;
     const m = new McpHost(e, getOutput());
     mcp = m;
-    m.start().catch((err) => {
-      getOutput().appendLine(t('ext.mcp.failed', err.message));
-      if (mcp === m) mcp = undefined;
-    });
+    m.start()
+      .then(() => m.refreshConnection())
+      .catch((err) => {
+        getOutput().appendLine(t('ext.mcp.failed', err.message));
+        if (mcp === m) mcp = undefined;
+      });
   };
   startMcp();
   context.subscriptions.push(
@@ -100,6 +102,10 @@ export function activate(context: vscode.ExtensionContext) {
       if (ev.affectsConfiguration('panoptent.language')) {
         engine?.emit({ type: 'lang', value: uiLang() });
         bridge?.refreshLang();
+      }
+      // MCP gönderimi seçildiyse ve Claude Code henüz bağlı değilse bağlamayı öner
+      if (ev.affectsConfiguration('panoptent.sendTo') && engine?.sendTo() === 'mcp' && mcp && !mcp.connected) {
+        mcp.connectClaudeCode(true);
       }
       if (ev.affectsConfiguration('panoptent.mcpServer') || ev.affectsConfiguration('panoptent.mcpPort')) {
         mcp?.stop();
@@ -165,6 +171,14 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(t('ext.chromeForgotten'));
     }),
     vscode.commands.registerCommand('panoptent.changeLanguage', () => pickLanguage()),
+    vscode.commands.registerCommand('panoptent.connectClaudeCode', async () => {
+      if (!mcp?.port) {
+        vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
+        return;
+      }
+      await mcp.connectClaudeCode(false);
+      if (mcp.connected) vscode.window.showInformationMessage(t('ext.mcp.connected'));
+    }),
     vscode.commands.registerCommand('panoptent.copyMcpCommand', async () => {
       if (!mcp?.port) {
         vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
@@ -428,6 +442,7 @@ class PreviewPanel {
             <select id="sendTo" class="sendTo" data-i18n-title="pn.sendTo.title" title="İstek nereye gitsin?">
               <option value="claudePanel" data-i18n="pn.sendTo.panel">Claude Code paneli</option>
               <option value="cli" data-i18n="pn.sendTo.cli">Arka planda (CLI)</option>
+              <option value="mcp" data-i18n="pn.sendTo.mcp">Claude Code (MCP)</option>
             </select>
             <button id="queueBtn" class="secondary" data-i18n-title="pn.queueBtn.title" data-i18n="pn.queueBtn" title="Kuyruğa ekle (Ctrl/Cmd+Enter)">Kuyruğa</button>
             <button id="sendBtn" class="primary" data-i18n-title="pn.sendBtn.title" title="Hemen gönder (Ctrl/Cmd+Shift+Enter)">Aktar</button>

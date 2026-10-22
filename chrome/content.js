@@ -46,6 +46,7 @@
       'cx.sendToLbl': 'Where requests go',
       'cx.sendTo.panel': 'Claude Code panel in VS Code',
       'cx.sendTo.cli': 'In the background (Claude Code CLI)',
+      'cx.sendTo.mcp': 'Claude Code in VS Code, over MCP (no request file)',
       'cx.cont': 'Add to the open Claude Code conversation',
       'cx.pop': 'Open a box next to the element on select',
       'cx.openSrc': 'Open its code in VS Code on select',
@@ -71,6 +72,10 @@
       'cx.ho.clipboardLong': 'The prompt was <b>copied to the clipboard</b>; paste it into the Claude Code box in VS Code and press <b>Enter</b>.',
       'cx.ho.newTab': 'Opened in a new Claude Code tab in VS Code — press Enter',
       'cx.ho.newTabLong': 'The prompt is ready in a new Claude Code tab in VS Code; press <b>Enter</b>.',
+      'cx.ho.mcp': 'Short command copied — paste it into Claude Code in VS Code',
+      'cx.ho.mcpLong': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: paste it into your Claude Code conversation in VS Code and press <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> there instead of pressing Apply.',
+      'cx.ho.mcpPrompt': 'Claude Code took the queue over MCP',
+      'cx.ho.mcpPromptLong': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them as usual.',
       'cx.panelFail': 'Couldn’t open the Claude Code panel', 'cx.panelFailLog': 'Couldn’t open the Claude Code panel.',
       'cx.done': '✓ Done', 'cx.changedFiles': 'Changed: {0}', 'cx.noFiles': ' · no files changed',
       'cx.claudeFail': 'Claude couldn’t finish the job.', 'cx.claudeFailShort': 'Claude couldn’t finish the job',
@@ -117,6 +122,7 @@
       'cx.sendToLbl': 'İstek nereye gitsin',
       'cx.sendTo.panel': 'VS Code’daki Claude Code paneli',
       'cx.sendTo.cli': 'Arka planda (Claude Code CLI)',
+      'cx.sendTo.mcp': 'VS Code’daki Claude Code, MCP ile (istek dosyası yok)',
       'cx.cont': 'Açık Claude Code konuşmasına ekle',
       'cx.pop': 'Seçince öğenin yanında kutu aç',
       'cx.openSrc': 'Seçince kodunu VS Code’da aç',
@@ -142,6 +148,10 @@
       'cx.ho.clipboardLong': 'İstem <b>panoya kopyalandı</b>; VS Code’daki Claude Code kutusuna yapıştırıp <b>Enter</b>’a bas.',
       'cx.ho.newTab': 'VS Code’da yeni Claude Code sekmesinde açıldı — Enter’a bas',
       'cx.ho.newTabLong': 'İstem VS Code’da yeni bir Claude Code sekmesinde hazır; <b>Enter</b>’a bas.',
+      'cx.ho.mcp': 'Kısa komut kopyalandı — VS Code’daki Claude Code’a yapıştır',
+      'cx.ho.mcpLong': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: VS Code’daki Claude Code konuşmana yapıştırıp <b>Enter</b>’a bas. İpucu: Uygula’ya basmadan oraya <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
+      'cx.ho.mcpPrompt': 'Claude Code kuyruğu MCP üzerinden aldı',
+      'cx.ho.mcpPromptLong': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi geri alabilirsin.',
       'cx.panelFail': 'Claude Code paneli açılamadı', 'cx.panelFailLog': 'Claude Code paneli açılamadı.',
       'cx.done': '✓ Tamamlandı', 'cx.changedFiles': 'Değişen: {0}', 'cx.noFiles': ' · dosya değişmedi',
       'cx.claudeFail': 'Claude işi bitiremedi.', 'cx.claudeFailShort': 'Claude işi bitiremedi',
@@ -526,7 +536,7 @@
       const lines = entries.map((en) => `• ${kindLabel(en.kind)}: ${summary(en)}`).join('\n');
       return `<span class="meta">${fromQueue ? plural(entries.length, 'cx.logQueue') : t('cx.logQuick')}</span>${esc(lines)}`;
     });
-    bg({ type: 'applyEntries', entries, fromQueue, pageUrl: location.href, continueSession: settings.sendTo === 'claudePanel' ? ui.cont : false });
+    bg({ type: 'applyEntries', entries, fromQueue, pageUrl: location.href, continueSession: settings.sendTo !== 'cli' ? ui.cont : false });
     render();
     return true;
   }
@@ -596,7 +606,7 @@
         .concat(I18N.LANGS.map((l) => `<option value="${l.code}">${esc(l.name)}</option>`)).join('');
       dbody.innerHTML = conn + wsSel + `
         <div class="lbl">${esc(t('cx.sendToLbl'))}</div>
-        <div class="row"><select id="sendTo"><option value="claudePanel">${esc(t('cx.sendTo.panel'))}</option><option value="cli">${esc(t('cx.sendTo.cli'))}</option></select></div>
+        <div class="row"><select id="sendTo"><option value="claudePanel">${esc(t('cx.sendTo.panel'))}</option><option value="cli">${esc(t('cx.sendTo.cli'))}</option><option value="mcp">${esc(t('cx.sendTo.mcp'))}</option></select></div>
         <div class="row"><label><input type="checkbox" id="cont"> ${esc(t('cx.cont'))}</label></div>
         <div class="row"><label><input type="checkbox" id="pop"> ${esc(t('cx.pop'))}</label></div>
         <div class="row"><label><input type="checkbox" id="openSrc"> ${esc(t('cx.openSrc'))}</label></div>
@@ -609,7 +619,7 @@
       g('langSel').addEventListener('change', (e) => setLangPref(e.target.value));
       g('sendTo').value = settings.sendTo;
       g('cont').checked = ui.cont;
-      g('cont').disabled = settings.sendTo !== 'claudePanel';
+      g('cont').disabled = settings.sendTo === 'cli';
       g('pop').checked = ui.popover;
       g('openSrc').checked = settings.openOnSelect;
       g('sendTo').addEventListener('change', (e) => { settings.sendTo = e.target.value; bg({ type: 'setSendTo', value: settings.sendTo }); sendConfig(); renderDrawer(); });
@@ -841,7 +851,7 @@
         break;
       }
       case 'handoff': {
-        const how = m.how === 'mention' || m.how === 'clipboard' ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
         const short = () => t('cx.ho.' + how);
         if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? short() : t('cx.panelFail'), 2600); }
         if (m.ok) {

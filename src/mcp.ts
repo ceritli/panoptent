@@ -5,12 +5,14 @@
 import * as vscode from 'vscode';
 import * as http from 'http';
 import * as path from 'path';
+import { spawnSync } from 'child_process';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod/v4';
 import type { Engine, PageState } from './engine';
 import type { Entry, SelectedItem } from './entries';
 import { addStrings, t } from './i18n';
+import { cliOnPath, findBundledClaude } from './claudePanel';
 
 addStrings({
   en: {
@@ -20,6 +22,11 @@ addStrings({
     'ext.mcp.error': 'MCP request error: {0}',
     'ext.mcp.copied': 'Copied. Run it in a terminal in this project to connect Claude Code to Panoptent: {0}',
     'ext.mcp.notRunning': 'The Panoptent MCP server is not running. Turn on the “panoptent.mcpServer” setting and open a project folder.',
+    'ext.mcp.ask': 'Connect Claude Code to Panoptent in this project? Panoptent will run: {0}',
+    'ext.mcp.connect': 'Connect',
+    'ext.mcp.connected': 'Claude Code is connected to Panoptent in this project. Start a new Claude Code conversation to use it.',
+    'ext.mcp.connectFailed': 'Could not connect Claude Code automatically ({0}). The command was copied; run it in a terminal in this project: {1}',
+    'ext.mcp.noCli': 'Claude Code CLI not found',
   },
   tr: {
     'ext.mcp.ready': 'MCP sunucusu hazır: {0} ({1})',
@@ -28,10 +35,17 @@ addStrings({
     'ext.mcp.error': 'MCP isteği hatası: {0}',
     'ext.mcp.copied': 'Kopyalandı. Claude Code’u Panoptent’e bağlamak için bu projede bir terminalde çalıştır: {0}',
     'ext.mcp.notRunning': 'Panoptent MCP sunucusu çalışmıyor. “panoptent.mcpServer” ayarını aç ve bir proje klasörü aç.',
+    'ext.mcp.ask': 'Claude Code bu projede Panoptent’e bağlansın mı? Panoptent şu komutu çalıştıracak: {0}',
+    'ext.mcp.connect': 'Bağla',
+    'ext.mcp.connected': 'Claude Code bu projede Panoptent’e bağlandı. Kullanmak için yeni bir Claude Code konuşması başlat.',
+    'ext.mcp.connectFailed': 'Claude Code otomatik bağlanamadı ({0}). Komut kopyalandı; bu projede bir terminalde çalıştır: {1}',
+    'ext.mcp.noCli': 'Claude Code CLI bulunamadı',
   },
 });
 
 export const MCP_PORT_RANGE = 10;
+const PORT_KEY = 'panoptent.mcpLastPort';
+const CONNECTED_KEY = 'panoptent.mcpConnectedUrl';
 
 const NO_PAGE =
   'No page is connected to Panoptent. Ask the user to open the preview in VS Code (command “Panoptent: Open Preview”) ' +
@@ -62,10 +76,15 @@ export class McpHost {
 
   async start() {
     const base = vscode.workspace.getConfiguration('panoptent').get<number>('mcpPort') || 47821;
-    for (let p = base; p < base + MCP_PORT_RANGE; p++) {
+    // Bu proje en son hangi portu kullandıysa önce onu dene: Claude Code'a kayıtlı adres değişmesin
+    const last = this.state.get<number>(PORT_KEY);
+    const ports = [...Array(MCP_PORT_RANGE).keys()].map((i) => base + i);
+    if (last && ports.includes(last)) ports.unshift(...ports.splice(ports.indexOf(last), 1));
+    for (const p of ports) {
       try {
         await this.listen(p);
         this.port = p;
+        await this.state.update(PORT_KEY, p);
         this.output.appendLine(t('ext.mcp.ready', this.url, vscode.workspace.name || path.basename(this.engine.root)));
         return;
       } catch {
@@ -73,6 +92,50 @@ export class McpHost {
       }
     }
     throw new Error(t('ext.mcp.noPort', base, base + MCP_PORT_RANGE - 1));
+  }
+
+  private get state() {
+    return this.engine.context.workspaceState;
+  }
+
+  /** Claude Code bu proje için bu adrese kayıtlı mı (Panoptent'in kendi kaydına göre)? */
+  get connected() {
+    return !!this.port && this.state.get<string>(CONNECTED_KEY) === this.url;
+  }
+
+  /** Daha önce bağlanmış ama port değişmişse kaydı sessizce günceller. */
+  async refreshConnection() {
+    const prev = this.state.get<string>(CONNECTED_KEY);
+    if (prev && this.port && prev !== this.url) await this.connectClaudeCode(false);
+  }
+
+  /** `claude mcp add` komutunu bu proje (local kapsam) için çalıştırır. `ask`: önce kullanıcıya sor. */
+  async connectClaudeCode(ask: boolean): Promise<boolean> {
+    if (!this.port) {
+      vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
+      return false;
+    }
+    if (ask) {
+      const yes = t('ext.mcp.connect');
+      if ((await vscode.window.showInformationMessage(t('ext.mcp.ask', this.addCommand), yes)) !== yes) return false;
+    }
+    const cli = cliOnPath('claude') ? 'claude' : findBundledClaude();
+    let error = cli ? '' : t('ext.mcp.noCli');
+    if (cli) {
+      const opts = { cwd: this.engine.root, encoding: 'utf8' as const, timeout: 30000, shell: process.platform === 'win32' };
+      spawnSync(cli, ['mcp', 'remove', 'panoptent', '-s', 'local'], opts); // eski adres varsa
+      const r = spawnSync(cli, ['mcp', 'add', '--transport', 'http', '-s', 'local', 'panoptent', this.url], opts);
+      if (r.status !== 0) error = (r.stderr || r.stdout || String(r.error?.message || r.status)).trim().split('\n')[0];
+    }
+    if (error) {
+      await vscode.env.clipboard.writeText(this.addCommand);
+      vscode.window.showWarningMessage(t('ext.mcp.connectFailed', error, this.addCommand));
+      return false;
+    }
+    await this.state.update(CONNECTED_KEY, this.url);
+    this.output.appendLine(t('ext.mcp.connected'));
+    if (ask) vscode.window.showInformationMessage(t('ext.mcp.connected'));
+    return true;
   }
 
   stop() {
@@ -151,7 +214,8 @@ export class McpHost {
         description:
           'Changes the user queued in Panoptent but has not applied yet: free-text requests, style edits (from → to), ' +
           'text replacements, element deletions and image swaps, each with its target elements and source locations. ' +
-          'Entries marked viewportOnly must only apply at that screen width (use a responsive breakpoint). ' + UNTRUSTED,
+          'Entries marked viewportOnly must only apply at that screen width (use a responsive breakpoint). ' +
+          'If you apply entries from here, call mark_applied with their tokens afterwards. ' + UNTRUSTED,
         inputSchema: { all },
         annotations: { readOnlyHint: true },
       },
@@ -185,6 +249,60 @@ export class McpHost {
             updated: new Date(p.at).toISOString(),
           })),
         }),
+    );
+
+    server.registerTool(
+      'get_apply',
+      {
+        title: 'Change set to apply',
+        description:
+          'The full instructions for a change set the user sent with Panoptent\'s Apply button (id like PT-abc123): target ' +
+          'elements with source locations and the requested changes. Make the edits, then call mark_applied with the same id. ' +
+          UNTRUSTED,
+        inputSchema: { id: z.string().describe('The change set id from the user message, e.g. PT-abc123.') },
+        annotations: { readOnlyHint: true },
+      },
+      async ({ id }) => {
+        const prompt = this.engine.mcpApplyPrompt(id.trim());
+        return { content: [{ type: 'text' as const, text: prompt || `Unknown change set ${id}. Ask the user to press Apply in Panoptent again.` }] };
+      },
+    );
+
+    server.registerTool(
+      'mark_applied',
+      {
+        title: 'Mark changes as applied',
+        description:
+          'Tell Panoptent you finished. Pass `id` for a change set from get_apply / the apply_queue prompt, or `tokens` for ' +
+          'queue entries (from get_queue) you applied directly; those entries are removed from the user\'s queue.',
+        inputSchema: {
+          id: z.string().optional().describe('Change set id, e.g. PT-abc123.'),
+          tokens: z.array(z.string()).optional().describe('Queue entry tokens from get_queue.'),
+        },
+      },
+      async ({ id, tokens }) => {
+        const n = this.engine.mcpMarkApplied(id?.trim(), tokens);
+        return this.text({ ok: n > 0, marked: n });
+      },
+    );
+
+    server.registerPrompt(
+      'apply_queue',
+      {
+        title: 'Apply the Panoptent queue',
+        description: 'Apply every change queued in Panoptent (same as pressing Apply); the changes can be undone from Panoptent.',
+      },
+      async () => {
+        const prompt = await this.engine.mcpApplyQueue();
+        return {
+          messages: [
+            {
+              role: 'user' as const,
+              content: { type: 'text' as const, text: prompt || 'The Panoptent queue is empty. ' + NO_PAGE },
+            },
+          ],
+        };
+      },
     );
 
     return server;

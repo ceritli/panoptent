@@ -46,6 +46,7 @@
       'pn.sendTo.title': 'Where should the request go?',
       'pn.sendTo.panel': 'Claude Code panel',
       'pn.sendTo.cli': 'In the background (CLI)',
+      'pn.sendTo.mcp': 'Claude Code (MCP)',
       'pn.queueBtn': 'Add to queue',
       'pn.queueBtn.title': 'Add to queue (Ctrl/Cmd+Enter)',
       'pn.sendBtn.title': 'Send now (Ctrl/Cmd+Shift+Enter)',
@@ -131,6 +132,10 @@
       'pn.ho.clipboard.long': "Couldn't add it to the Claude Code box automatically; the prompt was <b>copied to the clipboard</b>. Click the Claude Code panel, then <b>Cmd/Ctrl+V</b> and <b>Enter</b>.",
       'pn.ho.newTab.short': 'Opened in a new Claude Code tab — press Enter',
       'pn.ho.newTab.long': 'The prompt is ready in a new Claude Code tab. Review it and press <b>Enter</b>.',
+      'pn.ho.mcp.short': 'Short command copied — paste it into Claude Code and press Enter',
+      'pn.ho.mcp.long': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: click your Claude Code conversation, press <b>Cmd/Ctrl+V</b> and <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> in Claude Code instead of pressing Apply.',
+      'pn.ho.mcpPrompt.short': 'Claude Code took the queue over MCP',
+      'pn.ho.mcpPrompt.long': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them here as usual.',
       'pn.ho.failShort': "Couldn't open the Claude Code panel",
       'pn.ho.failLong': 'Couldn\'t open the Claude Code panel. Try setting the destination to "In the background (CLI)".',
       'pn.changed': '✎ Changed',
@@ -175,6 +180,7 @@
       'pn.sendTo.title': 'İstek nereye gitsin?',
       'pn.sendTo.panel': 'Claude Code paneli',
       'pn.sendTo.cli': 'Arka planda (CLI)',
+      'pn.sendTo.mcp': 'Claude Code (MCP)',
       'pn.queueBtn': 'Kuyruğa',
       'pn.queueBtn.title': 'Kuyruğa ekle (Ctrl/Cmd+Enter)',
       'pn.sendBtn.title': 'Hemen gönder (Ctrl/Cmd+Shift+Enter)',
@@ -260,6 +266,10 @@
       'pn.ho.clipboard.long': 'Claude Code kutusuna otomatik eklenemedi; istem <b>panoya kopyalandı</b>. Claude Code paneline tıklayıp <b>Cmd/Ctrl+V</b> ve <b>Enter</b>.',
       'pn.ho.newTab.short': "Yeni Claude Code sekmesinde açıldı — Enter'a bas",
       'pn.ho.newTab.long': "İstem yeni bir Claude Code sekmesinde hazır. Kontrol edip <b>Enter</b>'a bas.",
+      'pn.ho.mcp.short': 'Kısa komut kopyalandı — Claude Code’a yapıştırıp Enter’a bas',
+      'pn.ho.mcp.long': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: Claude Code konuşmana tıkla, <b>Cmd/Ctrl+V</b> ve <b>Enter</b>. İpucu: Uygula’ya basmadan Claude Code’a <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
+      'pn.ho.mcpPrompt.short': 'Claude Code kuyruğu MCP üzerinden aldı',
+      'pn.ho.mcpPrompt.long': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi buradan geri alabilirsin.',
       'pn.ho.failShort': 'Claude Code paneli açılamadı',
       'pn.ho.failLong': 'Claude Code paneli açılamadı. Gönderme yerini "Arka planda (CLI)" yapmayı dene.',
       'pn.changed': '✎ Değişti',
@@ -748,7 +758,7 @@
       entries,
       fromQueue,
       pageUrl: displayUrl(pageHref),
-      continueSession: sendTo === 'claudePanel' ? contChk.checked : !!(sessionId && contChk.checked),
+      continueSession: sendTo !== 'cli' ? contChk.checked : !!(sessionId && contChk.checked),
     });
     return true;
   }
@@ -837,7 +847,7 @@
   // ---------- gönderme yeri ----------
   function applySendTo() {
     sendToSel.value = sendTo;
-    const panel = sendTo === 'claudePanel';
+    const panel = sendTo !== 'cli';
     sendBtn.textContent = panel ? t('pn.send.panel') : t('pn.send.cli');
     contLabel.textContent = panel ? t('pn.cont.panel') : t('pn.cont.cli');
     contWrap.hidden = !panel && !sessionId;
@@ -850,7 +860,7 @@
       popover: layout.popover,
       viewport,
       lang: I18N.lang,
-      nowLabel: sendTo === 'claudePanel' ? t('pn.now.panel') : t('pn.now.cli'),
+      nowLabel: sendTo !== 'cli' ? t('pn.now.panel') : t('pn.now.cli'),
     });
     syncSoon();
   }
@@ -1015,7 +1025,7 @@
         openOnSelect = m.openOnSelect !== false;
         openSrcChk.checked = openOnSelect;
         applySendTo();
-        if (sendTo === 'claudePanel' && !claudeExt) {
+        if (sendTo !== 'cli' && !claudeExt) {
           addLog('err', esc(t('pn.noClaudeExt')));
         }
         proxyBase = m.proxyBase;
@@ -1087,7 +1097,7 @@
         if (m.ok && supportKind === 'none') setTimeout(reloadFrame, 300);
         break;
       case 'handoff': {
-        const how = m.how === 'mention' || m.how === 'clipboard' ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
         if (popPending) {
           popPending = false;
           popStatus(m.ok ? 'ok' : 'err', m.ok ? t('pn.ho.' + how + '.short') : t('pn.ho.failShort'), 2600);

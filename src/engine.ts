@@ -43,6 +43,10 @@ addStrings({
     'ext.rb.confirm': 'Undo the apply from {0}?',
     'ext.rb.undo': 'Undo',
     'ext.rb.failed': 'Undo failed: {0}',
+    'ext.mcp.applyLine': 'Apply the Panoptent change set {0}: get it with the Panoptent MCP tool get_apply (id {0}), make the edits, then call mark_applied with the same id.',
+    'ext.mcp.markDone': 'When you are done, call the Panoptent MCP tool mark_applied with id {0}.',
+    'ext.mcp.directOnly': 'Panoptent wrote the {0} text change(s) directly; there is nothing left to edit.',
+    'ext.mcp.log.done': 'Claude finished {0} (via MCP)',
   },
   tr: {
     'ext.fileNotFound': 'Dosya bulunamadı: {0}',
@@ -75,6 +79,10 @@ addStrings({
     'ext.rb.confirm': 'Saat {0} uygulaması geri alınsın mı?',
     'ext.rb.undo': 'Geri al',
     'ext.rb.failed': 'Geri alma başarısız: {0}',
+    'ext.mcp.applyLine': 'Panoptent değişiklik paketi {0}’i uygula: Panoptent MCP aracı get_apply ile al (id {0}), düzenlemeleri yap, sonra aynı id ile mark_applied çağır.',
+    'ext.mcp.markDone': 'İşin bitince Panoptent MCP aracı mark_applied’ı {0} kimliğiyle çağır.',
+    'ext.mcp.directOnly': 'Panoptent {0} metin değişikliğini doğrudan yazdı; düzenlenecek başka bir şey kalmadı.',
+    'ext.mcp.log.done': 'Claude {0} işini bitirdi (MCP üzerinden)',
   },
 });
 
@@ -190,7 +198,8 @@ export class Engine {
   }
 
   async setSendTo(v: string) {
-    await this.cfg().update('sendTo', v === 'cli' ? 'cli' : 'claudePanel', vscode.ConfigurationTarget.Global);
+    const value = v === 'cli' || v === 'mcp' ? v : 'claudePanel';
+    await this.cfg().update('sendTo', value, vscode.ConfigurationTarget.Global);
     this.emit({ type: 'sendTo', value: this.sendTo() });
   }
 
@@ -238,8 +247,47 @@ export class Engine {
     await this.applyEntries([{ token: 'ins' + Date.now(), kind: 'prompt', text: prompt, items: [], raw: true }], '', false, false);
   }
 
-  sendTo(): 'claudePanel' | 'cli' {
-    return this.cfg().get<string>('sendTo') === 'cli' ? 'cli' : 'claudePanel';
+  sendTo(): 'claudePanel' | 'cli' | 'mcp' {
+    const v = this.cfg().get<string>('sendTo');
+    return v === 'cli' || v === 'mcp' ? v : 'claudePanel';
+  }
+
+  /** MCP modunda Claude'un `get_apply` ile alacağı değişiklik paketleri (PT kimliğine göre). */
+  private mcpApplies = new Map<string, { prompt: string; client?: string; tokens: string[] }>();
+
+  mcpApplyPrompt(id: string): string | undefined {
+    return this.mcpApplies.get(id)?.prompt;
+  }
+
+  /**
+   * Claude işini bitirdiğini bildirir. `id`: Uygula/istem ile gelen paket (kuyruk zaten boşaltıldı).
+   * `tokens`: Claude'un kuyruktan doğrudan uyguladığı girdiler; ilgili sayfanın kuyruğundan düşülür.
+   */
+  mcpMarkApplied(id?: string, tokens?: string[]): number {
+    let n = 0;
+    if (id && this.mcpApplies.delete(id)) {
+      this.output.appendLine(t('ext.mcp.log.done', id));
+      n++;
+    }
+    if (tokens?.length) {
+      for (const p of this.pages.values()) {
+        const hit = p.queue.filter((e) => tokens.includes(e.token)).map((e) => e.token);
+        if (!hit.length) continue;
+        p.queue = p.queue.filter((e) => !hit.includes(e.token));
+        this.emit({ type: 'applied', ok: true, tokens: hit, fromQueue: true, sent: hit.length, canRollback: this.canRollback() }, p.client);
+        n += hit.length;
+      }
+    }
+    return n;
+  }
+
+  /** MCP istemi (`apply_queue`): en son sayfanın kuyruğunu uygular ve Claude'a gidecek istemi döndürür. */
+  async mcpApplyQueue(): Promise<string | undefined> {
+    const p = this.pageStates().find((x) => x.queue.length);
+    if (!p) return undefined;
+    const queue = p.queue;
+    p.queue = []; // sayfa yeni durumu bildirene kadar aynı kuyruk ikinci kez alınmasın
+    return this.applyEntries(queue, p.pageUrl, false, true, p.client, true);
   }
 
   records: ApplyRecord[] = [];
@@ -254,17 +302,22 @@ export class Engine {
   };
 
   /** Kuyruk veya hızlı kutudan gelen değişiklikleri uygular. */
-  async applyEntries(entries: Entry[], pageUrl: string, continueSession: boolean, fromQueue: boolean, client?: string) {
+  async applyEntries(entries: Entry[], pageUrl: string, continueSession: boolean, fromQueue: boolean, client?: string, viaMcpPrompt = false): Promise<string | undefined> {
     const tokens = entries.map((e) => e.token);
     const emit = (m: any) => {
       this.emit(m, client);
       if (m.type === 'applied') this.emit({ type: 'checkpointState', canRollback: this.canRollback() });
     };
-    const fail = (message: string) => emit({ type: 'applied', ok: false, message, tokens, fromQueue, canRollback: this.canRollback() });
+    const fail = (message: string) => {
+      emit({ type: 'applied', ok: false, message, tokens, fromQueue, canRollback: this.canRollback() });
+      return undefined;
+    };
     if (!entries.length) return fail(t('ext.nothingToApply'));
     if (this.runner.running) return fail(t('ext.busy'));
-    const panelMode = this.sendTo() === 'claudePanel';
-    if (panelMode && !claudeExtensionInstalled()) {
+    // mcp: Claude değişiklikleri Panoptent'in MCP sunucusundan kendisi alır (istek dosyası yok)
+    const mcpMode = viaMcpPrompt || this.sendTo() === 'mcp';
+    const panelMode = this.sendTo() !== 'cli';
+    if (panelMode && !viaMcpPrompt && !claudeExtensionInstalled()) {
       return fail(t('ext.noClaudeExt'));
     }
 
@@ -326,7 +379,34 @@ export class Engine {
     if (!rest.length) {
       pushRecord();
       emit({ type: 'applied', ok: true, direct, sent: 0, tokens, fromQueue, checkpoint: !!cp, canRollback: this.canRollback() });
-      return;
+      return viaMcpPrompt ? t('ext.mcp.directOnly', direct) : undefined;
+    }
+
+    if (mcpMode) {
+      // İstem kimliği (PT-…) kullanıcı mesajında geçtiği için geri alma aynı şekilde çalışır
+      const prompt =
+        (await buildBatchPrompt(rest, { id: rec.id, pageUrl: pageUrl || t('ext.p.unknownPage'), detail: true, resolve: this.relPath })) +
+        '\n\n' + t('ext.mcp.markDone', rec.id);
+      rec.sentToClaude = true;
+      pushRecord();
+      this.output.appendLine(t('ext.log.prompt') + '\n' + prompt);
+      this.mcpApplies.set(rec.id, { prompt, client, tokens });
+      if (this.mcpApplies.size > 15) this.mcpApplies.delete(this.mcpApplies.keys().next().value!);
+      let ok = true;
+      let how = 'mcpPrompt';
+      if (!viaMcpPrompt) {
+        const line = t('ext.mcp.applyLine', rec.id);
+        if (continueSession) {
+          await vscode.env.clipboard.writeText(line);
+          how = 'mcp';
+        } else {
+          ok = await openInClaudePanel(line);
+          how = 'newTab';
+        }
+      }
+      emit({ type: 'handoff', ok, how, id: rec.id });
+      emit({ type: 'applied', ok, direct, sent: rest.length, tokens, fromQueue, checkpoint: !!cp, canRollback: this.canRollback(), message: ok ? undefined : t('ext.panelFailed') });
+      return viaMcpPrompt ? prompt : undefined;
     }
 
     // 4) Kalanlar Claude'a

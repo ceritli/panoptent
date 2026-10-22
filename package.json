@@ -94,6 +94,11 @@
         "category": "Panoptent"
       },
       {
+        "command": "panoptent.connectClaudeCode",
+        "title": "%command.connectClaudeCode%",
+        "category": "Panoptent"
+      },
+      {
         "command": "panoptent.copyMcpCommand",
         "title": "%command.copyMcpCommand%",
         "category": "Panoptent"
@@ -134,11 +139,13 @@
           "type": "string",
           "enum": [
             "claudePanel",
-            "cli"
+            "cli",
+            "mcp"
           ],
           "enumDescriptions": [
             "%config.sendTo.claudePanel%",
-            "%config.sendTo.cli%"
+            "%config.sendTo.cli%",
+            "%config.sendTo.mcp%"
           ],
           "default": "claudePanel",
           "description": "%config.sendTo%"
