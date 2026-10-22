@@ -16,6 +16,7 @@ Open to every kind of contribution.
 | `src/extension.ts` | activation, commands, VS Code preview panel (webview HTML template lives here) |
 | `src/engine.ts` | apply / hand-off to Claude / undo; one engine per workspace, shared by panel and Chrome |
 | `src/bridge.ts` | Chrome bridge: `ws` on 127.0.0.1:47811–47820, extension origins only, one-time pairing |
+| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `mark_applied`, prompt `apply_queue`; reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
 | `src/revert.ts` | precise undo from Claude Code transcripts (`~/.claude/projects/...`), matches the `PT-…` id only |
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |
@@ -60,7 +61,8 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.9.1 released on GitHub and VS Code Marketplace.
+- 0.10.0 (MCP server + `sendTo: mcp`, PR #6) released on GitHub and VS Code Marketplace. Next for #3:
+  `screenshot_element`, `highlight` / `preview_style`.
 - Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
   description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
 - Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.

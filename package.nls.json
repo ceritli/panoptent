@@ -8,6 +8,8 @@
   "command.chromeStatus": "Chrome Connection Status",
   "command.forgetChrome": "Remove Chrome Pairings",
   "command.changeLanguage": "Change Language",
+  "command.connectClaudeCode": "Connect Claude Code (MCP)",
+  "command.copyMcpCommand": "Copy MCP Connect Command (Claude Code)",
   "config.language": "Language of the Panoptent interface (preview panel, overlay, Chrome extension, notifications and the prompts sent to Claude).",
   "config.language.auto": "Follow VS Code's display language (English if not supported)",
   "config.defaultUrl": "Dev server address the preview opens.",
@@ -19,8 +21,11 @@
   "config.reloadAfterEdit": "Fully reload the preview when Claude finishes. Not needed for projects with hot reload (Vite, Next, Nuxt).",
   "config.chromeBridge": "Open the local bridge so the Chrome extension can connect to this VS Code window (127.0.0.1 only; asks for approval on first connection).",
   "config.bridgePort": "First port the Chrome bridge tries (if taken, the next 9 ports are tried).",
+  "config.mcpServer": "Run a local MCP server (127.0.0.1 only) so AI agents such as Claude Code, Cursor or Windsurf can read the selected elements, the queue and the page context, and mark changes as applied.",
+  "config.mcpPort": "First port the MCP server tries (if taken, the next 9 ports are tried). The address is http://127.0.0.1:PORT/mcp.",
   "config.sendTo.claudePanel": "Hands the request to the Claude Code panel in VS Code (prefilled; you press Enter).",
   "config.sendTo.cli": "Runs the Claude Code CLI in the background; progress shows in the Panoptent panel.",
+  "config.sendTo.mcp": "Claude Code reads the changes itself through Panoptent's MCP server: Apply copies a one-line command instead of attaching a request file (or type /mcp__panoptent__apply_queue in Claude Code). Panoptent offers to connect Claude Code the first time.",
   "view.home": "Get Started",
   "view.home.welcome": "Preview your app, click an element, type what you want — Claude Code edits the code.\n[$(eye) Open Preview](command:panoptent.open)\nStart your project's dev server first (e.g. npm run dev).\n[$(wand) Set Up code-inspector Automatically](command:panoptent.setupCodeInspector)\nLinks elements to their exact file and line, so Claude doesn't spend time and tokens searching.\n[$(book) Setup Guide](command:panoptent.setupGuide)\n[$(gear) Settings](command:workbench.action.openSettings?%5B%22panoptent%22%5D)\n[$(globe) Language: English / Türkçe](command:panoptent.changeLanguage)"
 }

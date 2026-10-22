@@ -2,7 +2,7 @@
   "name": "panoptent",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.9.1",
+  "version": "0.10.0",
   "publisher": "ceritli",
   "author": {
     "name": "Fatih Ceritli",
@@ -92,6 +92,16 @@
         "command": "panoptent.changeLanguage",
         "title": "%command.changeLanguage%",
         "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.connectClaudeCode",
+        "title": "%command.connectClaudeCode%",
+        "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.copyMcpCommand",
+        "title": "%command.copyMcpCommand%",
+        "category": "Panoptent"
       }
     ],
     "keybindings": [
@@ -129,11 +139,13 @@
           "type": "string",
           "enum": [
             "claudePanel",
-            "cli"
+            "cli",
+            "mcp"
           ],
           "enumDescriptions": [
             "%config.sendTo.claudePanel%",
-            "%config.sendTo.cli%"
+            "%config.sendTo.cli%",
+            "%config.sendTo.mcp%"
           ],
           "default": "claudePanel",
           "description": "%config.sendTo%"
@@ -179,6 +191,16 @@
           "type": "number",
           "default": 47811,
           "description": "%config.bridgePort%"
+        },
+        "panoptent.mcpServer": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.mcpServer%"
+        },
+        "panoptent.mcpPort": {
+          "type": "number",
+          "default": 47821,
+          "description": "%config.mcpPort%"
         }
       }
     },
@@ -221,7 +243,9 @@
     "esbuild": "^0.28.2",
     "typescript": "^5.4.0",
     "ws": "^8.22.0",
-    "@vscode/vsce": "^3.2.0"
+    "@vscode/vsce": "^3.2.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^3.25.76"
   },
   "preview": true
 }

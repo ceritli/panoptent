@@ -192,7 +192,9 @@ chrome.runtime.onConnect.addListener((p) => {
   scan();
   setTimeout(broadcastStatus, 300);
   p.onDisconnect.addListener(() => {
-    if (tabs.get(tabId) === p) tabs.delete(tabId);
+    if (tabs.get(tabId) !== p) return;
+    tabs.delete(tabId);
+    toVS(tabId, { type: 'syncState', closed: true }); // sekme kapandı / sayfa değişti: seçimi VS Code'da unut
   });
   p.onMessage.addListener(async (m) => {
     switch (m.type) {
@@ -224,6 +226,9 @@ chrome.runtime.onConnect.addListener((p) => {
         }
         return;
       }
+      case 'syncState':
+        toVS(tabId, m); // bağlı değilse sessizce düşer
+        return;
       case 'getState':
         broadcastStatus();
         if (!toVS(tabId, m)) send(p, { type: 'status', workspaces: readyList(), active: pickFor(tabId) });

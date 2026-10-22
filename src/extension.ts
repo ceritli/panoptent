@@ -5,6 +5,7 @@ import { DevProxy } from './proxy';
 import { pickCandidate, setupPrompt, runInstall } from './codeInspector';
 import { Engine } from './engine';
 import { Bridge } from './bridge';
+import { McpHost } from './mcp';
 import { uiLang, addStrings, t } from './i18n';
 
 addStrings({
@@ -43,6 +44,7 @@ addStrings({
 let current: PreviewPanel | undefined;
 let engine: Engine | undefined;
 let bridge: Bridge | undefined;
+let mcp: McpHost | undefined;
 let output: vscode.OutputChannel | undefined;
 
 function getOutput() {
@@ -76,13 +78,39 @@ export function activate(context: vscode.ExtensionContext) {
     bridge.start().catch((err) => getOutput().appendLine(t('ext.bridgeFailed', err.message)));
   };
   startBridge();
+  const startMcp = () => {
+    const e = getEngine(context);
+    if (!e || mcp) return;
+    if (vscode.workspace.getConfiguration('panoptent').get<boolean>('mcpServer') === false) return;
+    const m = new McpHost(e, getOutput());
+    mcp = m;
+    m.start()
+      .then(() => m.refreshConnection())
+      .catch((err) => {
+        getOutput().appendLine(t('ext.mcp.failed', err.message));
+        if (mcp === m) mcp = undefined;
+      });
+  };
+  startMcp();
   context.subscriptions.push(
     // proje klasörü sonradan açılırsa köprüyü o zaman başlat
-    vscode.workspace.onDidChangeWorkspaceFolders(() => startBridge()),
+    vscode.workspace.onDidChangeWorkspaceFolders(() => {
+      startBridge();
+      startMcp();
+    }),
     vscode.workspace.onDidChangeConfiguration((ev) => {
       if (ev.affectsConfiguration('panoptent.language')) {
         engine?.emit({ type: 'lang', value: uiLang() });
         bridge?.refreshLang();
+      }
+      // MCP gönderimi seçildiyse ve Claude Code henüz bağlı değilse bağlamayı öner
+      if (ev.affectsConfiguration('panoptent.sendTo') && engine?.sendTo() === 'mcp' && mcp && !mcp.connected) {
+        mcp.connectClaudeCode(true);
+      }
+      if (ev.affectsConfiguration('panoptent.mcpServer') || ev.affectsConfiguration('panoptent.mcpPort')) {
+        mcp?.stop();
+        mcp = undefined;
+        startMcp();
       }
       if (!ev.affectsConfiguration('panoptent.chromeBridge') && !ev.affectsConfiguration('panoptent.bridgePort')) return;
       bridge?.stop();
@@ -143,12 +171,29 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.window.showInformationMessage(t('ext.chromeForgotten'));
     }),
     vscode.commands.registerCommand('panoptent.changeLanguage', () => pickLanguage()),
+    vscode.commands.registerCommand('panoptent.connectClaudeCode', async () => {
+      if (!mcp?.port) {
+        vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
+        return;
+      }
+      await mcp.connectClaudeCode(false);
+      if (mcp.connected) vscode.window.showInformationMessage(t('ext.mcp.connected'));
+    }),
+    vscode.commands.registerCommand('panoptent.copyMcpCommand', async () => {
+      if (!mcp?.port) {
+        vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
+        return;
+      }
+      await vscode.env.clipboard.writeText(mcp.addCommand);
+      vscode.window.showInformationMessage(t('ext.mcp.copied', mcp.addCommand));
+    }),
   );
 }
 
 export function deactivate() {
   current?.dispose();
   bridge?.stop();
+  mcp?.stop();
   engine?.dispose();
 }
 
@@ -217,6 +262,7 @@ class PreviewPanel {
     if (this.disposed) return;
     this.disposed = true;
     this.sub.dispose();
+    this.engine.dropPages('panel');
     this.proxy.stop();
     this.panel.dispose();
     this.disposeHandlers.forEach((f) => f());
@@ -285,6 +331,9 @@ class PreviewPanel {
           false,
           'panel',
         );
+        break;
+      case 'syncState':
+        e.syncPage('panel', 'vscode', m);
         break;
       case 'applyEntries':
         await e.applyEntries(m.entries || [], m.pageUrl || this.proxy.targetOrigin, !!m.continueSession, !!m.fromQueue, 'panel');
@@ -393,6 +442,7 @@ class PreviewPanel {
             <select id="sendTo" class="sendTo" data-i18n-title="pn.sendTo.title" title="İstek nereye gitsin?">
               <option value="claudePanel" data-i18n="pn.sendTo.panel">Claude Code paneli</option>
               <option value="cli" data-i18n="pn.sendTo.cli">Arka planda (CLI)</option>
+              <option value="mcp" data-i18n="pn.sendTo.mcp">Claude Code (MCP)</option>
             </select>
             <button id="queueBtn" class="secondary" data-i18n-title="pn.queueBtn.title" data-i18n="pn.queueBtn" title="Kuyruğa ekle (Ctrl/Cmd+Enter)">Kuyruğa</button>
             <button id="sendBtn" class="primary" data-i18n-title="pn.sendBtn.title" title="Hemen gönder (Ctrl/Cmd+Shift+Enter)">Aktar</button>

@@ -57,6 +57,18 @@ Works with React / Next.js, Vue / Nuxt, Vite, and plain HTML.
 
 In Chrome: open your dev site → extension icon → **Turn on Panoptent in this tab** (`Alt+Shift+P`) → approve the one-time pairing prompt in VS Code.
 
+### Use it from any AI agent (MCP)
+
+Panoptent also runs a local **MCP server**, so Claude Code in the terminal, Cursor, Windsurf or any other MCP client can read what you selected instead of you describing it. Run *Panoptent: Connect Claude Code (MCP)* once per project (it runs the command below for you), or *Panoptent: Copy MCP Connect Command* and paste it in a terminal in your project:
+
+```bash
+claude mcp add --transport http panoptent http://127.0.0.1:47821/mcp
+```
+
+Then just say *"make the selected button bigger"*, or type `/mcp__panoptent__apply_queue` in Claude Code to apply your whole queue (undo still works). Tools: `get_selection` (elements with file/line, HTML and styles), `get_queue` (queued changes), `get_page_context` (page URL, viewport, workspace), `get_apply` and `mark_applied`.
+
+Set **Send to** to **Claude Code (MCP)** to make **Apply** skip the request file: it copies a one-line command (`Apply the Panoptent change set PT-…`) for your Claude Code conversation, and Claude fetches the details over MCP. Panoptent offers to connect Claude Code the first time you pick it. For Cursor and others, add `http://127.0.0.1:47821/mcp` as an HTTP (streamable) MCP server. With several VS Code windows open, each gets the next port (47822, …); the command copies the right one. Turn it off with `panoptent.mcpServer`.
+
 **Recommended:** run *Panoptent: Set Up code-inspector Automatically* once. It adds [code-inspector-plugin](https://github.com/zh-lx/code-inspector) (dev-only) so every element maps to its exact file and line, and Claude doesn't spend time or tokens searching.
 
 ### Language
@@ -98,7 +110,7 @@ Releases are built by GitHub Actions when the version in `package.json` is bumpe
 
 ## Privacy
 
-Panoptent collects no data: no servers, no analytics. The Chrome extension only talks to VS Code on your own computer (`127.0.0.1`). [Privacy policy](https://ceritli.github.io/panoptent/privacy.html)
+Panoptent collects no data: no servers, no analytics. The Chrome extension only talks to VS Code on your own computer (`127.0.0.1`). The MCP server also listens on `127.0.0.1` only and refuses requests from web pages. [Privacy policy](https://ceritli.github.io/panoptent/privacy.html)
 
 ## License
 
@@ -127,6 +139,8 @@ Panoptent collects no data: no servers, no analytics. The Chrome extension only 
 3. Zip'i aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.
 4. Önerilir: Komut Paleti → **Panoptent: code-inspector'ı Otomatik Kur**.
 5. Sol menüdeki göz → **Önizlemeyi Aç**; **Seç**'e bas, öğeye tıkla, isteğini yaz, **Uygula**. Chrome'da: eklenti simgesi → **Bu sekmede Panoptent’i aç**.
+
+**Her yapay zekâ aracından kullan (MCP).** Panoptent yerel bir **MCP sunucusu** da açar; terminaldeki Claude Code, Cursor, Windsurf gibi MCP destekleyen araçlar seçtiğin öğeleri kendisi okur. *Panoptent: MCP Bağlantı Komutunu Kopyala* komutunu çalıştırıp projendeki bir terminale yapıştır ya da: `claude mcp add --transport http panoptent http://127.0.0.1:47821/mcp`. Sonra *"seçtiğim butonu büyüt"* demen yeterli; tüm kuyruğu uygulatmak için Claude Code'a `/mcp__panoptent__apply_queue` yaz (geri alma çalışır). Ya da *Panoptent: Claude Code'u Bağla (MCP)* komutu bağlantı komutunu senin yerine çalıştırır. **Gönderim yeri**ni **Claude Code (MCP)** yaparsan **Uygula** istek dosyası eklemez; Claude Code'a yapıştıracağın tek satırlık bir komut kopyalar, Claude ayrıntıları MCP'den kendisi alır. Araçlar: `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `mark_applied`. Kapatmak için `panoptent.mcpServer`.
 
 Ayrıntılı Türkçe rehber, ekran görüntüleri ve sorun giderme: **https://ceritli.github.io/panoptent/**
 
