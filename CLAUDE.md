@@ -16,6 +16,7 @@ Open to every kind of contribution.
 | `src/extension.ts` | activation, commands, VS Code preview panel (webview HTML template lives here) |
 | `src/engine.ts` | apply / hand-off to Claude / undo; one engine per workspace, shared by panel and Chrome |
 | `src/bridge.ts` | Chrome bridge: `ws` on 127.0.0.1:47811–47820, extension origins only, one-time pairing |
+| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, read-only): `get_selection`, `get_queue`, `get_page_context`; reads page state the panel/Chrome push via `syncState` |
 | `src/revert.ts` | precise undo from Claude Code transcripts (`~/.claude/projects/...`), matches the `PT-…` id only |
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |

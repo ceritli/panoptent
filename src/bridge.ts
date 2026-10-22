@@ -157,6 +157,7 @@ export class Bridge {
     });
     ws.on('close', () => {
       this.conns.delete(c.id);
+      this.engine.dropPages(c.id + ':');
       this.updateStatus();
     });
     this.send(c, { type: 'hi', workspace: { name: this.workspaceName, root: this.engine.root, port: this.port } });
@@ -202,6 +203,9 @@ export class Bridge {
     switch (m.type) {
       case 'getState':
         this.welcome(c);
+        break;
+      case 'syncState':
+        e.syncPage(client, 'chrome', m);
         break;
       case 'applyEntries':
         await e.applyEntries(m.entries || [], m.pageUrl || '', !!m.continueSession, !!m.fromQueue, client);

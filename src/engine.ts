@@ -80,6 +80,17 @@ addStrings({
 
 export type Listener = (msg: any, to?: string) => void;
 
+/** Bir önizleme sayfasının (VS Code paneli ya da Chrome sekmesi) son bildirilen seçimi ve kuyruğu. MCP sunucusu bunu okur. */
+export interface PageState {
+  client: string;
+  via: 'vscode' | 'chrome';
+  pageUrl: string;
+  viewport: string;
+  items: SelectedItem[];
+  queue: Entry[];
+  at: number;
+}
+
 export class Engine {
   runner = new ClaudeRunner();
   sessionId?: string;
@@ -87,6 +98,7 @@ export class Engine {
   private watcher: vscode.FileSystemWatcher;
   private changed = new Set<string>();
   private changeTimer?: NodeJS.Timeout;
+  private pages = new Map<string, PageState>();
 
   constructor(
     public readonly context: vscode.ExtensionContext,
@@ -142,6 +154,33 @@ export class Engine {
       canRollback: this.canRollback(),
       lang: uiLang(),
     };
+  }
+
+  /** Panel / Chrome seçim ve kuyruk değiştikçe son halini bildirir (`syncState`). */
+  syncPage(client: string, via: PageState['via'], m: any) {
+    if (m.closed) {
+      this.pages.delete(client);
+      return;
+    }
+    this.pages.set(client, {
+      client,
+      via,
+      pageUrl: String(m.pageUrl || ''),
+      viewport: String(m.viewport || 'full'),
+      items: Array.isArray(m.items) ? m.items : [],
+      queue: Array.isArray(m.queue) ? m.queue : [],
+      at: Date.now(),
+    });
+  }
+
+  /** Kapanan panel ya da kopan Chrome bağlantısının sayfalarını unutur (`prefix` ile başlayan istemciler). */
+  dropPages(prefix: string) {
+    for (const k of [...this.pages.keys()]) if (k === prefix || k.startsWith(prefix)) this.pages.delete(k);
+  }
+
+  /** Bilinen sayfalar, en son güncellenen önce. */
+  pageStates(): PageState[] {
+    return [...this.pages.values()].sort((a, b) => b.at - a.at);
   }
 
   /** Change the UI language (writes the `panoptent.language` setting; the config listener broadcasts it). */

@@ -187,6 +187,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const baseName = (p) => String(p).split(/[\\/]/).pop();
   let seq = 0;
+  let syncTimer = 0;
   const newToken = () => 'k' + Date.now().toString(36) + ++seq;
 
   // Sayfa betikleri sahte "commit" mesajı üretemesin: yalnızca gerçek kullanıcı etkileşiminden hemen sonra kabul et
@@ -390,6 +391,8 @@
     toOverlay({ type: 'config', active: false });
     if (queue.length) toOverlay({ type: 'revert', tokens: queue.map((x) => x.token) });
     host.remove();
+    clearTimeout(syncTimer);
+    bg({ type: 'syncState', closed: true });
   }
 
   chrome.storage.local.get([KEY_ON, KEY_Q, KEY_UI, 'lang', 'vsLang', 'langPref'], (o) => {
@@ -640,8 +643,24 @@
     }
   }
 
+  // Seçim ve kuyruğun son halini VS Code'a bildirir (MCP sunucusu buradan okur). Büyük görsel verisi gönderilmez.
+  function syncSoon() {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => {
+      if (!enabled || !connected()) return;
+      bg({
+        type: 'syncState',
+        pageUrl: location.href,
+        viewport,
+        items,
+        queue: queue.map((en) => (en.dataUrl ? Object.assign({}, en, { dataUrl: undefined, hasImageData: true }) : en)),
+      });
+    }, 250);
+  }
+
   function render() {
     if (!enabled) return;
+    syncSoon();
     mountUI();
     const n = queue.length;
     const w = workspaces.find((x) => x.port === activePort);
@@ -701,6 +720,7 @@
         break;
       case 'select':
         items = m.additive ? items.concat(m.item) : [m.item];
+        syncSoon();
         if (m.item.source) {
           bg({ type: 'hint', file: m.item.source.file });
           if (!m.additive && settings.openOnSelect && connected()) bg({ type: 'openSource', item: m.item, quiet: true });
@@ -709,11 +729,13 @@
       case 'replace': {
         const i = items.findIndex((x) => x.id === m.oldId);
         if (i !== -1) items[i] = m.item;
+        syncSoon();
         if (m.nav && settings.openOnSelect && m.item.source && connected()) bg({ type: 'openSource', item: m.item, quiet: true });
         break;
       }
       case 'unselect':
         items = items.filter((x) => x.id !== m.id);
+        syncSoon();
         break;
       case 'commit':
         if (!userJustActed()) return; // sayfa betiklerinden gelen sahte istekleri yok say

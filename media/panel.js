@@ -330,6 +330,7 @@
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
   const baseName = (p) => String(p).split(/[\\/]/).pop();
   let seq = 0;
+  let syncTimer = 0;
   const newToken = () => 'p' + Date.now().toString(36) + (++seq);
 
   function toFrame(msg) {
@@ -502,7 +503,22 @@
     return `<span class="warn">${esc(t('pn.src.unknown'))}</span>`;
   }
 
+  // Seçim ve kuyruğun son halini eklentiye bildirir (MCP sunucusu buradan okur). Büyük görsel verisi gönderilmez.
+  function syncSoon() {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(() => {
+      vscode.postMessage({
+        type: 'syncState',
+        pageUrl: displayUrl(pageHref),
+        viewport,
+        items,
+        queue: queue.map((en) => (en.dataUrl ? Object.assign({}, en, { dataUrl: undefined, hasImageData: true }) : en)),
+      });
+    }, 250);
+  }
+
   function renderItems() {
+    syncSoon();
     clearBtn.hidden = !items.length;
     selCount.hidden = !items.length && !queue.length;
     selCount.textContent = String(queue.length || items.length);
@@ -836,6 +852,7 @@
       lang: I18N.lang,
       nowLabel: sendTo === 'claudePanel' ? t('pn.now.panel') : t('pn.now.cli'),
     });
+    syncSoon();
   }
   sendToSel.addEventListener('change', () => {
     sendTo = sendToSel.value;
@@ -940,6 +957,7 @@
       case 'location':
         pageHref = m.href;
         if (document.activeElement !== urlInput) urlInput.value = displayUrl(m.href);
+        syncSoon();
         break;
       case 'select':
         items = m.additive ? items.concat(m.item) : [m.item];

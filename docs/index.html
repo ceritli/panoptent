@@ -222,6 +222,7 @@
     <a href="#stil"><span lang="tr">Stil paneli</span><span lang="en">Style panel</span></a>
     <a href="#kuyruk"><span lang="tr">Kuyruk ve Uygula</span><span lang="en">Queue &amp; Apply</span></a>
     <a href="#claude"><span lang="tr">Claude Code'a gönderim</span><span lang="en">Sending to Claude Code</span></a>
+    <a href="#mcp"><span lang="tr">MCP sunucusu</span><span lang="en">MCP server</span></a>
     <a href="#geri-al"><span lang="tr">Geri alma</span><span lang="en">Undo</span></a>
     <a href="#chrome"><span lang="tr">Chrome eklentisi</span><span lang="en">Chrome extension</span></a>
     <a href="#code-inspector">code-inspector</a>
@@ -423,6 +424,23 @@
       <p lang="en">Untick <b>Add to the open Claude Code conversation</b> to open each request in a new, pre-filled Claude Code tab instead.</p>
       <p lang="tr">Gönderilen tam istem her zaman <b>Output → Panoptent</b> kanalında görünür.</p>
       <p lang="en">The exact prompt is always visible in <b>Output → Panoptent</b>.</p>
+
+      <h3 id="mcp"><span lang="tr">MCP sunucusu: her yapay zekâ aracından kullan</span><span lang="en">MCP server: use it from any AI agent</span></h3>
+      <p lang="tr">Panoptent yerel ve salt okunur bir <b>MCP sunucusu</b> da açar. Böylece terminaldeki Claude Code, Cursor, Windsurf ya da MCP destekleyen başka bir araç, seçtiğin öğeleri ve kuyruğu <b>kendisi okur</b>; sohbetin ortasında “seçtiğim butonu büyüt” demen yeterli olur. Uygula akışı aynen kalır, MCP ek bir yoldur.</p>
+      <p lang="en">Panoptent also runs a local, read-only <b>MCP server</b>. Claude Code in the terminal, Cursor, Windsurf or any other MCP client can then <b>read your selection and queue itself</b>; in the middle of a conversation just say “make the selected button bigger”. The Apply flow stays as it is; MCP is an extra path.</p>
+      <p lang="tr">Bağlamak için Komut Paleti → <b>Panoptent: MCP Bağlantı Komutunu Kopyala</b>, sonra projendeki bir terminale yapıştır:</p>
+      <p lang="en">To connect: Command Palette → <b>Panoptent: Copy MCP Connect Command</b>, then paste it in a terminal in your project:</p>
+      <pre><code>claude mcp add --transport http panoptent http://127.0.0.1:47821/mcp</code></pre>
+      <p lang="tr">Cursor, Windsurf ve diğerleri için bu adresi <b>HTTP (streamable)</b> türünde bir MCP sunucusu olarak ekle. Birden fazla VS Code penceresi açıksa her biri sıradaki portu alır (47822, …); komut doğru portu kopyalar.</p>
+      <p lang="en">For Cursor, Windsurf and others, add the same address as an <b>HTTP (streamable)</b> MCP server. With several VS Code windows open, each takes the next port (47822, …); the command copies the right one.</p>
+      <div class="tbl"><table>
+        <thead><tr><th lang="tr">Araç</th><th lang="en">Tool</th><th lang="tr">Ne döndürür</th><th lang="en">Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>get_selection</code></td><td><span lang="tr">Seçili öğeler: dosya ve satır, bileşen zinciri, seçici, hesaplanmış stiller, HTML</span><span lang="en">Selected elements: file and line, component chain, selector, computed styles, HTML</span></td></tr>
+          <tr><td><code>get_queue</code></td><td><span lang="tr">Kuyrukta bekleyen değişiklikler (istek, stil, metin, silme, görsel) ve hedefleri</span><span lang="en">Pending queued changes (request, style, text, delete, image) and their targets</span></td></tr>
+          <tr><td><code>get_page_context</code></td><td><span lang="tr">Çalışma alanı, sayfa adresi, ekran genişliği, seçim ve kuyruk sayıları</span><span lang="en">Workspace, page URL, viewport, selection and queue counts</span></td></tr>
+        </tbody>
+      </table></div>
     </section>
 
     <!-- ===================== GERİ AL ===================== -->
@@ -605,6 +623,8 @@ export default defineNuxtConfig({
           <tr><td><code>panoptent.defaultUrl</code></td><td><code>http://localhost:3000</code></td><td><span lang="tr">İlk açılışta önerilen adres</span><span lang="en">Suggested URL on first open</span></td></tr>
           <tr><td><code>panoptent.chromeBridge</code></td><td><code>true</code></td><td><span lang="tr">Chrome eklentisi için yerel köprü</span><span lang="en">Local bridge for the Chrome extension</span></td></tr>
           <tr><td><code>panoptent.bridgePort</code></td><td><code>47811</code></td><td><span lang="tr">Köprünün ilk denediği port (doluysa sonraki 9)</span><span lang="en">First bridge port tried (then the next 9)</span></td></tr>
+          <tr><td><code>panoptent.mcpServer</code></td><td><code>true</code></td><td><span lang="tr">Yapay zekâ araçları için yerel MCP sunucusu</span><span lang="en">Local MCP server for AI agents</span></td></tr>
+          <tr><td><code>panoptent.mcpPort</code></td><td><code>47821</code></td><td><span lang="tr">MCP sunucusunun ilk denediği port (doluysa sonraki 9)</span><span lang="en">First MCP port tried (then the next 9)</span></td></tr>
           <tr><td><code>panoptent.claudePath</code></td><td><code>claude</code></td><td><span lang="tr">CLI modu için komut ya da tam yol</span><span lang="en">Command or full path for CLI mode</span></td></tr>
           <tr><td><code>panoptent.permissionMode</code></td><td><code>acceptEdits</code></td><td><span lang="tr">CLI modunda Claude Code izin modu</span><span lang="en">Claude Code permission mode in CLI mode</span></td></tr>
           <tr><td><code>panoptent.model</code></td><td>—</td><td><span lang="tr">CLI modunda model (<code>sonnet</code>, <code>opus</code>…)</span><span lang="en">Model in CLI mode (<code>sonnet</code>, <code>opus</code>…)</span></td></tr>
@@ -641,6 +661,7 @@ export default defineNuxtConfig({
         <li><b>Her şey yerel.</b> Panoptent'in kendi sunucusu yok; veri yalnızca bilgisayarındaki VS Code, Chrome ve Claude Code arasında dolaşır. Claude'a giden içerik, Claude Code'u normal kullanırken gidenle aynıdır.</li>
         <li><b>Köprü yalnızca <code>127.0.0.1</code></b> üzerinde dinler ve <b>yalnızca tarayıcı eklentisi kökenlerinden</b> (<code>chrome-extension://</code>) bağlantı kabul eder. Normal web siteleri bağlanamaz.</li>
         <li><b>İlk bağlantı onay ister.</b> Onaylanan tarayıcıya bir anahtar verilir. Silmek için: <b>Panoptent: Chrome Eşleştirmelerini Sil</b>. Köprüyü tamamen kapatmak için <code>panoptent.chromeBridge</code>.</li>
+        <li><b>MCP sunucusu</b> da yalnızca <code>127.0.0.1</code> üzerinde dinler, salt okunurdur ve web sayfalarından gelen istekleri (<code>Origin</code> başlığı olanları) reddeder. Kapatmak için <code>panoptent.mcpServer</code>.</li>
         <li><b>Sayfa kodu istek üretemez.</b> Chrome'da değişiklikler yalnızca senin gerçek tıklaman ya da tuşa basmanla kabul edilir.</li>
         <li><b>Commit yok.</b> Panoptent git geçmişine, dallara ya da staging alanına dokunmaz. İstek dosyaları <code>.claude/panoptent/</code> altında, git'te yok sayılır.</li>
         <li><b>CLI modu</b> varsayılan olarak <code>acceptEdits</code> ile çalışır: dosya düzenlemelerine izin verir, diğer terminal komutlarını reddeder.</li>
@@ -649,6 +670,7 @@ export default defineNuxtConfig({
         <li><b>Everything is local.</b> Panoptent has no server of its own; data moves only between VS Code, Chrome and Claude Code on your machine. What reaches Claude is the same as when you use Claude Code directly.</li>
         <li><b>The bridge listens on <code>127.0.0.1</code> only</b> and accepts connections <b>only from browser-extension origins</b> (<code>chrome-extension://</code>). Regular websites can't connect.</li>
         <li><b>First connection requires approval.</b> The approved browser gets a key. Remove keys with <b>Panoptent: Remove Chrome Pairings</b>; disable the bridge with <code>panoptent.chromeBridge</code>.</li>
+        <li><b>The MCP server</b> also listens on <code>127.0.0.1</code> only, is read-only and refuses requests from web pages (those with an <code>Origin</code> header). Turn it off with <code>panoptent.mcpServer</code>.</li>
         <li><b>Page scripts can't inject requests.</b> In Chrome, changes are accepted only right after a real click or key press.</li>
         <li><b>No commits.</b> Panoptent never touches git history, branches or the index. Request files live in <code>.claude/panoptent/</code>, git-ignored.</li>
         <li><b>CLI mode</b> defaults to <code>acceptEdits</code>: file edits allowed, other shell commands refused.</li>

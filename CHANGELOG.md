@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.10.0 — unreleased
+
+- **MCP server**: Panoptent now runs a local, read-only MCP server (`http://127.0.0.1:47821/mcp`, Streamable HTTP) so Claude Code CLI, Cursor, Windsurf and other MCP clients can pull context themselves. Tools: `get_selection` (selected elements with source file/line, component chain, selector, computed styles, HTML), `get_queue` (pending queued changes) and `get_page_context` (workspace, page URL, viewport, counts)
+- The VS Code preview and the Chrome extension report their current selection and queue to VS Code (`syncState`); large image data is not sent
+- New command *Panoptent: Copy MCP Connect Command*; new settings `panoptent.mcpServer` (default on) and `panoptent.mcpPort` (default 47821, next 9 tried)
+- The MCP server refuses requests that carry an `Origin` header (web pages) or a foreign `Host`; the existing Apply → Claude Code flow is unchanged
+
 ## 0.9.1 — 2026-10-22
 
 - Chrome: no longer requests the broad `tabs` permission (`activeTab` is enough)
