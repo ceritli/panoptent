@@ -5,3 +5,4 @@ dist/
 chrome/overlay.js
 .DS_Store
 .vscode-test/
+chrome/i18n.js

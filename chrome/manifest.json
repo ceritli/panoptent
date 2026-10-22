@@ -46,6 +46,7 @@
         "https://*.localhost/*"
       ],
       "js": [
+        "i18n.js",
         "content.js"
       ],
       "run_at": "document_idle"

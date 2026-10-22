@@ -171,7 +171,7 @@ chrome.runtime.onConnect.addListener((p) => {
   p.onMessage.addListener(async (m) => {
     switch (m.type) {
       case 'injectOverlay':
-        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: 'Seçim katmanı yüklenemedi: ' + e.message }));
+        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['i18n.js', 'overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: 'Seçim katmanı yüklenemedi: ' + e.message }));
         return;
       case 'pair':
         wantPair = true;
@@ -243,7 +243,7 @@ chrome.runtime.onMessage.addListener((m, sender, reply) => {
 async function ensureContent(tabId) {
   if (tabs.has(tabId)) return true;
   try {
-    await chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] });
+    await chrome.scripting.executeScript({ target: { tabId }, files: ['i18n.js', 'content.js'] });
     await new Promise((r) => setTimeout(r, 150));
     return true;
   } catch (e) {

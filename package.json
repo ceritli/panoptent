@@ -94,6 +94,21 @@
     "configuration": {
       "title": "Panoptent",
       "properties": {
+        "panoptent.language": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "en",
+            "tr"
+          ],
+          "enumDescriptions": [
+            "%config.language.auto%",
+            "English",
+            "Türkçe"
+          ],
+          "default": "auto",
+          "description": "%config.language%"
+        },
         "panoptent.defaultUrl": {
           "type": "string",
           "default": "http://localhost:3000",

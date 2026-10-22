@@ -5,6 +5,7 @@ import { DevProxy } from './proxy';
 import { pickCandidate, setupPrompt, runInstall } from './codeInspector';
 import { Engine } from './engine';
 import { Bridge } from './bridge';
+import { uiLang } from './i18n';
 
 let current: PreviewPanel | undefined;
 let engine: Engine | undefined;
@@ -46,6 +47,9 @@ export function activate(context: vscode.ExtensionContext) {
     // proje klasörü sonradan açılırsa köprüyü o zaman başlat
     vscode.workspace.onDidChangeWorkspaceFolders(() => startBridge()),
     vscode.workspace.onDidChangeConfiguration((ev) => {
+      if (ev.affectsConfiguration('panoptent.language')) {
+        engine?.emit({ type: 'lang', value: uiLang() });
+      }
       if (!ev.affectsConfiguration('panoptent.chromeBridge') && !ev.affectsConfiguration('panoptent.bridgePort')) return;
       bridge?.stop();
       bridge = undefined;
@@ -121,9 +125,13 @@ class PreviewPanel {
 
   static async create(context: vscode.ExtensionContext, engine: Engine, url: string) {
     const overlayPath = path.join(context.extensionPath, 'media', 'overlay.js');
+    const i18nPath = path.join(context.extensionPath, 'media', 'i18n.js');
     const proxy = new DevProxy({
       target: url,
-      overlayScript: () => fs.readFileSync(overlayPath, 'utf8'),
+      overlayScript: () =>
+        fs.readFileSync(i18nPath, 'utf8') +
+        `\n;PanoptentI18n.setLang(${JSON.stringify(uiLang())});\n` +
+        fs.readFileSync(overlayPath, 'utf8'),
       log: (m) => engine.output.appendLine(m),
     });
     const port = await proxy.start();
@@ -218,6 +226,9 @@ class PreviewPanel {
         break;
       case 'setupCodeInspector':
         vscode.commands.executeCommand('panoptent.setupCodeInspector');
+        break;
+      case 'setLang':
+        await e.setLang(m.value);
         break;
       case 'setOpenOnSelect':
         await e.setOpenOnSelect(!!m.value);
@@ -366,6 +377,8 @@ class PreviewPanel {
     </aside>
   </main>
 </div>
+<script nonce="${nonce}" src="${media('i18n.js')}"></script>
+<script nonce="${nonce}">PanoptentI18n.setLang(${JSON.stringify(uiLang())});</script>
 <script nonce="${nonce}" src="${media('panel.js')}"></script>
 </body>
 </html>`;

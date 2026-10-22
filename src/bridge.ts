@@ -197,6 +197,9 @@ export class Bridge {
       case 'setOpenOnSelect':
         await e.setOpenOnSelect(!!m.value);
         break;
+      case 'setLang':
+        await e.setLang(m.value);
+        break;
       case 'stop':
         e.runner.stop();
         break;

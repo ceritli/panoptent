@@ -2,6 +2,7 @@
 // VS Code önizleme paneli ve Chrome köprüsü aynı motoru kullanır.
 
 import * as vscode from 'vscode';
+import { uiLang, normLang } from './i18n';
 import * as fs from 'fs';
 import * as path from 'path';
 import { ClaudeRunner } from './claude';
@@ -72,7 +73,14 @@ export class Engine {
       openOnSelect: this.cfg().get<boolean>('openSourceOnSelect') !== false,
       claudeExt: claudeExtensionInstalled(),
       canRollback: this.canRollback(),
+      lang: uiLang(),
     };
+  }
+
+  /** Change the UI language (writes the `panoptent.language` setting; the config listener broadcasts it). */
+  async setLang(v: string) {
+    const value = v === 'auto' ? 'auto' : normLang(v);
+    await this.cfg().update('language', value, vscode.ConfigurationTarget.Global);
   }
 
   async setSendTo(v: string) {
