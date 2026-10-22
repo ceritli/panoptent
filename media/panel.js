@@ -59,7 +59,9 @@
       'pn.popChk': 'Open a box next to the element on select',
       'pn.openSrc': 'Also open its code on select',
       'pn.openSrc.title': "Opens the selected element's source file in the editor without taking focus from the preview",
-      'pn.design': 'Design rules:',
+      'pn.design': 'Design rules',
+      'pn.opts': 'Options',
+      'pn.moreSettings': 'All settings…',
       'pn.design.title': "Claude follows the design rules in this file for every change (click to choose another file or turn it off)",
       'pn.design.auto': '{0} (automatic)',
       'pn.design.none': 'none — choose a file',
@@ -199,7 +201,9 @@
       'pn.popChk': 'Seçince öğenin yanında kutu aç',
       'pn.openSrc': 'Seçince kodunu da yanda aç',
       'pn.openSrc.title': 'Seçtiğin öğenin kaynak dosyası, odağı önizlemeden almadan editörde açılır',
-      'pn.design': 'Tasarım kuralları:',
+      'pn.design': 'Tasarım kuralları',
+      'pn.opts': 'Seçenekler',
+      'pn.moreSettings': 'Tüm ayarlar…',
       'pn.design.title': 'Claude her değişiklikte bu dosyadaki tasarım kurallarına uyar (başka dosya seçmek ya da kapatmak için tıkla)',
       'pn.design.auto': '{0} (otomatik)',
       'pn.design.none': 'yok — dosya seç',
@@ -419,6 +423,10 @@
       : d.missing ? t('pn.design.missing', d.setting) : t('pn.design.none');
   }
   if (designBtn) designBtn.addEventListener('click', () => vscode.postMessage({ type: 'chooseDesignFile' }));
+  const optsBox = $('#optsBox');
+  if (saved.optsOpen === false) optsBox.open = false;
+  optsBox.addEventListener('toggle', () => persist({ optsOpen: optsBox.open }));
+  $('#moreSettings').addEventListener('click', () => vscode.postMessage({ type: 'openSettings' }));
   let openOnSelect = true;
   openSrcChk.addEventListener('change', () => {
     openOnSelect = openSrcChk.checked;
