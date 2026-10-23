@@ -78,6 +78,8 @@
       'cx.ho.mcpLong': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: paste it into your Claude Code conversation in VS Code and press <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> there instead of pressing Apply.',
       'cx.ho.mcpPrompt': 'Claude Code took the queue over MCP',
       'cx.ho.mcpPromptLong': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them as usual.',
+      'cx.ho.live': 'Sent to Claude Code (live) — it is applying now',
+      'cx.ho.liveLong': 'A Claude Code conversation is listening with <code>/panoptent live</code>, so it got this change set directly and is applying it; the page updates when it is done. You can undo it as usual.',
       'cx.panelFail': 'Couldn’t open the Claude Code panel', 'cx.panelFailLog': 'Couldn’t open the Claude Code panel.',
       'cx.done': '✓ Done', 'cx.changedFiles': 'Changed: {0}', 'cx.noFiles': ' · no files changed',
       'cx.claudeFail': 'Claude couldn’t finish the job.', 'cx.claudeFailShort': 'Claude couldn’t finish the job',
@@ -156,6 +158,8 @@
       'cx.ho.mcpLong': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: VS Code’daki Claude Code konuşmana yapıştırıp <b>Enter</b>’a bas. İpucu: Uygula’ya basmadan oraya <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
       'cx.ho.mcpPrompt': 'Claude Code kuyruğu MCP üzerinden aldı',
       'cx.ho.mcpPromptLong': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi geri alabilirsin.',
+      'cx.ho.live': 'Claude Code’a gitti (canlı) — şimdi uyguluyor',
+      'cx.ho.liveLong': '<code>/panoptent live</code> ile dinleyen bir Claude Code konuşması var; bu değişiklik paketini doğrudan aldı ve uyguluyor, bitince sayfa güncellenir. Her zamanki gibi geri alabilirsin.',
       'cx.panelFail': 'Claude Code paneli açılamadı', 'cx.panelFailLog': 'Claude Code paneli açılamadı.',
       'cx.done': '✓ Tamamlandı', 'cx.changedFiles': 'Değişen: {0}', 'cx.noFiles': ' · dosya değişmedi',
       'cx.claudeFail': 'Claude işi bitiremedi.', 'cx.claudeFailShort': 'Claude işi bitiremedi',
@@ -871,7 +875,7 @@
         break;
       }
       case 'handoff': {
-        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt', 'live'].includes(m.how) ? m.how : 'newTab';
         const short = () => t('cx.ho.' + how);
         if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? short() : t('cx.panelFail'), 2600); }
         if (m.ok) {

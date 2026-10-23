@@ -144,6 +144,8 @@
       'pn.ho.mcp.long': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: click your Claude Code conversation, press <b>Cmd/Ctrl+V</b> and <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> in Claude Code instead of pressing Apply.',
       'pn.ho.mcpPrompt.short': 'Claude Code took the queue over MCP',
       'pn.ho.mcpPrompt.long': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them here as usual.',
+      'pn.ho.live.short': 'Sent to Claude Code (live) — it is applying now',
+      'pn.ho.live.long': 'A Claude Code conversation is listening with <code>/panoptent live</code>, so it got this change set directly and is applying it; the preview updates when it is done. You can undo it here as usual.',
       'pn.ho.failShort': "Couldn't open the Claude Code panel",
       'pn.ho.failLong': 'Couldn\'t open the Claude Code panel. Try setting the destination to "In the background (CLI)".',
       'pn.changed': '✎ Changed',
@@ -286,6 +288,8 @@
       'pn.ho.mcp.long': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: Claude Code konuşmana tıkla, <b>Cmd/Ctrl+V</b> ve <b>Enter</b>. İpucu: Uygula’ya basmadan Claude Code’a <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
       'pn.ho.mcpPrompt.short': 'Claude Code kuyruğu MCP üzerinden aldı',
       'pn.ho.mcpPrompt.long': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi buradan geri alabilirsin.',
+      'pn.ho.live.short': 'Claude Code’a gitti (canlı) — şimdi uyguluyor',
+      'pn.ho.live.long': '<code>/panoptent live</code> ile dinleyen bir Claude Code konuşması var; bu değişiklik paketini doğrudan aldı ve uyguluyor, bitince önizleme güncellenir. Her zamanki gibi buradan geri alabilirsin.',
       'pn.ho.failShort': 'Claude Code paneli açılamadı',
       'pn.ho.failLong': 'Claude Code paneli açılamadı. Gönderme yerini "Arka planda (CLI)" yapmayı dene.',
       'pn.changed': '✎ Değişti',
@@ -1135,7 +1139,7 @@
         if (m.ok && supportKind === 'none') setTimeout(reloadFrame, 300);
         break;
       case 'handoff': {
-        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt', 'live'].includes(m.how) ? m.how : 'newTab';
         if (popPending) {
           popPending = false;
           popStatus(m.ok ? 'ok' : 'err', m.ok ? t('pn.ho.' + how + '.short') : t('pn.ho.failShort'), 2600);

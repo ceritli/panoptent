@@ -10,6 +10,7 @@ import { resolveFile, openAt, quickEditText } from './source';
 import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClaude, sendToOpenConversation } from './claudePanel';
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
+import { LiveHub } from './live';
 
 addStrings({
   en: {
@@ -47,6 +48,8 @@ addStrings({
     'ext.mcp.markDone': 'When you are done, call the Panoptent MCP tool mark_applied with id {0}.',
     'ext.mcp.directOnly': 'Panoptent wrote the {0} text change(s) directly; there is nothing left to edit.',
     'ext.mcp.log.done': 'Claude finished {0} (via MCP)',
+    'ext.live.on': 'Live: a Claude Code session is listening (/panoptent live); Apply goes straight to it.',
+    'ext.live.off': 'Live: no Claude Code session is listening any more.',
   },
   tr: {
     'ext.fileNotFound': 'Dosya bulunamadı: {0}',
@@ -83,6 +86,8 @@ addStrings({
     'ext.mcp.markDone': 'İşin bitince Panoptent MCP aracı mark_applied’ı {0} kimliğiyle çağır.',
     'ext.mcp.directOnly': 'Panoptent {0} metin değişikliğini doğrudan yazdı; düzenlenecek başka bir şey kalmadı.',
     'ext.mcp.log.done': 'Claude {0} işini bitirdi (MCP üzerinden)',
+    'ext.live.on': 'Canlı: bir Claude Code oturumu dinliyor (/panoptent live); Uygula doğrudan ona gidiyor.',
+    'ext.live.off': 'Canlı: dinleyen Claude Code oturumu kalmadı.',
   },
 });
 
@@ -101,6 +106,8 @@ export interface PageState {
 
 export class Engine {
   runner = new ClaudeRunner();
+  /** `/panoptent live`: dinleyen Claude Code oturumuna doğrudan teslim */
+  readonly live = new LiveHub();
   sessionId?: string;
   private listeners = new Set<Listener>();
   private watcher: vscode.FileSystemWatcher;
@@ -126,6 +133,10 @@ export class Engine {
     };
     this.watcher.onDidChange(onChange);
     this.watcher.onDidCreate(onChange);
+    this.live.onChange((on) => {
+      this.output.appendLine(t(on ? 'ext.live.on' : 'ext.live.off'));
+      this.emit({ type: 'live', on });
+    });
   }
 
   on(l: Listener): vscode.Disposable {
@@ -149,6 +160,7 @@ export class Engine {
   }
 
   dispose() {
+    this.live.dispose();
     this.runner.stop();
     this.watcher.dispose();
     clearTimeout(this.changeTimer);
@@ -340,9 +352,11 @@ export class Engine {
     if (!entries.length) return fail(t('ext.nothingToApply'));
     if (this.runner.running) return fail(t('ext.busy'));
     // mcp: Claude değişiklikleri Panoptent'in MCP sunucusundan kendisi alır (istek dosyası yok)
-    const mcpMode = viaMcpPrompt || this.sendTo() === 'mcp';
+    // live: bir Claude Code oturumu `/panoptent live` ile dinliyorsa paket ona doğrudan gider (CLI modu hariç)
+    const liveOn = !viaMcpPrompt && this.sendTo() !== 'cli' && this.live.active;
+    const mcpMode = viaMcpPrompt || liveOn || this.sendTo() === 'mcp';
     const panelMode = this.sendTo() !== 'cli';
-    if (panelMode && !viaMcpPrompt && !claudeExtensionInstalled()) {
+    if (panelMode && !viaMcpPrompt && !liveOn && !claudeExtensionInstalled()) {
       return fail(t('ext.noClaudeExt'));
     }
 
@@ -419,7 +433,9 @@ export class Engine {
       if (this.mcpApplies.size > 15) this.mcpApplies.delete(this.mcpApplies.keys().next().value!);
       let ok = true;
       let how = 'mcpPrompt';
-      if (!viaMcpPrompt) {
+      if (liveOn && this.live.deliver({ type: 'apply', id: rec.id })) {
+        how = 'live';
+      } else if (!viaMcpPrompt) {
         const line = t('ext.mcp.applyLine', rec.id);
         if (continueSession) {
           // Açık Claude Code konuşmasının giriş kutusuna ekle (panel modundaki gibi): kullanıcı yalnızca Enter'a basar.

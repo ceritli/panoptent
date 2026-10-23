@@ -11,6 +11,8 @@
   "command.chooseDesignFile": "Tasarım Kuralları Dosyasını Seç",
   "command.connectClaudeCode": "Claude Code'u Bağla (MCP)",
   "command.copyMcpCommand": "MCP Bağlantı Komutunu Kopyala (Claude Code)",
+  "command.installClaudeCommand": "Claude Code’a /panoptent Komutunu Ekle (canlı mod)",
+  "command.stopLive": "Canlı Modu Durdur (/panoptent live)",
   "config.section.general": "Genel",
   "config.section.sending": "Claude'a gönderim",
   "config.section.cli": "Arka plan modu (CLI)",

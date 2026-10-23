@@ -107,6 +107,16 @@
         "command": "panoptent.copyMcpCommand",
         "title": "%command.copyMcpCommand%",
         "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.installClaudeCommand",
+        "title": "%command.installClaudeCommand%",
+        "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.stopLive",
+        "title": "%command.stopLive%",
+        "category": "Panoptent"
       }
     ],
     "keybindings": [
