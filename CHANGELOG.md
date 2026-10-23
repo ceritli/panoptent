@@ -3,6 +3,7 @@
 ## Unreleased
 
 - **Integrated Browser**: on VS Code 1.109+ *Panoptent: Open Preview* opens the page in VS Code's own Integrated Browser (real cookies, logins, DevTools) with the same in-page bar, drawer and popover as the Chrome extension, no separate panel. It connects to this VS Code window automatically (no pairing); selecting, queue, Apply, undo and the shortcut *Panoptent: Toggle Select Mode* work as in Chrome. Running the command again reuses the same browser tab
+- Closing the element popover (× or Esc) now also clears the selection, instead of leaving the element outlined (VS Code preview, Integrated Browser and Chrome)
 - New setting `panoptent.previewIn`: `auto` (Integrated Browser when available), `integratedBrowser`, or `panel` (classic in-panel preview)
 - The in-page UI talks to VS Code over a same-origin WebSocket on the preview proxy, guarded by a per-session token and an origin check; `media/pagehost.js` stands in for the `chrome.*` APIs `chrome/content.js` uses
 
