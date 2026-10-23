@@ -110,6 +110,17 @@ function contentText(msg: any): { text: string; isToolResult: boolean } {
   return { text: '', isToolResult: false };
 }
 
+/** Bir tool_result'ın metni (canlı modda PT kimliği bekleme komutunun çıktısında gelir). */
+function toolResultText(x: any): string {
+  const c = x?.content;
+  if (typeof c === 'string') return c;
+  if (Array.isArray(c)) return c.map((y: any) => (y?.type === 'text' ? y.text : '')).join('\n');
+  return '';
+}
+
+const ANY_ID = /PT-[a-z0-9]{6,10}/g;
+const LIVE_WAIT = '/panoptent/live/wait';
+
 export interface TranscriptResult {
   found: boolean;
   ops: RevOp[];
@@ -155,11 +166,40 @@ export function opsFromTranscripts(root: string, id: string, since: number): Tra
             }
           }
         }
+        const c = d.message?.content;
+        // Canlı mod (/panoptent live): kimlik kullanıcı mesajında değil, bekleme komutunun çıktısında ve
+        // get_apply çağrısında geçer; kapsam mark_applied(kimlik) ile ya da başka bir paketin gelişiyle biter.
+        if (!isSub && d.type === 'user' && Array.isArray(c)) {
+          const texts = c.filter((x: any) => x?.type === 'tool_result').map(toolResultText).join('\n');
+          if (texts) {
+            const ids: string[] = texts.match(ANY_ID) || [];
+            if (!inside && ids.includes(id)) {
+              inside = true;
+              res.found = true;
+            } else if (inside && ids.some((x) => x !== id) && !ids.includes(id)) {
+              inside = false;
+            }
+          }
+        }
+        if (!isSub && d.type === 'assistant' && Array.isArray(c)) {
+          for (const x of c) {
+            if (x?.type !== 'tool_use' || typeof x.name !== 'string') continue;
+            const argId = String(x.input?.id || '').trim();
+            if (/get_apply$/.test(x.name) && argId === id) {
+              inside = true;
+              res.found = true;
+            } else if (/get_apply$/.test(x.name) && argId && inside) {
+              inside = false; // başka bir paket başladı
+            }
+          }
+        }
         if (!inside) continue;
         if (isSub) res.found = true;
-        const c = d.message?.content;
         if (d.type === 'assistant' && Array.isArray(c)) {
-          for (const x of c) if (x?.type === 'tool_use' && x.name === 'Bash') res.bashCount++;
+          for (const x of c) {
+            if (x?.type === 'tool_use' && x.name === 'Bash' && !String(x.input?.command || '').includes(LIVE_WAIT)) res.bashCount++;
+            if (x?.type === 'tool_use' && /mark_applied$/.test(String(x.name)) && String(x.input?.id || '').trim() === id) inside = false;
+          }
         }
         if (d.type === 'user' && Array.isArray(c)) {
           for (const x of c) {

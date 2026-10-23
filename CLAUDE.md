@@ -21,7 +21,10 @@ Open to every kind of contribution.
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |
 | `src/claude.ts` | CLI mode runner (`claude -p --output-format stream-json`) |
-| `src/proxy.ts` | dev-server proxy that injects `i18n.js` + `overlay.js` |
+| `src/proxy.ts` | dev-server proxy that injects `i18n.js` + `overlay.js` (panel) or `pagehost.js` + `chrome/content.js` (Integrated Browser); token-guarded same-origin WebSocket channel `/__panoptent__/ws` |
+| `src/live.ts` | `/panoptent live` hand-off state (`LiveHub`): long-poll waiters, busy/reconnect grace, fallback when nobody listens |
+| `src/skill.ts` | installs/updates the personal Claude Code skill `~/.claude/skills/panoptent/SKILL.md` (template `media/claude-skill/SKILL.md`, version marker; never touches a user's own skill) |
+| `media/pagehost.js` | `chrome.*` stand-in so `chrome/content.js` runs in VS Code's Integrated Browser (runtime.connect → proxy channel, storage → localStorage) |
 | `src/codeInspector.ts` | code-inspector-plugin auto setup |
 | `src/i18n.ts` | extension-host strings (`addStrings`, `t`, `uiLang`) |
 | `media/i18n.js` | shared browser i18n core (`PanoptentI18n`) for panel, overlay, Chrome |

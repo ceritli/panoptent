@@ -7,6 +7,7 @@ import { Engine } from './engine';
 import { Bridge } from './bridge';
 import { McpHost } from './mcp';
 import { uiLang, addStrings, t } from './i18n';
+import { installSkill, refreshSkill } from './skill';
 
 addStrings({
   en: {
@@ -110,12 +111,15 @@ export function activate(context: vscode.ExtensionContext) {
     mcp = m;
     m.start()
       .then(() => m.refreshConnection())
+      // Claude Code bu projede bağlıysa /panoptent komutunu (bir kez) öner
+      .then(() => (m.connected ? installSkill(context, { ask: true }) : undefined))
       .catch((err) => {
         getOutput().appendLine(t('ext.mcp.failed', err.message));
         if (mcp === m) mcp = undefined;
       });
   };
   startMcp();
+  refreshSkill(context, getOutput());
   context.subscriptions.push(
     // proje klasörü sonradan açılırsa köprüyü o zaman başlat
     vscode.workspace.onDidChangeWorkspaceFolders(() => {
@@ -220,8 +224,13 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
       await mcp.connectClaudeCode(false);
-      if (mcp.connected) vscode.window.showInformationMessage(t('ext.mcp.connected'));
+      if (mcp.connected) {
+        vscode.window.showInformationMessage(t('ext.mcp.connected'));
+        await installSkill(context, { ask: true });
+      }
     }),
+    vscode.commands.registerCommand('panoptent.installClaudeCommand', () => installSkill(context, { ask: false, force: true })),
+    vscode.commands.registerCommand('panoptent.stopLive', () => engine?.live.stop()),
     vscode.commands.registerCommand('panoptent.copyMcpCommand', async () => {
       if (!mcp?.port) {
         vscode.window.showWarningMessage(t('ext.mcp.notRunning'));

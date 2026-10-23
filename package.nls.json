@@ -11,6 +11,8 @@
   "command.chooseDesignFile": "Choose Design Rules File",
   "command.connectClaudeCode": "Connect Claude Code (MCP)",
   "command.copyMcpCommand": "Copy MCP Connect Command (Claude Code)",
+  "command.installClaudeCommand": "Add /panoptent Command to Claude Code (live mode)",
+  "command.stopLive": "Stop Live Mode (/panoptent live)",
   "config.section.general": "General",
   "config.section.sending": "Sending to Claude",
   "config.section.cli": "Background mode (CLI)",
