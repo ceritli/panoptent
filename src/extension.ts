@@ -32,6 +32,7 @@ addStrings({
     'ext.design.browse': 'Choose another file…',
     'ext.design.outside': 'Pick a file inside this project folder.',
     'ext.design.set': 'Panoptent: Claude will follow {0} for changes in this project.',
+    'ext.browser.missing': 'Panoptent: This VS Code has no Integrated Browser (needs 1.109 or later), so the page opens inside the Panoptent panel.',
   },
   tr: {
     'ext.bridgeFailed': 'Chrome köprüsü başlatılamadı: {0}',
@@ -56,6 +57,7 @@ addStrings({
     'ext.design.browse': 'Başka bir dosya seç…',
     'ext.design.outside': 'Bu proje klasörünün içinden bir dosya seç.',
     'ext.design.set': 'Panoptent: Bu projede Claude değişikliklerde {0} dosyasına uyacak.',
+    'ext.browser.missing': 'Panoptent: Bu VS Code’da Integrated Browser yok (1.109 veya üstü gerekir), sayfa Panoptent panelinin içinde açılıyor.',
   },
 });
 
@@ -223,8 +225,21 @@ export function deactivate() {
   engine?.dispose();
 }
 
+/** VS Code'un Integrated Browser'ını açan komut (1.109+). */
+const BROWSER_OPEN = 'workbench.action.browser.open';
+
+/** Sayfa Integrated Browser'da mı açılsın? Ayar + bu VS Code'da komutun varlığı. */
+async function useIntegratedBrowser(): Promise<boolean> {
+  const pref = vscode.workspace.getConfiguration('panoptent').get<string>('previewIn') || 'auto';
+  if (pref === 'panel') return false;
+  const has = (await vscode.commands.getCommands(true)).includes(BROWSER_OPEN);
+  if (!has && pref === 'integratedBrowser') vscode.window.showWarningMessage(t('ext.browser.missing'));
+  return has;
+}
+
 class PreviewPanel {
   private panel: vscode.WebviewPanel;
+
   private disposeHandlers: (() => void)[] = [];
   private disposed = false;
   private sub: vscode.Disposable;
@@ -232,18 +247,24 @@ class PreviewPanel {
   static async create(context: vscode.ExtensionContext, engine: Engine, url: string) {
     const overlayPath = path.join(context.extensionPath, 'media', 'overlay.js');
     const i18nPath = path.join(context.extensionPath, 'media', 'i18n.js');
-    const proxy = new DevProxy({
+    const browser = await useIntegratedBrowser();
+    let self: PreviewPanel | undefined;
+    const proxy: DevProxy = new DevProxy({
       target: url,
       overlayScript: () =>
+        `window.__PANOPTENT_WS=${JSON.stringify(proxy.channelPath)};\n` +
         fs.readFileSync(i18nPath, 'utf8') +
         `\n;PanoptentI18n.setLang(${JSON.stringify(uiLang())});\n` +
         fs.readFileSync(overlayPath, 'utf8'),
       log: (m) => engine.output.appendLine(m),
+      // Integrated Browser'daki overlay → panel
+      onChannelMessage: (m) => self?.fromChannel(m),
     });
     const port = await proxy.start();
     // Uzak (SSH/Codespaces) senaryolarında da çalışsın diye dış adrese çevir
     const external = await vscode.env.asExternalUri(vscode.Uri.parse(`http://127.0.0.1:${port}/`));
-    return new PreviewPanel(context, engine, proxy, external.toString(true));
+    self = new PreviewPanel(context, engine, proxy, external.toString(true), browser);
+    return self;
   }
 
   private constructor(
@@ -251,6 +272,7 @@ class PreviewPanel {
     private engine: Engine,
     private proxy: DevProxy,
     private proxyBase: string,
+    private browser: boolean,
   ) {
     this.panel = vscode.window.createWebviewPanel(
       'panoptent.preview',
@@ -298,6 +320,26 @@ class PreviewPanel {
     if (!this.disposed) this.panel.webview.postMessage(msg);
   }
 
+  /** Integrated Browser'daki overlay'den gelen mesajı panele iletir. */
+  fromChannel(msg: any) {
+    this.post({ type: 'fromOverlay', msg });
+  }
+
+  /** Sayfayı Integrated Browser'da açar; açık Panoptent sekmesi varsa onu kullanır. */
+  private async openInBrowser(p: string) {
+    const base = this.proxyBase.replace(/\/$/, '');
+    if (!p || p[0] !== '/') p = '/' + (p || '');
+    try {
+      await vscode.commands.executeCommand(BROWSER_OPEN, {
+        url: base + p,
+        openToSide: true,
+        reuseUrlFilter: new URL(base).origin + '/**',
+      });
+    } catch (err: any) {
+      this.engine.output.appendLine(t('ext.startFailed', err?.message || String(err)));
+    }
+  }
+
   private async onMessage(m: any) {
     const e = this.engine;
     switch (m.type) {
@@ -307,9 +349,21 @@ class PreviewPanel {
           proxyBase: this.proxyBase,
           target: this.proxy.targetOrigin,
           initialPath: this.initialPath(),
+          browser: this.browser,
           layout: this.context.globalState.get('panoptent.layout'),
           ...e.settings(),
         });
+        break;
+      case 'toOverlay':
+        if (m.msg && typeof m.msg === 'object') this.proxy.sendToChannel({ ...m.msg, source: 'panoptent' });
+        break;
+      case 'browserNavigate':
+        // açık Panoptent sekmesi varsa o sekmede gider ve öne gelir; kapatıldıysa yeniden açılır
+        await this.openInBrowser(typeof m.path === 'string' ? m.path : '/');
+        break;
+      case 'browserReload':
+        // sayfa bağlıysa yerinde yenile; sekme kapatıldıysa yeniden aç
+        if (!this.proxy.sendToChannel({ source: 'panoptent', type: 'reload' })) await this.openInBrowser(typeof m.path === 'string' ? m.path : '/');
         break;
       case 'saveLayout':
         await this.context.globalState.update('panoptent.layout', m.layout);

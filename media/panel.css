@@ -319,3 +319,16 @@ main.dragging .qbar { pointer-events: none; }
 .qs { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .qvp { font-family: var(--vscode-font-family); font-size: 10.5px; color: var(--sel); border: 1px solid currentColor; border-radius: 3px; padding: 0 4px; margin-left: 4px; }
 .badge.q { background: var(--sel); }
+
+/* ---------- Integrated Browser modu: sayfa VS Code'un tarayıcısında, panel yalnızca kontroller ---------- */
+body.ext-browser .bar .seg, body.ext-browser #sideToggle, body.ext-browser .splitter, body.ext-browser #frameWrap { display: none; }
+body.ext-browser main, body.ext-browser main.dock-left, body.ext-browser main.dock-right, body.ext-browser main.dock-bottom { flex-direction: column; }
+body.ext-browser main .stage { order: 2; flex: 0 0 auto; background: transparent; overflow: visible; justify-content: stretch; }
+body.ext-browser main .side, body.ext-browser main.collapsed .side {
+  display: flex; order: 1; flex: 1 1 auto; width: auto; height: auto; flex-direction: column; border: 0;
+}
+body.ext-browser main .col { flex: none; max-height: none; }
+body.ext-browser main .colSel { flex: 0 1 auto; max-height: 45%; overflow: auto; }
+body.ext-browser main .colLog { flex: 1 1 auto; min-height: 0; overflow: auto; }
+body.ext-browser main .col + .col { border-left: 0; }
+body.ext-browser .qbar { position: static; transform: none; margin: 8px; max-width: none; width: auto; }

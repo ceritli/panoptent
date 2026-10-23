@@ -331,6 +331,7 @@
   let claudeExt = true;
   let lastHandoff = 0;
   let proxyBase = '';
+  let ext = false; // sayfa VS Code'un Integrated Browser'ında (iframe yok)
   let target = '';
   let items = [];
   let selecting = false;
@@ -361,6 +362,7 @@
 
   function toFrame(msg) {
     msg.source = 'panoptent';
+    if (ext) { vscode.postMessage({ type: 'toOverlay', msg }); return; }
     try { frame.contentWindow.postMessage(msg, '*'); } catch (e) { /* yok say */ }
   }
   function persist(patch) {
@@ -378,8 +380,17 @@
       return href;
     }
   }
-  function navigate(p) { frame.src = proxyUrl(p); }
-  function reloadFrame() { try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; } }
+  function pagePath() {
+    try { const u = new URL(pageHref); return u.pathname + u.search + u.hash; } catch (e) { return '/'; }
+  }
+  function navigate(p) {
+    if (ext) { vscode.postMessage({ type: 'browserNavigate', path: p && p[0] === '/' ? p : '/' + (p || '') }); return; }
+    frame.src = proxyUrl(p);
+  }
+  function reloadFrame() {
+    if (ext) { vscode.postMessage({ type: 'browserReload', path: pagePath() }); return; }
+    try { frame.contentWindow.location.reload(); } catch (e) { frame.src = frame.src; }
+  }
 
   // ---------- seçim modu ----------
   function setSelect(on) {
@@ -1063,6 +1074,8 @@
           addLog('err', esc(t('pn.noClaudeExt')));
         }
         proxyBase = m.proxyBase;
+        ext = !!m.browser;
+        document.body.classList.toggle('ext-browser', ext);
         target = m.target;
         urlInput.value = target + (m.initialPath || '/');
         navigate(m.initialPath || '/');
@@ -1176,6 +1189,10 @@
         break;
       case 'reload':
         reloadFrame();
+        break;
+      case 'fromOverlay':
+        // Integrated Browser'daki sayfadan (eklenti üzerinden) gelen overlay mesajı
+        if (ext && m.msg && m.msg.source === 'panoptent') onOverlay(m.msg);
         break;
     }
   }

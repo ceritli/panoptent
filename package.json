@@ -149,10 +149,31 @@
             "order": 2,
             "markdownDescription": "%config.defaultUrl%"
           },
+          "panoptent.previewIn": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "integratedBrowser",
+              "panel"
+            ],
+            "enumItemLabels": [
+              "%config.previewIn.autoLabel%",
+              "%config.previewIn.browserLabel%",
+              "%config.previewIn.panelLabel%"
+            ],
+            "enumDescriptions": [
+              "%config.previewIn.auto%",
+              "%config.previewIn.browser%",
+              "%config.previewIn.panel%"
+            ],
+            "default": "auto",
+            "order": 3,
+            "markdownDescription": "%config.previewIn%"
+          },
           "panoptent.openSourceOnSelect": {
             "type": "boolean",
             "default": true,
-            "order": 3,
+            "order": 4,
             "markdownDescription": "%config.openSourceOnSelect%"
           }
         }

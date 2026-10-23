@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- **Integrated Browser**: on VS Code 1.109+ *Panoptent: Open Preview* opens the page in VS Code's own Integrated Browser (real cookies, logins, DevTools) instead of an iframe; the Panoptent panel beside it keeps the controls (selection, request box, queue, activity). Selecting, the popover, live preview, queue and Apply work as before. The ↻ button and address bar drive the browser tab; closing the tab and pressing ↻ reopens it
+- New setting `panoptent.previewIn`: `auto` (Integrated Browser when available), `integratedBrowser`, or `panel` (classic in-panel preview)
+- The overlay talks to the panel over a same-origin WebSocket on the preview proxy, guarded by a per-session token and an origin check
+
 ## 0.11.1 — 2026-10-22
 
 - **Tidier settings page**: Panoptent's settings are grouped into sections (General, Sending to Claude, Background mode (CLI), Chrome extension, MCP server) in a sensible order, with readable option names (e.g. *Claude Code panel* / *In the background (CLI)* / *Claude Code (MCP)*), an explanation for every permission mode, clickable command links and a note that the CLI settings only apply in background mode
