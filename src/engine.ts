@@ -422,8 +422,15 @@ export class Engine {
       if (!viaMcpPrompt) {
         const line = t('ext.mcp.applyLine', rec.id);
         if (continueSession) {
-          await vscode.env.clipboard.writeText(line);
-          how = 'mcp';
+          // Açık Claude Code konuşmasının giriş kutusuna ekle (panel modundaki gibi): kullanıcı yalnızca Enter'a basar.
+          // Claude Code'un komutu yoksa panoya kopyalanır.
+          try {
+            how = (await sendToOpenConversation(this.root, line, rec.id)) === 'mention' ? 'mention' : 'mcp';
+          } catch (err: any) {
+            this.output.appendLine(t('ext.log.appendFailed', err.message));
+            await vscode.env.clipboard.writeText(line);
+            how = 'mcp';
+          }
         } else {
           ok = await openInClaudePanel(line);
           how = 'newTab';
