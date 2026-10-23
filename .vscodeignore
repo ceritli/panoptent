@@ -2,6 +2,7 @@ src/**
 node_modules/**
 docs/**
 chrome/**
+!chrome/content.js
 scripts/**
 .github/**
 build.mjs

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { DevProxy } from './proxy';
+import { DevProxy, ChannelConn } from './proxy';
 import { pickCandidate, setupPrompt, runInstall } from './codeInspector';
 import { Engine } from './engine';
 import { Bridge } from './bridge';
@@ -32,6 +32,8 @@ addStrings({
     'ext.design.browse': 'Choose another file…',
     'ext.design.outside': 'Pick a file inside this project folder.',
     'ext.design.set': 'Panoptent: Claude will follow {0} for changes in this project.',
+    'ext.browser.missing': 'Panoptent: This VS Code has no Integrated Browser (needs 1.109 or later), so the page opens inside the Panoptent panel.',
+    'ext.browser.failed': 'Could not open the Integrated Browser: {0}',
   },
   tr: {
     'ext.bridgeFailed': 'Chrome köprüsü başlatılamadı: {0}',
@@ -56,12 +58,16 @@ addStrings({
     'ext.design.browse': 'Başka bir dosya seç…',
     'ext.design.outside': 'Bu proje klasörünün içinden bir dosya seç.',
     'ext.design.set': 'Panoptent: Bu projede Claude değişikliklerde {0} dosyasına uyacak.',
+    'ext.browser.missing': 'Panoptent: Bu VS Code’da Integrated Browser yok (1.109 veya üstü gerekir), sayfa Panoptent panelinin içinde açılıyor.',
+    'ext.browser.failed': 'Integrated Browser açılamadı: {0}',
   },
 });
 
 let current: PreviewPanel | undefined;
 let engine: Engine | undefined;
 let bridge: Bridge | undefined;
+/** Chrome köprüsü kapalıyken Integrated Browser sayfalarını bağlamak için (port dinlemez) */
+let pageBridge: Bridge | undefined;
 let mcp: McpHost | undefined;
 let output: vscode.OutputChannel | undefined;
 
@@ -169,13 +175,24 @@ export function activate(context: vscode.ExtensionContext) {
       if (!url) return;
       await context.workspaceState.update('panoptent.lastUrl', url);
       try {
+        if (await useIntegratedBrowser()) {
+          // Chrome'daki gibi: sayfa VS Code'un tarayıcısında, arayüz sayfanın içinde
+          await BrowserPreview.open(context, e, url, (conn) => {
+            const b = bridge ?? (pageBridge ??= new Bridge(context, e, getOutput()));
+            return b.attachPage(conn.send, conn.close);
+          });
+          return;
+        }
         current = await PreviewPanel.create(context, e, url);
         current.onDispose(() => (current = undefined));
       } catch (err: any) {
         vscode.window.showErrorMessage(t('ext.startFailed', err.message));
       }
     }),
-    vscode.commands.registerCommand('panoptent.toggleSelect', () => current?.toggleSelect()),
+    vscode.commands.registerCommand('panoptent.toggleSelect', () => {
+      if (current) current.toggleSelect();
+      else BrowserPreview.current?.toggleSelect();
+    }),
     vscode.commands.registerCommand('panoptent.setupGuide', () => showSetupGuide(context)),
     vscode.commands.registerCommand('panoptent.setupCodeInspector', async () => {
       const e = getEngine(context);
@@ -218,9 +235,101 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function deactivate() {
   current?.dispose();
+  BrowserPreview.current?.dispose();
   bridge?.stop();
+  pageBridge?.stop();
   mcp?.stop();
   engine?.dispose();
+}
+
+/** VS Code'un Integrated Browser'ını açan komut (1.109+). */
+const BROWSER_OPEN = 'workbench.action.browser.open';
+/** Sayfa içi arayüzün istediğinde yüklediği seçim katmanı */
+const LAYER_PATH = '/__panoptent__/layer.js';
+
+/** Sayfa Integrated Browser'da mı açılsın? Ayar + bu VS Code'da komutun varlığı. */
+async function useIntegratedBrowser(): Promise<boolean> {
+  const pref = vscode.workspace.getConfiguration('panoptent').get<string>('previewIn') || 'auto';
+  if (pref === 'panel') return false;
+  const has = (await vscode.commands.getCommands(true)).includes(BROWSER_OPEN);
+  if (!has && pref === 'integratedBrowser') vscode.window.showWarningMessage(t('ext.browser.missing'));
+  return has;
+}
+
+/**
+ * Integrated Browser önizlemesi. Proxy her HTML sayfasına Chrome eklentisinin sayfa içi
+ * arayüzünü (chrome/content.js) media/pagehost.js'teki küçük `chrome` yerine geçeniyle birlikte
+ * enjekte eder; arayüz proxy kanalı üzerinden Chrome köprüsüne bağlanır. Ayrı panel yok.
+ */
+class BrowserPreview {
+  static current: BrowserPreview | undefined;
+
+  private constructor(
+    private proxy: DevProxy,
+    private base: string,
+    private output: vscode.OutputChannel,
+  ) {}
+
+  static async open(
+    context: vscode.ExtensionContext,
+    engine: Engine,
+    url: string,
+    attach: (conn: ChannelConn) => { onMessage(m: any): void; onClose(): void },
+  ) {
+    const u = new URL(url);
+    const p = u.pathname + u.search + u.hash;
+    const cur = BrowserPreview.current;
+    if (cur) {
+      if (cur.proxy.targetOrigin !== u.origin) cur.proxy.setTarget(u.origin);
+      await cur.show(p);
+      return cur;
+    }
+    const media = (f: string) => fs.readFileSync(path.join(context.extensionPath, 'media', f), 'utf8');
+    const proxy: DevProxy = new DevProxy({
+      target: url,
+      overlayScript: () =>
+        media('i18n.js') +
+        `\n;PanoptentI18n.setLang(${JSON.stringify(uiLang())});\n;(function () {\n` +
+        media('pagehost.js') +
+        `\nvar chrome = PanoptentChromeShim(${JSON.stringify({ channel: proxy.channelPath, layer: LAYER_PATH })});\n` +
+        fs.readFileSync(path.join(context.extensionPath, 'chrome', 'content.js'), 'utf8') +
+        `\n})();\n`,
+      extraScripts: { [LAYER_PATH]: () => media('overlay.js') },
+      onChannelOpen: (conn) => attach(conn),
+      log: (m) => engine.output.appendLine(m),
+    });
+    await proxy.start();
+    const external = await vscode.env.asExternalUri(vscode.Uri.parse(`http://127.0.0.1:${proxy.port}/`));
+    const bp = new BrowserPreview(proxy, external.toString(true).replace(/\/$/, ''), engine.output);
+    BrowserPreview.current = bp;
+    await bp.show(p);
+    return bp;
+  }
+
+  /** Sayfayı açar; açık Panoptent sekmesi varsa o sekmede gider ve öne getirir. */
+  async show(p: string) {
+    if (!p || p[0] !== '/') p = '/' + (p || '');
+    try {
+      await vscode.commands.executeCommand(BROWSER_OPEN, {
+        url: this.base + p,
+        openToSide: true,
+        reuseUrlFilter: new URL(this.base).origin + '/**',
+      });
+    } catch (err: any) {
+      const msg = t('ext.browser.failed', err?.message || String(err));
+      this.output.appendLine(msg);
+      vscode.window.showErrorMessage(msg);
+    }
+  }
+
+  toggleSelect() {
+    this.proxy.sendToChannel({ type: 'toggleSelect' });
+  }
+
+  dispose() {
+    this.proxy.stop();
+    if (BrowserPreview.current === this) BrowserPreview.current = undefined;
+  }
 }
 
 class PreviewPanel {

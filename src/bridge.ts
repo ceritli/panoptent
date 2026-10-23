@@ -47,6 +47,9 @@ interface Conn {
   browser: string;
 }
 
+/** VS Code Integrated Browser'daki sayfa içi arayüz (proxy kanalı üzerinden, eşleştirmesiz) */
+const PAGE = 'vscode-browser';
+
 const TOKENS_KEY = 'panoptent.chromeTokens';
 export const PORT_RANGE = 10;
 
@@ -86,8 +89,44 @@ export class Bridge {
       }
     }
     if (!this.port) throw new Error(t('ext.br.noPort', base, base + PORT_RANGE - 1));
-    this.sub = this.engine.on((msg, to) => this.route(msg, to));
+    this.subscribe();
     this.updateStatus();
+  }
+
+  private subscribe() {
+    if (!this.sub) this.sub = this.engine.on((msg, to) => this.route(msg, to));
+  }
+
+  /**
+   * Integrated Browser'daki sayfa içi arayüzü (Chrome eklentisinin content.js'i) bağlar.
+   * Kanal proxy'nin kendi kökeninde ve oturum anahtarıyla korunduğu için eşleştirme sorulmaz.
+   * Chrome köprüsü kapalı olsa (port dinlenmese) da çalışır.
+   */
+  attachPage(send: (msg: any) => void, close: () => void) {
+    this.subscribe();
+    const ws = {
+      readyState: WebSocket.OPEN,
+      send: (data: string) => {
+        try {
+          send(JSON.parse(data));
+        } catch {
+          /* yok say */
+        }
+      },
+      close: () => close(),
+    } as unknown as WebSocket;
+    const c: Conn = { id: 'p' + ++this.seq, ws, authed: true, browser: PAGE };
+    this.conns.set(c.id, c);
+    this.welcome(c);
+    return {
+      onMessage: (m: any) => {
+        this.onMessage(c, m).catch((err) => this.output.appendLine(t('ext.br.error', err.message)));
+      },
+      onClose: () => {
+        this.conns.delete(c.id);
+        this.engine.dropPages(c.id + ':');
+      },
+    };
   }
 
   private listen(port: number): Promise<void> {
@@ -126,8 +165,11 @@ export class Bridge {
   }
 
   dropAll() {
-    for (const c of this.conns.values()) c.ws.close(4001, 'eşleştirme silindi');
-    this.conns.clear();
+    for (const c of [...this.conns.values()]) {
+      if (c.browser === PAGE) continue; // Integrated Browser eşleştirme kullanmıyor
+      c.ws.close(4001, 'eşleştirme silindi');
+      this.conns.delete(c.id);
+    }
     this.updateStatus();
   }
 
@@ -267,7 +309,7 @@ export class Bridge {
   }
 
   private updateStatus() {
-    const n = [...this.conns.values()].filter((c) => c.authed).length;
+    const n = [...this.conns.values()].filter((c) => c.authed && c.browser !== PAGE).length;
     if (!this.port) {
       this.status.hide();
       return;
@@ -280,7 +322,7 @@ export class Bridge {
   }
 
   showStatus() {
-    const n = [...this.conns.values()].filter((c) => c.authed).length;
+    const n = [...this.conns.values()].filter((c) => c.authed && c.browser !== PAGE).length;
     const forget = t('ext.br.forget');
     vscode.window.showInformationMessage(
       this.port
