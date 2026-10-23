@@ -20,7 +20,7 @@
   "config.language.autoLabel": "Automatic",
   "config.language.auto": "Follow VS Code's display language (English if not supported)",
   "config.defaultUrl": "Dev server address suggested when you open the preview, e.g. `http://localhost:5173`. Each project remembers the last address you used.",
-  "config.previewIn": "Where the page opens when you start Panoptent. VS Code's **Integrated Browser** (1.109+) has real cookies, logins and DevTools; the Panoptent panel then holds only the controls.",
+  "config.previewIn": "Where the page opens when you start Panoptent. VS Code's **Integrated Browser** (1.109+) has real cookies, logins and DevTools; with the same in-page bar and drawer as the Chrome extension.",
   "config.previewIn.autoLabel": "Automatic",
   "config.previewIn.auto": "Integrated Browser if this VS Code has it, otherwise inside the Panoptent panel",
   "config.previewIn.browserLabel": "Integrated Browser",

@@ -9,10 +9,7 @@
   window.__panoptentLoaded = true;
   // VS Code panelinde iframe içinde, Chrome eklentisinde ise sayfanın kendisinde çalışır
   var CHROME = document.documentElement.getAttribute('data-panoptent-host') === 'chrome';
-  // VS Code'un Integrated Browser'ında açıldığında üst pencere yoktur: panelle,
-  // proxy'nin kendi adresindeki WebSocket üzerinden konuşur (adres proxy tarafından verilir).
-  var WS_PATH = !CHROME && window.parent === window ? String(window.__PANOPTENT_WS || '') : '';
-  if (window.parent === window && !CHROME && !WS_PATH) return;
+  if (window.parent === window && !CHROME) return;
   var active = true;
 
   // ---------- Dil (i18n) ----------
@@ -175,40 +172,8 @@
   function post(msg) {
     msg.source = SRC;
     msg.dir = 'up';
-    if (WS_PATH) return wsSend(msg);
     try { (CHROME ? window : window.parent).postMessage(msg, '*'); } catch (e) { /* yok say */ }
   }
-
-  // ---------- Integrated Browser bağlantısı (WebSocket) ----------
-  var ws = null;
-  var wsQueue = [];
-  var wsRetry = 0;
-  function wsSend(msg) {
-    var data;
-    try { data = JSON.stringify(msg); } catch (e) { return; }
-    if (ws && ws.readyState === 1) ws.send(data);
-    else { wsQueue.push(data); if (wsQueue.length > 200) wsQueue.shift(); }
-  }
-  function wsConnect() {
-    try {
-      ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + WS_PATH);
-    } catch (e) { ws = null; return; }
-    ws.onopen = function () {
-      wsRetry = 0;
-      var q = wsQueue; wsQueue = [];
-      q.forEach(function (d) { ws.send(d); });
-    };
-    ws.onmessage = function (ev) {
-      var m;
-      try { m = JSON.parse(ev.data); } catch (e) { return; }
-      if (m && m.source === SRC && m.dir !== 'up') onHostMessage(m);
-    };
-    ws.onclose = function () {
-      ws = null;
-      setTimeout(wsConnect, Math.min(5000, 400 * ++wsRetry));
-    };
-  }
-  if (WS_PATH) wsConnect();
 
   var ICON = {
     text: '<svg viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M3 3h10v2.2h-1.4V4.4H8.7v7.2h1.5V13H5.8v-1.4h1.5V4.4H4.4v.8H3z"/></svg>',
@@ -1279,16 +1244,8 @@
   window.addEventListener('message', function (e) {
     var m = e.data;
     if (!m || m.source !== SRC || m.dir === 'up') return;
-    if (WS_PATH) return; // panel mesajları WebSocket'ten gelir
     if (!CHROME && e.source !== window.parent) return;
-    onHostMessage(m);
-  });
-  function onHostMessage(m) {
     switch (m.type) {
-      case 'reload':
-        // yalnızca Integrated Browser'da: panelin ↻ butonu
-        if (WS_PATH) location.reload();
-        break;
       case 'mode':
         setMode(m.on, false);
         break;
@@ -1375,7 +1332,7 @@
         break;
       }
     }
-  }
+  });
 
   // ---------- Sayfa konumu ----------
   function reportLocation() {

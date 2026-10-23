@@ -33,10 +33,20 @@ export interface ProxyOptions {
   target: string; // örn. http://localhost:3000
   overlayScript: () => string; // her istekte güncel overlay kaynağı
   log?: (msg: string) => void;
-  /** Sayfadaki overlay'den (WebSocket kanalı) gelen mesajlar */
-  onChannelMessage?: (msg: any) => void;
-  /** Kanala bağlı sayfa sayısı değişti */
-  onChannelChange?: (count: number) => void;
+  /** Proxy'nin ayrıca sunduğu betikler (yol → kaynak), örn. sayfa içi arayüzün istediği seçim katmanı */
+  extraScripts?: Record<string, () => string>;
+  /** Sayfadan (WebSocket kanalı) yeni bağlantı: dönen nesne o bağlantının mesajlarını alır */
+  onChannelOpen?: (conn: ChannelConn) => ChannelHandler | undefined;
+}
+
+/** Kanala bağlı tek bir sayfa */
+export interface ChannelConn {
+  send(msg: any): void;
+  close(): void;
+}
+export interface ChannelHandler {
+  onMessage(msg: any): void;
+  onClose(): void;
 }
 
 export class DevProxy {
@@ -98,7 +108,7 @@ export class DevProxy {
     return this.channel.size;
   }
 
-  /** Kanala bağlı sayfalara (Integrated Browser) mesaj gönderir. */
+  /** Kanala bağlı tüm sayfalara (Integrated Browser) mesaj gönderir. */
   sendToChannel(msg: any): boolean {
     const data = JSON.stringify(msg);
     let sent = false;
@@ -132,7 +142,18 @@ export class DevProxy {
     }
     this.wss.handleUpgrade(req, socket, head, (ws) => {
       this.channel.add(ws);
-      this.opts.onChannelChange?.(this.channel.size);
+      const conn: ChannelConn = {
+        send: (msg) => {
+          if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+        },
+        close: () => ws.close(),
+      };
+      const handler = this.opts.onChannelOpen?.(conn);
+      if (!handler) {
+        ws.close(4004, 'no handler');
+        this.channel.delete(ws);
+        return;
+      }
       ws.on('message', (data) => {
         let m: any;
         try {
@@ -140,11 +161,11 @@ export class DevProxy {
         } catch {
           return;
         }
-        if (m && m.source === 'panoptent' && m.dir === 'up') this.opts.onChannelMessage?.(m);
+        if (m && typeof m === 'object' && typeof m.type === 'string') handler.onMessage(m);
       });
       ws.on('close', () => {
         this.channel.delete(ws);
-        this.opts.onChannelChange?.(this.channel.size);
+        handler.onClose();
       });
       ws.on('error', () => ws.terminate());
     });
@@ -171,12 +192,14 @@ export class DevProxy {
   private handle(req: http.IncomingMessage, res: http.ServerResponse) {
     const url = req.url || '/';
 
-    if (url.startsWith(OVERLAY_PATH)) {
+    const pathOnly = url.split('?')[0];
+    const extra = this.opts.extraScripts?.[pathOnly];
+    if (url.startsWith(OVERLAY_PATH) || extra) {
       res.writeHead(200, {
         'content-type': 'application/javascript; charset=utf-8',
         'cache-control': 'no-store',
       });
-      res.end(this.opts.overlayScript());
+      res.end(extra ? extra() : this.opts.overlayScript());
       return;
     }
 

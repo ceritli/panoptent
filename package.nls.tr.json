@@ -20,7 +20,7 @@
   "config.language.autoLabel": "Otomatik",
   "config.language.auto": "VS Code'un görüntüleme dilini izle (desteklenmiyorsa İngilizce)",
   "config.defaultUrl": "Önizlemeyi açarken önerilen dev sunucu adresi, ör. `http://localhost:5173`. Her proje en son kullandığın adresi hatırlar.",
-  "config.previewIn": "Panoptent'i başlattığında sayfanın açılacağı yer. VS Code'un **Integrated Browser**'ı (1.109+) gerçek çerez, oturum ve DevTools desteği sunar; Panoptent paneli o zaman yalnızca kontrolleri gösterir.",
+  "config.previewIn": "Panoptent'i başlattığında sayfanın açılacağı yer. VS Code'un **Integrated Browser**'ı (1.109+) gerçek çerez, oturum ve DevTools desteği sunar; arayüz Chrome eklentisindeki gibi sayfanın içinde olur.",
   "config.previewIn.autoLabel": "Otomatik",
   "config.previewIn.auto": "VS Code'da varsa Integrated Browser, yoksa Panoptent panelinin içi",
   "config.previewIn.browserLabel": "Integrated Browser",
