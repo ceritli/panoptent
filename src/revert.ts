@@ -51,6 +51,9 @@ export interface ApplyRecord {
   sentToClaude: boolean;
 }
 
+/** Canlı modda araç sonucuyla gelen yeni bir değişiklik paketi (kimlik satırı). */
+const LIVE_SET = /\bPT-[a-z0-9]{6,}\b/;
+
 export function newApplyId(): string {
   return 'PT-' + Date.now().toString(36).slice(-5) + Math.random().toString(36).slice(2, 5);
 }
@@ -97,17 +100,22 @@ function listJsonl(dir: string, since: number, depth = 0): string[] {
   return out;
 }
 
-function contentText(msg: any): { text: string; isToolResult: boolean } {
+function contentText(msg: any): { text: string; isToolResult: boolean; resultText: string } {
   const c = msg?.message?.content;
-  if (typeof c === 'string') return { text: c, isToolResult: false };
+  if (typeof c === 'string') return { text: c, isToolResult: false, resultText: '' };
   if (Array.isArray(c)) {
     const isToolResult = c.length > 0 && c.every((x: any) => x?.type === 'tool_result');
     const text = c
       .map((x: any) => (x?.type === 'text' ? x.text : x?.type === 'tool_result' ? '' : ''))
       .join('\n');
-    return { text, isToolResult };
+    // canlı modda paket kullanıcı mesajıyla değil `wait_for_apply` aracının sonucuyla gelir
+    const resultText = c
+      .filter((x: any) => x?.type === 'tool_result')
+      .map((x: any) => (typeof x.content === 'string' ? x.content : Array.isArray(x.content) ? x.content.map((y: any) => (y?.type === 'text' ? y.text : '')).join('\n') : ''))
+      .join('\n');
+    return { text, isToolResult, resultText };
   }
-  return { text: '', isToolResult: false };
+  return { text: '', isToolResult: false, resultText: '' };
 }
 
 export interface TranscriptResult {
@@ -144,7 +152,17 @@ export function opsFromTranscripts(root: string, id: string, since: number): Tra
           continue;
         }
         if (d.type === 'user' && !d.isSidechain && !d.isMeta) {
-          const { text, isToolResult } = contentText(d);
+          const { text, isToolResult, resultText } = contentText(d);
+          if (isToolResult && !isSub) {
+            // canlı mod: bu kimliğin paketi geldi / başka bir paket geldi (bu isteğin kapsamı bitti)
+            if (resultText.includes(id)) {
+              inside = true;
+              res.found = true;
+              continue;
+            } else if (inside && LIVE_SET.test(resultText)) {
+              inside = false;
+            }
+          }
           if (!isToolResult) {
             if (text.includes(id)) {
               inside = true;
