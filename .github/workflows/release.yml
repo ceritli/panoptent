@@ -3,7 +3,7 @@ name: Release
 # Runs when a v* tag is pushed, when package.json changes on main, or by hand.
 # 1. Creates GitHub release vX.Y.Z (with .vsix + Chrome .zip) if it doesn't exist yet.
 # 2. Publishes the .vsix to the VS Code Marketplace (secret VSCE_PAT) and
-#    Open VSX (secret OVSX_PAT), and the Chrome zip to the Chrome Web Store
+#    Open VSX (trusted publishing via OIDC, falling back to secret OVSX_PAT), and the Chrome zip to the Chrome Web Store
 #    (secrets CWS_SA_KEY = service account JSON key, CWS_PUBLISHER_ID).
 #    Each step is skipped when its secrets are missing, and a version that is
 #    already published is treated as success.
@@ -16,6 +16,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # Open VSX trusted publishing
 
 jobs:
   release:
@@ -92,15 +93,18 @@ jobs:
             echo "$out" | grep -qi "already exists" && echo "Already on the Marketplace — OK." || exit 1
           fi
       - name: Publish to Open VSX (Cursor, Windsurf, VSCodium…)
-        if: env.OVSX_PAT != ''
+        # Trusted publishing first (registered on open-vsx.org for this repo +
+        # release.yml); OVSX_PAT is only a fallback. ovsx prefers a PAT when
+        # one is in the environment, so it is unset for the OIDC attempt.
         run: |
           VSIX="panoptent-${{ steps.v.outputs.tag }}.vsix"
-          npx --yes ovsx create-namespace ceritli -p "$OVSX_PAT" 2>/dev/null || true
-          if out=$(npx --yes ovsx publish "$VSIX" -p "$OVSX_PAT" 2>&1); then echo "$out"
-          else
-            echo "$out"
-            echo "$out" | grep -qi "already" && echo "Already on Open VSX — OK." || exit 1
-          fi
+          ok() { echo "$1"; echo "$1" | grep -qi "already" && echo "Already on Open VSX — OK."; }
+          if out=$(env -u OVSX_PAT npx --yes ovsx publish "$VSIX" --trusted-publishing 2>&1); then echo "$out"; exit 0; fi
+          ok "$out" && exit 0
+          if [ -z "$OVSX_PAT" ]; then echo "::error::Trusted publishing failed and OVSX_PAT is not set."; exit 1; fi
+          echo "Trusted publishing failed — retrying with OVSX_PAT."
+          if out=$(npx --yes ovsx publish "$VSIX" -p "$OVSX_PAT" 2>&1); then echo "$out"; exit 0; fi
+          ok "$out" || exit 1
       - name: Chrome Web Store — access token
         id: gauth
         if: env.CWS_SA_KEY != '' && env.CWS_PUBLISHER_ID != '' && env.CWS_EXTENSION_ID != ''
