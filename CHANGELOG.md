@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11.2 — 2026-10-24
+
+- Chrome: the drawer (Queue / Activity / Settings) has a **✕ close** button; the ⚙ button now toggles Settings, and **Esc** closes the drawer
+
 ## 0.11.1 — 2026-10-22
 
 - **Tidier settings page**: Panoptent's settings are grouped into sections (General, Sending to Claude, Background mode (CLI), Chrome extension, MCP server) in a sensible order, with readable option names (e.g. *Claude Code panel* / *In the background (CLI)* / *Claude Code (MCP)*), an explanation for every permission mode, clickable command links and a note that the CLI settings only apply in background mode
