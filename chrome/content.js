@@ -20,7 +20,7 @@
       'cx.claudeRunning': 'Claude is working…',
       'cx.rollbackTitle': 'Undo only the changes Panoptent made in the last apply',
       'cx.rollback': '↶ Undo last apply',
-      'cx.gearTitle': 'Settings', 'cx.minTitle': 'Minimize',
+      'cx.gearTitle': 'Settings', 'cx.minTitle': 'Minimize', 'cx.closeTitle': 'Close (Esc)',
       'cx.notConnected': 'Not connected to VS Code.',
       'cx.notConnectedShort': 'Not connected to VS Code',
       'cx.notConnectedLong': 'Not connected to VS Code. Your project must be open in VS Code with Panoptent installed.',
@@ -98,7 +98,7 @@
       'cx.claudeRunning': 'Claude çalışıyor…',
       'cx.rollbackTitle': "Son uygulamada yalnızca Panoptent'in yaptığı değişiklikleri geri al",
       'cx.rollback': '↶ Son uygulamayı geri al',
-      'cx.gearTitle': 'Ayarlar', 'cx.minTitle': 'Küçült',
+      'cx.gearTitle': 'Ayarlar', 'cx.minTitle': 'Küçült', 'cx.closeTitle': 'Kapat (Esc)',
       'cx.notConnected': 'VS Code’a bağlı değil.',
       'cx.notConnectedShort': 'VS Code’a bağlı değil',
       'cx.notConnectedLong': 'VS Code’a bağlı değil. VS Code’da proje açık ve Panoptent kurulu olmalı.',
@@ -269,7 +269,9 @@
     .qn{display:inline-flex;align-items:center;gap:6px;padding:0 6px 0 4px;color:#e6e8eb}
     .qdot{width:8px;height:8px;border-radius:4px;background:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.25)}
     .drawer{width:380px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);display:flex;flex-direction:column;border-radius:12px;background:#1f2329;border:1px solid #3a3f47;box-shadow:0 12px 32px rgba(0,0,0,.35);overflow:hidden}
-    .tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid #2c3138}
+    .tabs{display:flex;align-items:center;gap:2px;padding:6px 8px 0;border-bottom:1px solid #2c3138}
+    .tabs .grow{flex:1}.tabs .dclose{width:26px;height:26px;margin-bottom:4px;font-size:13px}
+    .b.on{background:#2c3138;color:#fff}
     .tabs button{padding:7px 10px;font-size:12.5px;color:#9aa4b2;border-bottom:2px solid transparent;margin-bottom:-1px}
     .tabs button.on{color:#fff;border-color:#f97316}
     .body{overflow:auto;padding:10px 12px;flex:1}
@@ -313,7 +315,7 @@
   <div class="wrap" id="wrap">
     <div id="toasts"></div>
     <div class="drawer" id="drawer" hidden>
-      <div class="tabs"><button data-tab="queue" data-i18n="cx.tab.queue">Queue</button><button data-tab="log" data-i18n="cx.tab.log">Activity</button><button data-tab="settings" data-i18n="cx.tab.settings">Settings</button></div>
+      <div class="tabs"><button data-tab="queue" data-i18n="cx.tab.queue">Queue</button><button data-tab="log" data-i18n="cx.tab.log">Activity</button><button data-tab="settings" data-i18n="cx.tab.settings">Settings</button><span class="grow"></span><button class="x dclose" id="dclose" data-i18n-title="cx.closeTitle" aria-label="Close">✕</button></div>
       <div class="body" id="dbody"></div>
       <div class="foot" id="dfoot"></div>
     </div>
@@ -511,7 +513,8 @@
     toast(t('cx.rollbackConfirm'), '', 2500);
   });
   $('logo').addEventListener('click', () => (ui.drawer ? closeDrawer() : openDrawer(ui.tab)));
-  $('gear').addEventListener('click', () => openDrawer('settings'));
+  $('gear').addEventListener('click', () => (ui.drawer && ui.tab === 'settings' ? closeDrawer() : openDrawer('settings')));
+  $('dclose').addEventListener('click', closeDrawer);
   $('minBtn').addEventListener('click', () => { ui.min = true; saveUi(); closeDrawer(); render(); });
   $('mini').addEventListener('click', () => { ui.min = false; saveUi(); render(); });
   root.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => openDrawer(b.dataset.tab)));
@@ -704,6 +707,7 @@
     $('apply').textContent = applying ? t('cx.applying') : running ? t('cx.claudeRunning') : t('cx.applyN', n);
     $('rollback').hidden = $('rsep').hidden = !canRollback;
     drawer.hidden = !ui.drawer;
+    $('gear').classList.toggle('on', ui.drawer && ui.tab === 'settings');
     bar.hidden = ui.min;
     $('mini').hidden = !ui.min;
     $('miniN').hidden = !n;
@@ -717,6 +721,7 @@
     const t = e.composedPath ? e.composedPath()[0] : e.target;
     const inField = t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
     const mod = e.ctrlKey || e.metaKey;
+    if (e.key === 'Escape' && ui.drawer && !inField) { closeDrawer(); return; }
     if (!inField && mod && e.key.toLowerCase() === 'z' && (undoStack.length || redoStack.length)) {
       e.preventDefault();
       e.stopPropagation();
