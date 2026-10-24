@@ -8,7 +8,7 @@ Open to every kind of contribution.
 - Repo: https://github.com/ceritli/panoptent (public, default branch `main`)
 - Guide (GitHub Pages, TR + EN): https://ceritli.github.io/panoptent/ — source in `docs/`
 - VS Code Marketplace: `ceritli.panoptent` (publisher `ceritli`, marked preview)
-- Chrome Web Store item: `kmikbnmoacgjjigohbcbmppccjidmacc` (see Status below)
+- Chrome Web Store: https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc
 
 ## Layout
 | Path | Role |
@@ -67,8 +67,9 @@ workflows (push to `main`, or `workflow_dispatch` via the API).
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
   0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.
-- Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
-  description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
+- Chrome Web Store: published (live by 2026-10-24) at
+  https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc; README and
+  `docs/` point there as the primary Chrome install path (manual zip kept as fallback).
 - Open VSX (#4): 0.11.0 uploaded 2026-10-22 but INACTIVE — namespace `ceritli` exists in another
   gallery, so it stays hidden until the ownership claim ("Claim Ownership" on open-vsx.org) is approved.
 - Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.
