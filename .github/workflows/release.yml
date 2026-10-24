@@ -96,14 +96,16 @@ jobs:
         # Trusted publishing first (registered on open-vsx.org for this repo +
         # release.yml); OVSX_PAT is only a fallback. ovsx prefers a PAT when
         # one is in the environment, so it is unset for the OIDC attempt.
+        # ovsx is pinned: a bare `npx ovsx` can reuse an old cached copy
+        # without --trusted-publishing (needs >= 1.3.0).
         run: |
           VSIX="panoptent-${{ steps.v.outputs.tag }}.vsix"
           ok() { echo "$1"; echo "$1" | grep -qi "already" && echo "Already on Open VSX — OK."; }
-          if out=$(env -u OVSX_PAT npx --yes ovsx publish "$VSIX" --trusted-publishing 2>&1); then echo "$out"; exit 0; fi
+          if out=$(env -u OVSX_PAT npx --yes ovsx@1.3.0 publish "$VSIX" --trusted-publishing 2>&1); then echo "$out"; exit 0; fi
           ok "$out" && exit 0
           if [ -z "$OVSX_PAT" ]; then echo "::error::Trusted publishing failed and OVSX_PAT is not set."; exit 1; fi
           echo "Trusted publishing failed — retrying with OVSX_PAT."
-          if out=$(npx --yes ovsx publish "$VSIX" -p "$OVSX_PAT" 2>&1); then echo "$out"; exit 0; fi
+          if out=$(npx --yes ovsx@1.3.0 publish "$VSIX" -p "$OVSX_PAT" 2>&1); then echo "$out"; exit 0; fi
           ok "$out" || exit 1
       - name: Chrome Web Store — access token
         id: gauth
