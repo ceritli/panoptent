@@ -324,7 +324,7 @@ export class Engine {
    * doğrudan ona gider (komut kopyalanmaz, sekme açılmaz). Claude düzenleme yaparken gelen paketler
    * kutuda sırasını bekler; canlı mod son bekleme ya da teslimden bir süre sonra kendiliğinden kapanır.
    */
-  private liveWaiters: ((x: { id: string; prompt: string }) => void)[] = [];
+  private liveWaiters: ((x: { id: string; prompt: string }) => boolean)[] = [];
   private liveInbox: { id: string; prompt: string }[] = [];
   private liveUntil = 0;
 
@@ -340,16 +340,21 @@ export class Engine {
       return Promise.resolve(next);
     }
     return new Promise((resolve) => {
-      const done = (x?: { id: string; prompt: string }, aborted = false) => {
+      const done = (x?: { id: string; prompt: string }) => {
         clearTimeout(timer);
         signal?.removeEventListener('abort', onAbort);
         this.liveWaiters = this.liveWaiters.filter((w) => w !== waiter);
-        // vazgeçildiyse (Esc) canlı mod hemen kapanır; süre dolduysa Claude birazdan yeniden bekler
-        this.liveUntil = aborted ? 0 : Date.now() + (x ? LIVE_WORK_MS : LIVE_GAP_MS);
+        // istemci isteği kesse de (Esc ya da kendi zaman aşımı) kısa bir süre açık kalır: Claude birazdan yeniden bekleyebilir
+        this.liveUntil = Date.now() + (x ? LIVE_WORK_MS : LIVE_GAP_MS);
         resolve(x);
       };
-      const waiter = (x: { id: string; prompt: string }) => done(x);
-      const onAbort = () => done(undefined, true);
+      // bağlantısı kopmuş bir bekleyiciye paket verilmesin (kaybolurdu)
+      const waiter = (x: { id: string; prompt: string }) => {
+        if (signal?.aborted) return false;
+        done(x);
+        return true;
+      };
+      const onAbort = () => done();
       const timer = setTimeout(() => done(), timeoutMs);
       if (signal?.aborted) return onAbort();
       signal?.addEventListener('abort', onAbort);
@@ -359,11 +364,7 @@ export class Engine {
 
   /** Paketi bekleyen Claude'a verir; bekleyen yoksa kutuya koyar. Dönüş: hemen alındı mı. */
   private deliverLive(x: { id: string; prompt: string }): boolean {
-    const w = this.liveWaiters.shift();
-    if (w) {
-      w(x);
-      return true;
-    }
+    for (let w = this.liveWaiters.shift(); w; w = this.liveWaiters.shift()) if (w(x)) return true;
     this.liveInbox.push(x);
     return false;
   }
