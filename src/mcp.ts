@@ -8,6 +8,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
 import { spawnSync } from 'child_process';
+import { randomBytes } from 'crypto';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { z } from 'zod/v4';
@@ -66,23 +67,23 @@ const UNTRUSTED =
 const LIVE_WAIT = 50;
 const LIVE_MAX_WAIT = 240;
 
+/** Saniye: arka plandaki `curl` beklemesi (Claude Code arka plan görevini bitince haber verir, ekranda satır birikmez). */
+const LIVE_POLL = 590;
+
 const LIVE_PROMPT = [
-  'Start Panoptent live mode. Loop until I stop you:',
-  '1. Call the Panoptent MCP tool wait_for_apply.',
-  '2. If it returns {"waiting": true} or fails with a timeout, call it again right away (without timeoutSeconds). ' +
-    'Do not write anything to me in between.',
-  '3. If it returns a change set (with a PT-… id), make the edits it describes in this project, then call mark_applied ' +
-    'with that id, tell me in one short line what you changed, and go back to step 1.',
-  'Before the first change, call get_page_context and read the design rules file if it names one. ' +
-    'If a change set is unclear, make your best reading and say so in your one line instead of asking. ' +
-    'Stop when I press Esc or ask you to stop.',
+  'Start Panoptent live mode: call the Panoptent MCP tool start_live and follow its instructions until I stop you.',
+  'Before the first change, call get_page_context and read the design rules file if it names one.',
 ].join('\n');
+
+const LIVE_AFTER =
+  'After the edits: call the Panoptent MCP tool mark_applied with this id, tell the user in one short line what you changed, ' +
+  'then start the same live command again in the background.';
 
 const COMMAND_MARK = '<!-- panoptent:command -->';
 
 const COMMAND_MD = `---
 description: Panoptent — live mode, apply the queue, or work on the selected elements
-argument-hint: live | apply | selection [what to do]
+argument-hint: live | stop | apply | selection [what to do]
 allowed-tools: mcp__panoptent
 ---
 ${COMMAND_MARK}
@@ -93,6 +94,7 @@ for this project and start a new conversation, then stop.
 Arguments: "$ARGUMENTS"
 
 - \`live\`: ${LIVE_PROMPT.split('\n').join('\n  ')}
+- \`stop\`: stop the Panoptent live background command if one is running.
 - \`apply\`: call get_queue, apply every queued change in this project, then call mark_applied with the tokens you applied.
 - \`selection\` followed by a request: call get_selection and do the request with the selected elements (ask me if there is no request).
 - Empty or anything else: call get_page_context and tell me in two lines what is connected, how many elements are selected
@@ -231,8 +233,8 @@ export class McpHost {
   }
 
   private async handle(req: http.IncomingMessage, res: http.ServerResponse, port: number) {
-    const url = (req.url || '').split('?')[0];
-    if (url !== '/mcp') return void res.writeHead(404).end();
+    const [url, query = ''] = (req.url || '').split('?');
+    if (url !== '/mcp' && url !== '/live/wait') return void res.writeHead(404).end();
     // web sayfaları bu sunucuya ulaşamasın: tarayıcılar Origin gönderir, MCP istemcileri göndermez
     if (req.headers.origin) return void res.writeHead(403).end();
     const host = String(req.headers.host || '');
@@ -241,6 +243,7 @@ export class McpHost {
       res.writeHead(405, { allow: 'POST' }).end();
       return;
     }
+    if (url === '/live/wait') return this.liveWait(req, res, new URLSearchParams(query).get('t'));
     const server = this.createServer();
     const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     res.on('close', () => {
@@ -249,6 +252,27 @@ export class McpHost {
     });
     await server.connect(transport);
     await transport.handleRequest(req, res);
+  }
+
+  /** Canlı modda bekleme adresine eklenen gizli anahtar: yalnızca start_live'ı çağıran istemci bilir. */
+  private liveToken = randomBytes(12).toString('hex');
+
+  private get liveCommand() {
+    return `curl -sS -X POST --max-time ${LIVE_POLL + 20} "http://127.0.0.1:${this.port}/live/wait?t=${this.liveToken}"`;
+  }
+
+  /** Arka plandaki `curl`: kullanıcı Uygula'ya basana kadar (ya da LIVE_POLL saniye) bekler, düz metin döner. */
+  private async liveWait(req: http.IncomingMessage, res: http.ServerResponse, token: string | null) {
+    if (token !== this.liveToken) return void res.writeHead(403).end();
+    const ac = new AbortController();
+    res.on('close', () => ac.abort());
+    req.resume();
+    const got = await this.engine.waitForApply(LIVE_POLL * 1000, ac.signal);
+    if (ac.signal.aborted) return;
+    const text = got
+      ? `PANOPTENT CHANGE SET ${got.id}\n\n${got.prompt}\n\n${LIVE_AFTER}\n`
+      : `PANOPTENT WAITING: nothing applied yet. Start the same command again in the background, silently.\n`;
+    res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end(text);
   }
 
   private createServer() {
@@ -358,11 +382,41 @@ export class McpHost {
     );
 
     server.registerTool(
+      'start_live',
+      {
+        title: 'Start live mode',
+        description:
+          'Live mode: returns a shell command that waits until the user presses Apply in Panoptent and then prints that ' +
+          'change set. Run it in the background (Claude Code: Bash with run_in_background) so nothing piles up on screen; ' +
+          'when it finishes, apply the change set and start it again. Clients without background commands can loop on ' +
+          'wait_for_apply instead.',
+        inputSchema: {},
+        annotations: { readOnlyHint: true },
+      },
+      async () =>
+        this.text({
+          command: this.liveCommand,
+          instructions: [
+            'Run `command` with your shell tool in the background (Claude Code: run_in_background: true). Do not wait for it ' +
+              'in the foreground and do not poll it or sleep: you are notified when it finishes.',
+            'Tell me in one line that live mode is on and I can press Apply in Panoptent. Then end your turn.',
+            'When it finishes, read its output. "PANOPTENT WAITING" means nothing happened: start the same command again in the ' +
+              'background without writing anything. "PANOPTENT CHANGE SET PT-…" is a change set: make the edits, call ' +
+              'mark_applied with that id, tell me in one short line what you changed, and start the command again in the background.',
+            'If a change set is unclear, make your best reading and say so in that line instead of asking.',
+            'If the command fails (connection refused), Panoptent restarted: call start_live again for a fresh command.',
+            'Stop when I ask you to stop: then stop the background command and do not start it again.',
+          ],
+        }),
+    );
+
+    server.registerTool(
       'wait_for_apply',
       {
         title: 'Wait for the next change set (live mode)',
         description:
-          'Live mode: waits until the user presses Apply in Panoptent (VS Code preview or Chrome) and returns that change set ' +
+          'Live mode for clients that cannot run background shell commands (prefer start_live): waits until the user presses ' +
+          'Apply in Panoptent (VS Code preview or Chrome) and returns that change set ' +
           '(same format as get_apply, with its PT-… id). While you are waiting or working, Apply hands changes to you instead of ' +
           'opening a new Claude Code tab. Returns {"waiting": true} if nothing arrived within the timeout: then call it again. ' +
           UNTRUSTED,
