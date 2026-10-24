@@ -53,7 +53,8 @@ protocol (`{source:'panoptent', type, ...}`) and e2e tests depend on them.
 2. Push to `main`. `.github/workflows/release.yml` then:
    - creates GitHub release `vX.Y.Z` with the `.vsix` and Chrome `.zip` (if it doesn't exist yet),
    - publishes to the VS Code Marketplace (secret `VSCE_PAT`, Azure DevOps PAT, Marketplace: Manage, expires ~Oct 2027),
-   - publishes to Open VSX (secret `OVSX_PAT`, namespace `ceritli`),
+   - publishes to Open VSX (namespace `ceritli`, verified): trusted publishing (OIDC, registration for
+     `ceritli/panoptent` + `release.yml` on open-vsx.org), falling back to secret `OVSX_PAT`,
    - uploads + publishes to the Chrome Web Store if `CWS_SA_KEY` (service-account JSON) and `CWS_PUBLISHER_ID` are set.
 3. `pages.yml` redeploys `docs/` on every push touching it. `ci.yml` builds every push/PR.
 
@@ -69,7 +70,7 @@ workflows (push to `main`, or `workflow_dispatch` via the API).
   `screenshot_element`, `highlight` / `preview_style`.
 - Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
   description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
-- Open VSX (#4): 0.11.0 uploaded 2026-10-22 but INACTIVE — namespace `ceritli` exists in another
-  gallery, so it stays hidden until the ownership claim ("Claim Ownership" on open-vsx.org) is approved.
+- Open VSX (#4, done 2026-10-24): namespace claim approved, `ceritli` verified; 0.11.2 live at
+  https://open-vsx.org/extension/ceritli/panoptent (published by the release workflow).
 - Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.
 - Open tasks and ideas are tracked as GitHub issues (label `roadmap`).
