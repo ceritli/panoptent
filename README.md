@@ -12,6 +12,7 @@
 <p align="center">
   <a href="https://ceritli.github.io/panoptent/">Documentation</a> ·
   <a href="https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent">Marketplace</a> ·
+  <a href="https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc">Chrome Web Store</a> ·
   <a href="https://github.com/ceritli/panoptent/releases/latest">Download</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
   <a href="#türkçe">Türkçe</a>
@@ -47,7 +48,7 @@ Works with React / Next.js, Vue / Nuxt, Vite, and plain HTML.
 
 **VS Code** — search **Panoptent** in the Extensions panel, or install from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent). Updates are automatic. (Offline: `.vsix` from [Releases](https://github.com/ceritli/panoptent/releases/latest) → Extensions → `⋯` → **Install from VSIX…**)
 
-**Chrome** (optional) — download `panoptent-chrome-x.y.z.zip` from [Releases](https://github.com/ceritli/panoptent/releases/latest), unzip `panoptent-chrome-x.y.z.zip` → `chrome://extensions` → enable **Developer mode** → **Load unpacked** → pick the folder.
+**Chrome** (optional) — install from the [Chrome Web Store](https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc) (**Add to Chrome**). Updates are automatic. (Manual: unzip `panoptent-chrome-x.y.z.zip` from [Releases](https://github.com/ceritli/panoptent/releases/latest) → `chrome://extensions` → **Developer mode** → **Load unpacked**.)
 
 ## Quick start
 
@@ -137,10 +138,9 @@ Panoptent collects no data: no servers, no analytics. The Chrome extension only 
 **Kurulum**
 
 1. VS Code: Extensions panelinde **Panoptent** ara ve kur ya da [Marketplace](https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent) sayfasından kur. Güncellemeler otomatik gelir.
-2. Chrome (isteğe bağlı): [Releases](https://github.com/ceritli/panoptent/releases/latest) sayfasından zip'i indir.
-3. Zip'i aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.
-4. Önerilir: Komut Paleti → **Panoptent: code-inspector'ı Otomatik Kur**.
-5. Sol menüdeki göz → **Önizlemeyi Aç**; **Seç**'e bas, öğeye tıkla, isteğini yaz, **Uygula**. Chrome'da: eklenti simgesi → **Bu sekmede Panoptent’i aç**.
+2. Chrome (isteğe bağlı): [Chrome Web Store](https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc) sayfasından **Chrome'a ekle**. Güncellemeler otomatik gelir. (Elle kurulum: [Releases](https://github.com/ceritli/panoptent/releases/latest)'tan zip'i indirip aç → `chrome://extensions` → **Geliştirici modu** → **Paketlenmemiş öğe yükle**.)
+3. Önerilir: Komut Paleti → **Panoptent: code-inspector'ı Otomatik Kur**.
+4. Sol menüdeki göz → **Önizlemeyi Aç**; **Seç**'e bas, öğeye tıkla, isteğini yaz, **Uygula**. Chrome'da: eklenti simgesi → **Bu sekmede Panoptent’i aç**.
 
 **Her yapay zekâ aracından kullan (MCP).** Panoptent yerel bir **MCP sunucusu** da açar; terminaldeki Claude Code, Cursor, Windsurf gibi MCP destekleyen araçlar seçtiğin öğeleri kendisi okur. *Panoptent: MCP Bağlantı Komutunu Kopyala* komutunu çalıştırıp projendeki bir terminale yapıştır ya da: `claude mcp add --transport http panoptent http://127.0.0.1:47821/mcp`. Sonra *"seçtiğim butonu büyüt"* demen yeterli; tüm kuyruğu uygulatmak için Claude Code'a `/mcp__panoptent__apply_queue` yaz (geri alma çalışır). Ya da *Panoptent: Claude Code'u Bağla (MCP)* komutu bağlantı komutunu senin yerine çalıştırır. **Gönderim yeri**ni **Claude Code (MCP)** yaparsan **Uygula** istek dosyası eklemez; Claude Code'a yapıştıracağın tek satırlık bir komut kopyalar, Claude ayrıntıları MCP'den kendisi alır. Araçlar: `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `mark_applied`. Kapatmak için `panoptent.mcpServer`.
 
