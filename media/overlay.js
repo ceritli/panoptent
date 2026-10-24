@@ -1136,9 +1136,16 @@
   }
 
   function setMode(on, notify) {
+    var wasOn = selectMode;
     selectMode = !!on;
     document.documentElement.style.cursor = selectMode ? 'crosshair' : '';
     if (!selectMode) hoverEl = null;
+    // Seç kapatılınca sayfada seçili bir şey kalmasın (panel/Chrome listesi de temizlensin)
+    if (wasOn && !selectMode) {
+      selected.forEach(function (_, id) { post({ type: 'unselect', id: id }); });
+      selected.clear();
+      closePopover();
+    }
     if (notify) post({ type: 'mode', on: selectMode });
   }
 

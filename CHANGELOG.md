@@ -3,6 +3,7 @@
 ## 0.11.2 — 2026-10-24
 
 - Chrome: the drawer (Queue / Activity / Settings) has a **✕ close** button; the ⚙ button now toggles Settings, and **Esc** closes the drawer
+- Turning **Select** off (button or Esc) now clears the selection: no highlighted elements or open box stay on the page, and the selected list in the panel / Chrome empties. Queued changes are kept
 
 ## 0.11.1 — 2026-10-22
 
