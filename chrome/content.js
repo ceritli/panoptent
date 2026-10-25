@@ -737,10 +737,59 @@
     }
   }, true);
 
+  // ---------- Claude'un MCP istekleri (highlight, preview_style, screenshot_element) ----------
+  // Seçim katmanına iletilir. Görüntü için önce sekmenin kendisi denenir (piksel piksel doğru, yalnızca
+  // eklentiye bu sekmede activeTab izni verildiyse); olmazsa katman öğeyi DOM'dan çizer.
+  const agentReqs = new Map(); // reqId -> istek
+  function agentReply(m) {
+    agentReqs.delete(m.reqId);
+    bg(m);
+  }
+  function onAgentRequest(m) {
+    if (!enabled || !overlayReady) {
+      bg({ type: 'mcpResult', reqId: m.reqId, ok: false, error: 'Panoptent is turned off in this Chrome tab. Ask the user to turn it on.' });
+      return;
+    }
+    agentReqs.set(m.reqId, m);
+    if (m.op === 'screenshot') toOverlay(Object.assign({}, m, { op: 'locate', hide: true }));
+    else toOverlay(m);
+  }
+  function onAgentResult(m) {
+    const req = agentReqs.get(m.reqId);
+    if (!req) return; // sayfa betiklerinin uydurduğu yanıtlar
+    if (m.op !== 'locate') return agentReply(m);
+    if (!m.ok) return agentReply(Object.assign({}, m, { op: 'screenshot' }));
+    if (!m.fits) return shotFromDom(req);
+    shotElements.set(m.reqId, m.element);
+    host.style.visibility = 'hidden';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bg({ type: 'captureTab', reqId: m.reqId, rect: m.rect, vw: m.vw });
+    }));
+  }
+  const shotElements = new Map(); // reqId -> öğe özeti (sekme görüntüsü alınırken)
+  function showUi() {
+    host.style.visibility = '';
+    toOverlay({ type: 'mcpRequest', reqId: 'show', op: 'show' });
+  }
+  function shotFromDom(req) {
+    showUi();
+    toOverlay(Object.assign({}, req, { op: 'screenshot' }));
+  }
+  function onCaptureResult(m) {
+    const req = agentReqs.get(m.reqId);
+    const element = shotElements.get(m.reqId);
+    shotElements.delete(m.reqId);
+    if (!req) return;
+    if (!m.ok) return shotFromDom(req);
+    showUi();
+    agentReply({ type: 'mcpResult', reqId: m.reqId, op: 'screenshot', ok: true, via: 'tab', data: m.data, mime: m.mime, width: m.width, height: m.height, element });
+  }
+
   // ---------- seçim katmanından gelenler ----------
   function popStatus(state, text, closeAfter) { toOverlay({ type: 'popStatus', state, text, closeAfter }); }
 
   function onOverlay(m) {
+    if (m.type === 'mcpResult') return onAgentResult(m);
     if (!enabled) return;
     switch (m.type) {
       case 'ready':
@@ -943,6 +992,12 @@
         render();
         break;
       case 'quickEditResult':
+        break;
+      case 'mcpRequest':
+        onAgentRequest(m);
+        break;
+      case 'captureResult':
+        onCaptureResult(m);
         break;
     }
   }

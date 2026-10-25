@@ -225,6 +225,38 @@ export class Engine {
     return [...this.pages.values()].sort((a, b) => b.at - a.at);
   }
 
+  private pageReqs = new Map<string, { client: string; done: (r: any) => void }>();
+  private pageReqSeq = 0;
+
+  /**
+   * MCP araçları (highlight, preview_style, screenshot_element) için sayfaya istek gönderir; sayfadaki seçim
+   * katmanı `mcpResult` ile yanıtlar. Süre dolarsa (eski Chrome eklentisi, kapalı sayfa) `undefined`.
+   */
+  pageRequest(client: string, req: Record<string, unknown>, timeoutMs: number): Promise<any> {
+    const reqId = 'mq' + Date.now().toString(36) + ++this.pageReqSeq;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        this.pageReqs.delete(reqId);
+        resolve(undefined);
+      }, timeoutMs);
+      this.pageReqs.set(reqId, {
+        client,
+        done: (r) => {
+          clearTimeout(timer);
+          this.pageReqs.delete(reqId);
+          resolve(r);
+        },
+      });
+      this.emit({ type: 'mcpRequest', reqId, ...req }, client);
+    });
+  }
+
+  /** Sayfadan gelen yanıt; yalnızca isteğin gittiği istemciden kabul edilir. */
+  pageResult(client: string, m: any) {
+    const r = this.pageReqs.get(String(m?.reqId));
+    if (r && r.client === client) r.done(m);
+  }
+
   /** Change the UI language (writes the `panoptent.language` setting; the config listener broadcasts it). */
   async setLang(v: string) {
     const value = v === 'auto' ? 'auto' : normLang(v);

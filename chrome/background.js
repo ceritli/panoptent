@@ -185,6 +185,31 @@ function toVS(tabId, msg) {
   return true;
 }
 
+/**
+ * screenshot_element: sekmenin görünen alanını yakalayıp öğenin dikdörtgenine kırpar. Yalnızca bu sekmede
+ * activeTab izni varsa çalışır (eklenti simgesi ya da kısayolla açıldıysa); yoksa içerik betiği DOM'dan çizer.
+ */
+async function captureTab(tab, m) {
+  const cur = await chrome.tabs.get(tab.id);
+  if (!cur.active) throw new Error('tab is not visible');
+  const url = await chrome.tabs.captureVisibleTab(cur.windowId, { format: 'png' });
+  const bmp = await createImageBitmap(await (await fetch(url)).blob());
+  const k = bmp.width / (m.vw || bmp.width);
+  const x = Math.max(0, Math.round(m.rect.x * k));
+  const y = Math.max(0, Math.round(m.rect.y * k));
+  const w = Math.max(1, Math.min(bmp.width - x, Math.round(m.rect.w * k)));
+  const h = Math.max(1, Math.min(bmp.height - y, Math.round(m.rect.h * k)));
+  const s = Math.min(1, 2000 / w, 4000 / h);
+  const c = new OffscreenCanvas(Math.max(1, Math.round(w * s)), Math.max(1, Math.round(h * s)));
+  c.getContext('2d').drawImage(bmp, x, y, w, h, 0, 0, c.width, c.height);
+  let blob = await c.convertToBlob({ type: 'image/png' });
+  if (blob.size > 4.5e6) blob = await c.convertToBlob({ type: 'image/jpeg', quality: 0.85 });
+  const bytes = new Uint8Array(await blob.arrayBuffer());
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return { data: btoa(bin), mime: blob.type, width: c.width, height: c.height };
+}
+
 chrome.runtime.onConnect.addListener((p) => {
   if (p.name !== 'panoptent' || !p.sender || !p.sender.tab) return;
   const tabId = p.sender.tab.id;
@@ -228,6 +253,12 @@ chrome.runtime.onConnect.addListener((p) => {
       }
       case 'syncState':
         toVS(tabId, m); // bağlı değilse sessizce düşer
+        return;
+      case 'captureTab':
+        captureTab(p.sender.tab, m).then(
+          (shot) => send(p, Object.assign({ type: 'captureResult', reqId: m.reqId, ok: true }, shot)),
+          (e) => send(p, { type: 'captureResult', reqId: m.reqId, ok: false, error: String(e && e.message || e) }),
+        );
         return;
       case 'getState':
         broadcastStatus();

@@ -16,7 +16,7 @@ Open to every kind of contribution.
 | `src/extension.ts` | activation, commands, VS Code preview panel (webview HTML template lives here) |
 | `src/engine.ts` | apply / hand-off to Claude / undo; one engine per workspace, shared by panel and Chrome |
 | `src/bridge.ts` | Chrome bridge: `ws` on 127.0.0.1:47811–47820, extension origins only, one-time pairing |
-| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `start_live` (returns a `curl` to `POST /live/wait?t=<token>` that Claude Code runs as a background task, ~590 s per round, like Impeccable's `live-poll`), `wait_for_apply` (MCP long-poll fallback, 50 s: clients time out at ~60 s), `mark_applied`, prompts `apply_queue`, `live`, `selection`; connecting also installs `~/.claude/commands/panoptent.md` (`/panoptent live|apply|selection`, never overwrites a file without its marker); reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
+| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `start_live` (returns a `curl` to `POST /live/wait?t=<token>` that Claude Code runs as a background task, ~590 s per round, like Impeccable's `live-poll`), `wait_for_apply` (MCP long-poll fallback, 50 s: clients time out at ~60 s), `mark_applied`, page tools `screenshot_element` / `highlight` / `preview_style` (engine `pageRequest` → `{type:'mcpRequest', op}` to the panel/Chrome tab → overlay `onAgent` → `mcpResult`; Chrome tries `captureVisibleTab` (needs activeTab) then falls back to the overlay's DOM → SVG foreignObject render), prompts `apply_queue`, `live`, `selection`; connecting also installs `~/.claude/commands/panoptent.md` (`/panoptent live|apply|selection`, never overwrites a file without its marker); reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
 | `src/revert.ts` | precise undo from Claude Code transcripts (`~/.claude/projects/...`), matches the `PT-…` id only |
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |
@@ -62,13 +62,13 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
+- 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3) in review.
 - 0.12.0 (live mode `/panoptent live` / `/panoptent:live (MCP)`: `start_live` background `curl` wait, Apply goes straight to the waiting Claude conversation, unclaimed sets fall back after 30 s; `/panoptent` command; PR #17) merged 2026-10-25 and released by the release workflow. Next: package as a Claude Code plugin.
 - 0.11.2 (Chrome drawer close button, ⚙ toggles, Esc closes; turning Select off clears the selection; PR #13) merged 2026-10-24 and released by the release workflow.
 - 0.11.1 (settings page grouped into sections with labels/descriptions; settings links open
   `@ext:ceritli.panoptent`; panel Options card; compact Get Started view; PR #10) merged 2026-10-22 and released by the release workflow.
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
-  0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
-  `screenshot_element`, `highlight` / `preview_style`.
+  0.10.0 added the MCP server + `sendTo: mcp` (PR #6).
 - Chrome Web Store: live since 2026-10-24 at https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc.
 - Open VSX (#4, done 2026-10-24): namespace claim approved, `ceritli` verified; 0.11.2 live at
   https://open-vsx.org/extension/ceritli/panoptent (published by the release workflow).

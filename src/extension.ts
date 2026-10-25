@@ -361,6 +361,9 @@ class PreviewPanel {
       case 'syncState':
         e.syncPage('panel', 'vscode', m);
         break;
+      case 'mcpResult':
+        e.pageResult('panel', m);
+        break;
       case 'applyEntries':
         await e.applyEntries(m.entries || [], m.pageUrl || this.proxy.targetOrigin, !!m.continueSession, !!m.fromQueue, 'panel');
         break;
