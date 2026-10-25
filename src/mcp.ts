@@ -76,8 +76,8 @@ const LIVE_PROMPT = [
 ].join('\n');
 
 const LIVE_AFTER =
-  'After the edits: call the Panoptent MCP tool mark_applied with this id, tell the user in one short line what you changed, ' +
-  'then start the same live command again in the background.';
+  'First start the same live command again in the background, then make the edits, call the Panoptent MCP tool ' +
+  'mark_applied with this id and tell the user in one short line what you changed.';
 
 const COMMAND_MARK = '<!-- panoptent:command -->';
 
@@ -401,8 +401,11 @@ export class McpHost {
               'in the foreground and do not poll it or sleep: you are notified when it finishes.',
             'Tell me in one line that live mode is on and I can press Apply in Panoptent. Then end your turn.',
             'When it finishes, read its output. "PANOPTENT WAITING" means nothing happened: start the same command again in the ' +
-              'background without writing anything. "PANOPTENT CHANGE SET PT-…" is a change set: make the edits, call ' +
-              'mark_applied with that id, tell me in one short line what you changed, and start the command again in the background.',
+              'background without writing anything. "PANOPTENT CHANGE SET PT-…" is a change set: FIRST start the same command ' +
+              'again in the background (so the next Apply is not lost), then make the edits, call mark_applied with that id and ' +
+              'tell me in one short line what you changed.',
+            'If I write to you about something else while live mode is on, answer me and keep live mode on: make sure the ' +
+              'command is running in the background (start it again if it is not).',
             'If a change set is unclear, make your best reading and say so in that line instead of asking.',
             'If the command fails (connection refused), Panoptent restarted: call start_live again for a fresh command.',
             'Stop when I ask you to stop: then stop the background command and do not start it again.',
@@ -436,7 +439,7 @@ export class McpHost {
       'live',
       {
         title: 'Panoptent live mode',
-        description: 'Stay connected and apply each change set as soon as you press Apply in Panoptent. Press Esc to stop.',
+        description: 'Stay connected and apply each change set as soon as you press Apply in Panoptent. Ask Claude to stop when you are done.',
       },
       async () => ({
         messages: [{ role: 'user' as const, content: { type: 'text' as const, text: LIVE_PROMPT } }],

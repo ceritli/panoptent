@@ -11,9 +11,12 @@ import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClau
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
 
-/** Canlı mod: Claude bir paketi aldıktan sonra düzenlerken / iki bekleme arasında açık kalma süresi. */
-const LIVE_WORK_MS = 10 * 60 * 1000;
-const LIVE_GAP_MS = 60 * 1000;
+/**
+ * Canlı mod: bir bekleme bittikten sonra Claude'un yenisini başlatması için tanınan süre. Claude beklemeyi
+ * düzenlemeden önce yeniden başlatır; başlatmazsa (konuşmada başka bir işe geçtiyse) paket bu süre sonunda
+ * her zamanki yoldan gönderilir, kaybolmaz.
+ */
+const LIVE_GAP_MS = 30 * 1000;
 
 addStrings({
   en: {
@@ -51,6 +54,7 @@ addStrings({
     'ext.mcp.markDone': 'When you are done, call the Panoptent MCP tool mark_applied with id {0}.',
     'ext.mcp.directOnly': 'Panoptent wrote the {0} text change(s) directly; there is nothing left to edit.',
     'ext.mcp.log.done': 'Claude finished {0} (via MCP)',
+    'ext.mcp.liveLost': 'Live mode: no Claude Code conversation picked up {0}; sent it the usual way.',
   },
   tr: {
     'ext.fileNotFound': 'Dosya bulunamadı: {0}',
@@ -87,6 +91,7 @@ addStrings({
     'ext.mcp.markDone': 'İşin bitince Panoptent MCP aracı mark_applied’ı {0} kimliğiyle çağır.',
     'ext.mcp.directOnly': 'Panoptent {0} metin değişikliğini doğrudan yazdı; düzenlenecek başka bir şey kalmadı.',
     'ext.mcp.log.done': 'Claude {0} işini bitirdi (MCP üzerinden)',
+    'ext.mcp.liveLost': 'Canlı mod: {0} hiçbir Claude Code konuşması tarafından alınmadı; her zamanki yoldan gönderildi.',
   },
 });
 
@@ -336,7 +341,7 @@ export class Engine {
   waitForApply(timeoutMs: number, signal?: AbortSignal): Promise<{ id: string; prompt: string } | undefined> {
     const next = this.liveInbox.shift();
     if (next) {
-      this.liveUntil = Date.now() + LIVE_WORK_MS;
+      this.liveUntil = Date.now() + LIVE_GAP_MS;
       return Promise.resolve(next);
     }
     return new Promise((resolve) => {
@@ -345,7 +350,7 @@ export class Engine {
         signal?.removeEventListener('abort', onAbort);
         this.liveWaiters = this.liveWaiters.filter((w) => w !== waiter);
         // istemci isteği kesse de (Esc ya da kendi zaman aşımı) kısa bir süre açık kalır: Claude birazdan yeniden bekleyebilir
-        this.liveUntil = Date.now() + (x ? LIVE_WORK_MS : LIVE_GAP_MS);
+        this.liveUntil = Date.now() + LIVE_GAP_MS;
         resolve(x);
       };
       // bağlantısı kopmuş bir bekleyiciye paket verilmesin (kaybolurdu)
@@ -362,10 +367,19 @@ export class Engine {
     });
   }
 
-  /** Paketi bekleyen Claude'a verir; bekleyen yoksa kutuya koyar. Dönüş: hemen alındı mı. */
-  private deliverLive(x: { id: string; prompt: string }): boolean {
+  /**
+   * Paketi bekleyen Claude'a verir; bekleyen yoksa kutuya koyar ve LIVE_GAP_MS içinde alınmazsa `fallback`
+   * çalışır (canlı mod kesilmiş demektir). Dönüş: hemen alındı mı.
+   */
+  private deliverLive(x: { id: string; prompt: string }, fallback: () => void): boolean {
     for (let w = this.liveWaiters.shift(); w; w = this.liveWaiters.shift()) if (w(x)) return true;
     this.liveInbox.push(x);
+    setTimeout(() => {
+      if (!this.liveInbox.includes(x)) return;
+      this.liveInbox = this.liveInbox.filter((y) => y !== x);
+      this.output.appendLine(t('ext.mcp.liveLost', x.id));
+      fallback();
+    }, LIVE_GAP_MS);
     return false;
   }
 
@@ -476,7 +490,12 @@ export class Engine {
       let ok = true;
       let how = 'mcpPrompt';
       if (live) {
-        how = this.deliverLive({ id: rec.id, prompt }) ? 'live' : 'liveQueued';
+        how = this.deliverLive({ id: rec.id, prompt }, async () => {
+          const ok = await openInClaudePanel(t('ext.mcp.applyLine', rec.id));
+          emit({ type: 'handoff', ok, how: 'newTab', id: rec.id });
+        })
+          ? 'live'
+          : 'liveQueued';
       } else if (!viaMcpPrompt) {
         const line = t('ext.mcp.applyLine', rec.id);
         if (continueSession) {

@@ -2,7 +2,7 @@
 
 ## 0.12.0 — 2026-10-24
 
-- **Live mode: `/panoptent live`** in Claude Code. Claude waits for you; every time you press **Apply** in the VS Code preview or in Chrome, the change set goes straight to that conversation (no command to paste, no new tab), Claude makes the edits, calls `mark_applied` and waits for the next one. Changes you apply while Claude is still busy wait their turn. Press **Esc** in Claude Code to stop. Undo works as usual
+- **Live mode: `/panoptent live`** in Claude Code. Claude waits for you; every time you press **Apply** in the VS Code preview or in Chrome, the change set goes straight to that conversation (no command to paste, no new tab), Claude makes the edits, calls `mark_applied` and waits for the next one. Claude restarts the wait before editing, so an Apply while it works is not lost; if no conversation picks a change set up within 30 seconds (live mode was interrupted), Panoptent sends it the usual way. Ask Claude to stop, or use `/panoptent stop`. Undo works as usual
 - **`/panoptent` command for Claude Code**: *Panoptent: Connect Claude Code (MCP)* installs `~/.claude/commands/panoptent.md` with `/panoptent live`, `/panoptent apply` (apply the queue) and `/panoptent selection …` (work on the selected elements). A `panoptent.md` you wrote yourself is left alone
 - Live mode waits with a quiet background command (`curl` to the local MCP server, ~10 minutes per round), so the conversation stays free and nothing piles up on screen
 - MCP: new tools `start_live` and `wait_for_apply` (for clients without background commands) and prompts `live` and `selection` (`/mcp__panoptent__live`, `/mcp__panoptent__selection`)
