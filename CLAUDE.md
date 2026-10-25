@@ -69,9 +69,10 @@ workflows (push to `main`, or `workflow_dispatch` via the API).
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
   0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
   `screenshot_element`, `highlight` / `preview_style`.
-- Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
-  description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
+- Chrome Web Store: live since 2026-10-24 at https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc.
 - Open VSX (#4, done 2026-10-24): namespace claim approved, `ceritli` verified; 0.11.2 live at
   https://open-vsx.org/extension/ceritli/panoptent (published by the release workflow).
-- Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.
+- Chrome Web Store automation (#2, done 2026-10-25): service account `panoptent-publisher@panoptent.iam.gserviceaccount.com`
+  (GCP project `panoptent`) linked in the CWS dashboard; secrets `CWS_SA_KEY` / `CWS_PUBLISHER_ID` set. Release run
+  40147704574 uploaded 0.12.0 and submitted it for review (PR #18). Store was on 0.9.1 before that.
 - Open tasks and ideas are tracked as GitHub issues (label `roadmap`).
