@@ -78,6 +78,10 @@
       'cx.ho.mcpLong': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: paste it into your Claude Code conversation in VS Code and press <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> there instead of pressing Apply.',
       'cx.ho.mcpPrompt': 'Claude Code took the queue over MCP',
       'cx.ho.mcpPromptLong': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them as usual.',
+      'cx.ho.live': 'Claude Code (live mode) is applying it',
+      'cx.ho.liveLong': 'Claude Code is in live mode (<code>/panoptent live</code>) and took this change set right away. You can undo it as usual.',
+      'cx.ho.liveQueued': 'Waiting for Claude Code (live mode)',
+      'cx.ho.liveQueuedLong': 'Claude Code is in live mode but is not waiting right now; if it does not pick this one up within 30 seconds, Panoptent sends it the usual way.',
       'cx.panelFail': 'Couldn’t open the Claude Code panel', 'cx.panelFailLog': 'Couldn’t open the Claude Code panel.',
       'cx.done': '✓ Done', 'cx.changedFiles': 'Changed: {0}', 'cx.noFiles': ' · no files changed',
       'cx.claudeFail': 'Claude couldn’t finish the job.', 'cx.claudeFailShort': 'Claude couldn’t finish the job',
@@ -156,6 +160,10 @@
       'cx.ho.mcpLong': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: VS Code’daki Claude Code konuşmana yapıştırıp <b>Enter</b>’a bas. İpucu: Uygula’ya basmadan oraya <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
       'cx.ho.mcpPrompt': 'Claude Code kuyruğu MCP üzerinden aldı',
       'cx.ho.mcpPromptLong': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi geri alabilirsin.',
+      'cx.ho.live': 'Claude Code (canlı mod) uyguluyor',
+      'cx.ho.liveLong': 'Claude Code canlı modda (<code>/panoptent live</code>) ve bu değişiklik paketini hemen aldı. Her zamanki gibi geri alabilirsin.',
+      'cx.ho.liveQueued': 'Claude Code bekleniyor (canlı mod)',
+      'cx.ho.liveQueuedLong': 'Claude Code canlı modda ama şu an beklemiyor; 30 saniye içinde almazsa Panoptent bunu her zamanki yoldan gönderir.',
       'cx.panelFail': 'Claude Code paneli açılamadı', 'cx.panelFailLog': 'Claude Code paneli açılamadı.',
       'cx.done': '✓ Tamamlandı', 'cx.changedFiles': 'Değişen: {0}', 'cx.noFiles': ' · dosya değişmedi',
       'cx.claudeFail': 'Claude işi bitiremedi.', 'cx.claudeFailShort': 'Claude işi bitiremedi',
@@ -876,7 +884,7 @@
         break;
       }
       case 'handoff': {
-        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt', 'live', 'liveQueued'].includes(m.how) ? m.how : 'newTab';
         const short = () => t('cx.ho.' + how);
         if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? short() : t('cx.panelFail'), 2600); }
         if (m.ok) {

@@ -11,6 +11,13 @@ import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClau
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
 
+/**
+ * Canlı mod: bir bekleme bittikten sonra Claude'un yenisini başlatması için tanınan süre. Claude beklemeyi
+ * düzenlemeden önce yeniden başlatır; başlatmazsa (konuşmada başka bir işe geçtiyse) paket bu süre sonunda
+ * her zamanki yoldan gönderilir, kaybolmaz.
+ */
+const LIVE_GAP_MS = 30 * 1000;
+
 addStrings({
   en: {
     'ext.fileNotFound': 'File not found: {0}',
@@ -47,6 +54,7 @@ addStrings({
     'ext.mcp.markDone': 'When you are done, call the Panoptent MCP tool mark_applied with id {0}.',
     'ext.mcp.directOnly': 'Panoptent wrote the {0} text change(s) directly; there is nothing left to edit.',
     'ext.mcp.log.done': 'Claude finished {0} (via MCP)',
+    'ext.mcp.liveLost': 'Live mode: no Claude Code conversation picked up {0}; sent it the usual way.',
   },
   tr: {
     'ext.fileNotFound': 'Dosya bulunamadı: {0}',
@@ -83,6 +91,7 @@ addStrings({
     'ext.mcp.markDone': 'İşin bitince Panoptent MCP aracı mark_applied’ı {0} kimliğiyle çağır.',
     'ext.mcp.directOnly': 'Panoptent {0} metin değişikliğini doğrudan yazdı; düzenlenecek başka bir şey kalmadı.',
     'ext.mcp.log.done': 'Claude {0} işini bitirdi (MCP üzerinden)',
+    'ext.mcp.liveLost': 'Canlı mod: {0} hiçbir Claude Code konuşması tarafından alınmadı; her zamanki yoldan gönderildi.',
   },
 });
 
@@ -315,6 +324,65 @@ export class Engine {
     return this.applyEntries(queue, p.pageUrl, false, true, p.client, true);
   }
 
+  /**
+   * Canlı mod (`/panoptent live`): Claude `wait_for_apply` ile bekler, kullanıcı Uygula'ya basınca paket
+   * doğrudan ona gider (komut kopyalanmaz, sekme açılmaz). Claude düzenleme yaparken gelen paketler
+   * kutuda sırasını bekler; canlı mod son bekleme ya da teslimden bir süre sonra kendiliğinden kapanır.
+   */
+  private liveWaiters: ((x: { id: string; prompt: string }) => boolean)[] = [];
+  private liveInbox: { id: string; prompt: string }[] = [];
+  private liveUntil = 0;
+
+  liveActive() {
+    return this.liveWaiters.length > 0 || Date.now() < this.liveUntil;
+  }
+
+  /** Sıradaki paketi bekler; süre dolarsa ya da istemci vazgeçerse `undefined`. */
+  waitForApply(timeoutMs: number, signal?: AbortSignal): Promise<{ id: string; prompt: string } | undefined> {
+    const next = this.liveInbox.shift();
+    if (next) {
+      this.liveUntil = Date.now() + LIVE_GAP_MS;
+      return Promise.resolve(next);
+    }
+    return new Promise((resolve) => {
+      const done = (x?: { id: string; prompt: string }) => {
+        clearTimeout(timer);
+        signal?.removeEventListener('abort', onAbort);
+        this.liveWaiters = this.liveWaiters.filter((w) => w !== waiter);
+        // istemci isteği kesse de (Esc ya da kendi zaman aşımı) kısa bir süre açık kalır: Claude birazdan yeniden bekleyebilir
+        this.liveUntil = Date.now() + LIVE_GAP_MS;
+        resolve(x);
+      };
+      // bağlantısı kopmuş bir bekleyiciye paket verilmesin (kaybolurdu)
+      const waiter = (x: { id: string; prompt: string }) => {
+        if (signal?.aborted) return false;
+        done(x);
+        return true;
+      };
+      const onAbort = () => done();
+      const timer = setTimeout(() => done(), timeoutMs);
+      if (signal?.aborted) return onAbort();
+      signal?.addEventListener('abort', onAbort);
+      this.liveWaiters.push(waiter);
+    });
+  }
+
+  /**
+   * Paketi bekleyen Claude'a verir; bekleyen yoksa kutuya koyar ve LIVE_GAP_MS içinde alınmazsa `fallback`
+   * çalışır (canlı mod kesilmiş demektir). Dönüş: hemen alındı mı.
+   */
+  private deliverLive(x: { id: string; prompt: string }, fallback: () => void): boolean {
+    for (let w = this.liveWaiters.shift(); w; w = this.liveWaiters.shift()) if (w(x)) return true;
+    this.liveInbox.push(x);
+    setTimeout(() => {
+      if (!this.liveInbox.includes(x)) return;
+      this.liveInbox = this.liveInbox.filter((y) => y !== x);
+      this.output.appendLine(t('ext.mcp.liveLost', x.id));
+      fallback();
+    }, LIVE_GAP_MS);
+    return false;
+  }
+
   records: ApplyRecord[] = [];
 
   canRollback() {
@@ -340,9 +408,11 @@ export class Engine {
     if (!entries.length) return fail(t('ext.nothingToApply'));
     if (this.runner.running) return fail(t('ext.busy'));
     // mcp: Claude değişiklikleri Panoptent'in MCP sunucusundan kendisi alır (istek dosyası yok)
-    const mcpMode = viaMcpPrompt || this.sendTo() === 'mcp';
+    // canlı mod: Claude Code `wait_for_apply` ile bekliyor, paket ona gider
+    const live = !viaMcpPrompt && this.liveActive();
+    const mcpMode = viaMcpPrompt || live || this.sendTo() === 'mcp';
     const panelMode = this.sendTo() !== 'cli';
-    if (panelMode && !viaMcpPrompt && !claudeExtensionInstalled()) {
+    if (panelMode && !viaMcpPrompt && !live && !claudeExtensionInstalled()) {
       return fail(t('ext.noClaudeExt'));
     }
 
@@ -419,7 +489,14 @@ export class Engine {
       if (this.mcpApplies.size > 15) this.mcpApplies.delete(this.mcpApplies.keys().next().value!);
       let ok = true;
       let how = 'mcpPrompt';
-      if (!viaMcpPrompt) {
+      if (live) {
+        how = this.deliverLive({ id: rec.id, prompt }, async () => {
+          const ok = await openInClaudePanel(t('ext.mcp.applyLine', rec.id));
+          emit({ type: 'handoff', ok, how: 'newTab', id: rec.id });
+        })
+          ? 'live'
+          : 'liveQueued';
+      } else if (!viaMcpPrompt) {
         const line = t('ext.mcp.applyLine', rec.id);
         if (continueSession) {
           await vscode.env.clipboard.writeText(line);
