@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.13.0 — 2026-10-25
+
+- **MCP: Claude can now see and point at the page.** Three new tools work in the VS Code preview and in Chrome:
+  - `screenshot_element`: an image of a selected element (or any CSS selector) as it looks now, so Claude can check a change before and after editing. Chrome captures the tab when the extension has access to it (opened from its icon or shortcut); otherwise, and in the VS Code preview, the element is rendered from the page (cross-origin images and web fonts may be missing)
+  - `highlight`: Claude draws a labelled purple outline around the elements it means and scrolls to them; nothing changes
+  - `preview_style`: Claude shows a proposed style change live on the page without touching the code (outlined as *Claude's preview*), so you can compare options before it edits the source; `reset` undoes its previews, and a reload clears them
+- The Chrome extension needs 0.13.0 for these tools; with an older one they say so instead of hanging
+
 ## 0.12.0 — 2026-10-24
 
 - **Live mode: `/panoptent live`** in Claude Code. Claude waits for you; every time you press **Apply** in the VS Code preview or in Chrome, the change set goes straight to that conversation (no command to paste, no new tab), Claude makes the edits, calls `mark_applied` and waits for the next one. Claude restarts the wait before editing, so an Apply while it works is not lost; if no conversation picks a change set up within 30 seconds (live mode was interrupted), Panoptent sends it the usual way. Ask Claude to stop, or use `/panoptent stop`. Undo works as usual

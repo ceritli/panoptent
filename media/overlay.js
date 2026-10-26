@@ -100,6 +100,8 @@
       'ov.busy.queue': 'Adding to queue…',
       'ov.edit.hint': 'Edit text · Enter saves, Esc cancels',
       'ov.truncated': '…(truncated)',
+      'ov.agent': 'Claude',
+      'ov.agent.preview': 'Claude’s preview',
     },
     tr: {
       'ov.act.text': 'Metni yerinde düzenle (çift tık)',
@@ -159,6 +161,8 @@
       'ov.busy.queue': 'Kuyruğa ekleniyor…',
       'ov.edit.hint': 'Metni düzenle · Enter kaydeder, Esc iptal',
       'ov.truncated': '…(kısaltıldı)',
+      'ov.agent': 'Claude',
+      'ov.agent.preview': 'Claude’un önizlemesi',
     },
   });
 
@@ -251,8 +255,11 @@
     '.sp{width:11px;height:11px;border-radius:50%;border:2px solid #3a3f47;border-top-color:#f97316;animation:r .8s linear infinite;flex-shrink:0}' +
     '@keyframes r{to{transform:rotate(360deg)}}' +
     '.editing{outline:2px dashed #f97316!important;outline-offset:2px}' +
+    '.agent{outline:2px dashed #a855f7;outline-offset:2px;background:rgba(168,85,247,.08)}' +
+    '.alb{position:fixed;pointer-events:none;font:600 11px/1.4 ' + FONT + ';background:#7c3aed;color:#fff;padding:2px 7px;border-radius:3px;' +
+    'white-space:nowrap;max-width:50vw;overflow:hidden;text-overflow:ellipsis}' +
     '</style>' +
-    '<div id="hover" class="box hover" hidden></div><div id="lbl" class="lbl" hidden></div><div id="sels"></div>' +
+    '<div id="hover" class="box hover" hidden></div><div id="lbl" class="lbl" hidden></div><div id="sels"></div><div id="agentMarks"></div>' +
     '<div id="pop" class="pop" hidden>' +
     '<div class="popHead"><span class="n" id="popN">1</span><div class="crumbs" id="crumbs"></div>' +
     '<div class="acts">' +
@@ -275,7 +282,7 @@
     '<div class="st" id="popSt" hidden></div></div>';
 
   var q = function (id) { return root.getElementById ? root.getElementById(id) : root.querySelector('#' + id); };
-  var hoverBox = q('hover'), label = q('lbl'), selsLayer = q('sels');
+  var hoverBox = q('hover'), label = q('lbl'), selsLayer = q('sels'), agentLayer = q('agentMarks');
   var pop = q('pop'), popN = q('popN'), crumbs = q('crumbs'), srcline = q('srcline'), popIn = q('popIn'),
     popQueue = q('popQueue'), popNow = q('popNow'), popX = q('popX'), popHint = q('popHint'), popSt = q('popSt'),
     tabAsk = q('tabAsk'), tabStyle = q('tabStyle'), styleDot = q('styleDot'),
@@ -550,6 +557,7 @@
       i++;
     });
     while (selsLayer.children.length > i * 2) selsLayer.removeChild(selsLayer.lastChild);
+    renderAgentMarks();
     placePopover();
     requestAnimationFrame(render);
   }
@@ -1236,6 +1244,348 @@
     }
   }, true);
 
+  // ---------- Ajan istekleri (MCP: highlight, preview_style, screenshot_element) ----------
+  // Claude, Panoptent'in MCP sunucusu üzerinden sayfada öğe gösterebilir, stil önerisini canlı önizleyebilir
+  // ve bir öğenin görüntüsünü alabilir. Hiçbiri kaynak koda dokunmaz; önizlemeler sayfa yenilenince kaybolur.
+  var agentMarks = []; // { el, label, until }
+  var agentPreviews = {}; // önizleme kimliği -> geri alma fonksiyonları
+  var agentSeq = 0;
+  var MAX_TARGETS = 50;
+
+  function reply(m, data) {
+    data.type = 'mcpResult';
+    data.reqId = m.reqId;
+    data.op = m.op;
+    post(data);
+  }
+
+  /** Hedefler: seçimdeki kimlik (yoksa seçimdeki seçici) ve/veya sayfadaki CSS seçicisi. */
+  function agentTargets(m) {
+    var els = [];
+    var add = function (el) { if (el && el.nodeType === 1 && !isOurs(el) && els.indexOf(el) < 0 && els.length < MAX_TARGETS) els.push(el); };
+    (m.targets || []).forEach(function (tg) {
+      var el = selected.get(tg.id);
+      if (!el || !el.isConnected) { try { el = tg.selector ? document.querySelector(tg.selector) : null; } catch (e) { el = null; } }
+      add(el);
+    });
+    if (m.selector) {
+      try { Array.prototype.forEach.call(document.querySelectorAll(m.selector), add); } catch (e) { return { error: 'Invalid CSS selector: ' + m.selector }; }
+    }
+    return { els: els };
+  }
+
+  function brief(el) {
+    var r = el.getBoundingClientRect();
+    var src = findSource(el);
+    return {
+      tag: el.tagName.toLowerCase(),
+      selector: selectorFor(el),
+      source: src ? src.file + (src.line ? ':' + src.line : '') : undefined,
+      size: Math.round(r.width) + '×' + Math.round(r.height),
+    };
+  }
+
+  function renderAgentMarks() {
+    var now = Date.now();
+    agentMarks = agentMarks.filter(function (k) { return k.el.isConnected && (!k.until || k.until > now); });
+    var i = 0;
+    agentMarks.forEach(function (k) {
+      var box = agentLayer.children[i * 2], lb = agentLayer.children[i * 2 + 1];
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'box agent';
+        lb = document.createElement('div');
+        lb.className = 'alb';
+        agentLayer.appendChild(box);
+        agentLayer.appendChild(lb);
+      }
+      var r = place(box, k.el);
+      box.hidden = lb.hidden = r.width === 0 && r.height === 0;
+      if (lb.textContent !== k.label) lb.textContent = k.label;
+      var top = r.top - 22;
+      if (top < 2) top = r.bottom + 4;
+      lb.style.top = top + 'px';
+      lb.style.left = Math.max(2, Math.min(r.left, window.innerWidth - 200)) + 'px';
+      i++;
+    });
+    while (agentLayer.children.length > i * 2) agentLayer.removeChild(agentLayer.lastChild);
+  }
+
+  function mark(els, label, seconds) {
+    var until = seconds > 0 ? Date.now() + seconds * 1000 : 0;
+    els.forEach(function (el) {
+      agentMarks = agentMarks.filter(function (k) { return k.el !== el; });
+      agentMarks.push({ el: el, label: label, until: until });
+    });
+    var r = els[0] && els[0].getBoundingClientRect();
+    if (r && (r.bottom < 0 || r.top > window.innerHeight)) els[0].scrollIntoView({ block: 'center' });
+  }
+
+  function agentReset(id) {
+    Object.keys(agentPreviews).forEach(function (k) {
+      if (id && id !== 'all' && k !== id) return;
+      var list = agentPreviews[k];
+      for (var i = list.length - 1; i >= 0; i--) { try { list[i](); } catch (e) { /* yok say */ } }
+      delete agentPreviews[k];
+    });
+  }
+
+  var CSS_PROP = /^(--[\w-]+|-?[a-z][a-z0-9-]*)$/;
+
+  function agentPreview(m, els) {
+    var styles = m.styles || {};
+    var props = Object.keys(styles).filter(function (p) { return CSS_PROP.test(p); });
+    var bad = Object.keys(styles).filter(function (p) { return !CSS_PROP.test(p); });
+    var undo = [];
+    els.forEach(function (el) {
+      props.forEach(function (p) { undo.push(setStyle(el, p, String(styles[p]).slice(0, 1000))); });
+      if (m.classes) undo.push(addClasses(el, String(m.classes)));
+    });
+    var id = 'pv' + (++agentSeq);
+    agentPreviews[id] = undo;
+    mark(els, m.label || t('ov.agent.preview'), 6);
+    // tarayıcının kabul etmediği değerleri bildir (ör. yazım hatası)
+    var ignored = [];
+    props.forEach(function (p) { if (!els[0].style.getPropertyValue(p)) ignored.push(p); });
+    return { previewId: id, ignored: bad.concat(ignored) };
+  }
+
+  // --- Görüntü: DOM'u SVG foreignObject içinde çizer (VS Code önizlemesi ve Chrome yedeği) ---
+  var baseStyles = {};
+  var sandbox = null;
+  function baseStyle(tag, pseudo) {
+    var key = tag + (pseudo || '');
+    if (baseStyles[key]) return baseStyles[key];
+    if (!sandbox) {
+      sandbox = document.createElement('div');
+      sandbox.style.cssText = 'all:initial;position:fixed;left:-99999px;top:0;visibility:hidden';
+      root.appendChild(sandbox);
+    }
+    var el;
+    try { el = document.createElement(tag); } catch (e) { el = document.createElement('div'); }
+    sandbox.appendChild(el);
+    var cs = getComputedStyle(el, pseudo || null), out = {};
+    for (var i = 0; i < cs.length; i++) out[cs[i]] = cs.getPropertyValue(cs[i]);
+    sandbox.removeChild(el);
+    return (baseStyles[key] = out);
+  }
+  function styleText(cs, base) {
+    var s = '';
+    for (var i = 0; i < cs.length; i++) {
+      var k = cs[i], v = cs.getPropertyValue(k);
+      if (base[k] !== v) s += k + ':' + v + ';';
+    }
+    return s;
+  }
+
+  var URL_RE = /url\((["']?)([^"')]+)\1\)/g;
+  function toDataUrl(url, cache) {
+    if (!url || /^data:/.test(url)) return Promise.resolve(url);
+    if (cache[url]) return cache[url];
+    cache[url] = fetch(url, { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.blob();
+    }).then(function (b) {
+      if (b.size > 3e6) throw new Error('too big');
+      return new Promise(function (res, rej) {
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = rej;
+        fr.readAsDataURL(b);
+      });
+    }).catch(function () { return url; });
+    return cache[url];
+  }
+  function inlineUrls(text, base, cache) {
+    var urls = [];
+    text.replace(URL_RE, function (_, q, u) { if (u.charAt(0) !== '#') urls.push(u); return _; });
+    if (!urls.length) return Promise.resolve(text);
+    return Promise.all(urls.map(function (u) {
+      var abs;
+      try { abs = new URL(u, base).href; } catch (e) { abs = u; }
+      return toDataUrl(abs, cache);
+    })).then(function (data) {
+      var i = 0;
+      return text.replace(URL_RE, function (all, q, u) { return u.charAt(0) === '#' ? all : 'url("' + data[i++] + '")'; });
+    });
+  }
+
+  /** Aynı kökenli stil sayfalarındaki @font-face kuralları (yazı tipleri görüntüde doğru görünsün). */
+  function fontCss(cache) {
+    var jobs = [];
+    Array.prototype.forEach.call(document.styleSheets, function (sh) {
+      var rules;
+      try { rules = sh.cssRules; } catch (e) { return; } // başka kökenden: okunamaz
+      Array.prototype.forEach.call(rules || [], function (r) {
+        if (r.type === 5 && jobs.length < 30) jobs.push(inlineUrls(r.cssText, sh.href || location.href, cache));
+      });
+    });
+    return Promise.all(jobs).then(function (a) { return a.join('\n'); });
+  }
+
+  function cloneTree(src, ctx, isRoot) {
+    if (src.nodeType === 3) return document.createTextNode(src.nodeValue);
+    if (src.nodeType !== 1 || isOurs(src)) return null;
+    var tag = src.tagName;
+    if (/^(SCRIPT|NOSCRIPT|TEMPLATE|STYLE|LINK|META)$/.test(tag)) return null;
+    if (++ctx.count > 6000) throw new Error('The element is too large to render (over 6000 nodes). Pick a smaller element.');
+    var cs = getComputedStyle(src);
+    if (cs.display === 'none') return null;
+    var c;
+    if (tag === 'CANVAS') {
+      c = document.createElement('img');
+      try { c.setAttribute('src', src.toDataURL()); } catch (e) { /* kirli tuval */ }
+    } else if (tag === 'IFRAME' || tag === 'VIDEO' || tag === 'OBJECT' || tag === 'EMBED') {
+      c = document.createElement('div');
+      if (tag === 'VIDEO' && src.poster) c.style.background = 'url("' + src.poster + '") center/cover';
+    } else {
+      c = src.cloneNode(false);
+      if (tag === 'IMG' && (src.currentSrc || src.src)) {
+        c.removeAttribute('srcset');
+        c.removeAttribute('loading');
+        (function (img, url) {
+          ctx.jobs.push(toDataUrl(url, ctx.cache).then(function (d) { img.setAttribute('src', d); }));
+        })(c, src.currentSrc || src.src);
+      }
+      if (tag === 'INPUT') {
+        if (src.type === 'checkbox' || src.type === 'radio') { if (src.checked) c.setAttribute('checked', ''); else c.removeAttribute('checked'); }
+        else c.setAttribute('value', src.value);
+      }
+      if (tag === 'TEXTAREA') c.textContent = src.value;
+      if (tag === 'SELECT') {
+        Array.prototype.forEach.call(src.children, function (o) { var oc = o.cloneNode(true); if (o.selected) oc.setAttribute('selected', ''); c.appendChild(oc); });
+      }
+    }
+    var css = styleText(cs, baseStyle(tag.toLowerCase())) + 'animation:none;transition:none;';
+    if (isRoot) {
+      css += 'margin:0;' + (cs.position === 'static' ? '' : 'position:relative;inset:auto;') + 'transform:none;';
+    }
+    if (/url\(/.test(css)) {
+      (function (node, text) {
+        ctx.jobs.push(inlineUrls(text, location.href, ctx.cache).then(function (v) { node.setAttribute('style', v); }));
+      })(c, css);
+    }
+    c.setAttribute('style', css);
+    ['::before', '::after'].forEach(function (ps) {
+      var pcs = getComputedStyle(src, ps);
+      var content = pcs.getPropertyValue('content');
+      if (!content || content === 'none' || content === 'normal') return;
+      var cls = 'pt-ps' + (++ctx.pseudo);
+      c.setAttribute('class', ((c.getAttribute('class') || '') + ' ' + cls).trim());
+      ctx.rules.push('.' + cls + ps + '{' + styleText(pcs, baseStyle(tag.toLowerCase(), ps)) + 'content:' + content + ';}');
+    });
+    if (tag !== 'SELECT' && tag !== 'TEXTAREA' && tag !== 'CANVAS') {
+      var kids = src.shadowRoot ? src.shadowRoot.childNodes : src.childNodes;
+      Array.prototype.forEach.call(kids, function (n) {
+        var k = cloneTree(n, ctx, false);
+        if (k) c.appendChild(k);
+      });
+    }
+    return c;
+  }
+
+  function pageBackground(el) {
+    for (var n = el; n && n.nodeType === 1; n = n.parentElement) {
+      var bg = getComputedStyle(n).backgroundColor;
+      if (bg && bg !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(bg)) return bg;
+    }
+    return '#fff';
+  }
+
+  function renderShot(el) {
+    var r = el.getBoundingClientRect();
+    var w = Math.max(1, Math.ceil(r.width)), h = Math.max(1, Math.ceil(r.height));
+    var ctx = { count: 0, pseudo: 0, jobs: [], cache: {}, rules: [] };
+    var clone = cloneTree(el, ctx, true);
+    if (!clone) return Promise.reject(new Error('The element is not visible (display: none).'));
+    return Promise.all([fontCss(ctx.cache)].concat(ctx.jobs)).then(function (a) {
+      var wrap = document.createElement('div');
+      wrap.setAttribute('style', 'width:' + w + 'px;height:' + h + 'px;overflow:hidden;background:' + pageBackground(el));
+      var st = document.createElement('style');
+      st.textContent = a[0] + '\n' + ctx.rules.join('\n');
+      wrap.appendChild(st);
+      wrap.appendChild(clone);
+      var xml = new XMLSerializer().serializeToString(wrap);
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '"><foreignObject x="0" y="0" width="100%" height="100%">' + xml + '</foreignObject></svg>';
+      return new Promise(function (res, rej) {
+        var img = new Image();
+        img.onload = function () { res(img); };
+        img.onerror = function () { rej(new Error('The browser could not render the element.')); };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      });
+    }).then(function (img) {
+      var scale = Math.min(Math.max(1, Math.min(window.devicePixelRatio || 1, 2)), 2000 / w, 4000 / h);
+      var cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(w * scale));
+      cv.height = Math.max(1, Math.round(h * scale));
+      var g = cv.getContext('2d');
+      g.drawImage(img, 0, 0, cv.width, cv.height);
+      var url = cv.toDataURL('image/png');
+      if (url.length > 6e6) url = cv.toDataURL('image/jpeg', 0.85);
+      var mime = url.slice(5, url.indexOf(';'));
+      return { data: url.slice(url.indexOf(',') + 1), mime: mime, width: cv.width, height: cv.height };
+    });
+  }
+
+  var hideTimer = null;
+  function hideUi(on) {
+    clearTimeout(hideTimer);
+    host.style.visibility = on ? 'hidden' : '';
+    if (on) hideTimer = setTimeout(function () { host.style.visibility = ''; }, 4000);
+  }
+
+  function onAgent(m) {
+    var found = m.op === 'reset' || m.op === 'show' ? { els: [] } : agentTargets(m);
+    if (found.error) return reply(m, { ok: false, error: found.error });
+    var els = found.els;
+    var need = m.op !== 'reset' && m.op !== 'show' && !(m.op === 'highlight' && m.clear && !(m.targets || []).length && !m.selector);
+    if (need && !els.length) return reply(m, { ok: false, error: 'No matching element on the page (it may have been removed or the page reloaded).' });
+    switch (m.op) {
+      case 'highlight':
+        if (m.clear) agentMarks = [];
+        if (els.length) mark(els, String(m.label || t('ov.agent')).slice(0, 120), m.seconds === 0 ? 0 : (m.seconds || 8));
+        return reply(m, { ok: true, found: els.length, elements: els.slice(0, 10).map(brief) });
+      case 'preview': {
+        if (m.reset) agentReset('all');
+        var pv = agentPreview(m, els);
+        return reply(m, { ok: true, found: els.length, previewId: pv.previewId, ignored: pv.ignored.length ? pv.ignored : undefined });
+      }
+      case 'reset':
+        agentReset(m.previewId || 'all');
+        agentMarks = [];
+        return reply(m, { ok: true });
+      case 'locate': {
+        // Chrome: sekme görüntüsü için öğeyi görünür alana getir, kendi katmanını gizle
+        var el = els[0];
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        if (m.hide) hideUi(true);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            var r = el.getBoundingClientRect();
+            var fits = r.width > 0 && r.height > 0 && r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight;
+            if (!fits) hideUi(false);
+            reply(m, { ok: true, fits: fits, rect: { x: r.left, y: r.top, w: r.width, h: r.height }, vw: window.innerWidth, element: brief(el) });
+          });
+        });
+        return;
+      }
+      case 'show':
+        hideUi(false);
+        return reply(m, { ok: true });
+      case 'screenshot':
+        renderShot(els[0]).then(function (shot) {
+          shot.ok = true;
+          shot.via = 'dom';
+          shot.element = brief(els[0]);
+          reply(m, shot);
+        }, function (err) {
+          reply(m, { ok: false, error: err.message || String(err) });
+        });
+        return;
+    }
+    reply(m, { ok: false, error: 'Unknown request ' + m.op });
+  }
+
   // ---------- Dil değişimi: açık kutuyu yeniden çevir ----------
   function relocalize() {
     localizeStatic();
@@ -1332,6 +1682,9 @@
         if (el3) el3.scrollIntoView({ block: 'center', behavior: 'smooth' });
         break;
       }
+      case 'mcpRequest':
+        try { onAgent(m); } catch (err) { reply(m, { ok: false, error: err.message || String(err) }); }
+        break;
       case 'openPopover': {
         var last = null;
         selected.forEach(function (_, k) { last = k; });

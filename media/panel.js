@@ -1049,6 +1049,9 @@
       case 'openSourceReq':
         vscode.postMessage({ type: 'openSource', item: m.item });
         break;
+      case 'mcpResult': // Claude'un MCP isteğine (highlight, preview_style, screenshot_element) yanıt
+        vscode.postMessage(m);
+        break;
     }
   }
 
@@ -1184,6 +1187,9 @@
         break;
       case 'reload':
         reloadFrame();
+        break;
+      case 'mcpRequest':
+        toFrame(m);
         break;
     }
   }
