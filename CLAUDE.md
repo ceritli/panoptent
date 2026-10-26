@@ -62,7 +62,7 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3) in review.
+- 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3; PR #20) merged 2026-10-26 and released by the release workflow.
 - 0.12.0 (live mode `/panoptent live` / `/panoptent:live (MCP)`: `start_live` background `curl` wait, Apply goes straight to the waiting Claude conversation, unclaimed sets fall back after 30 s; `/panoptent` command; PR #17) merged 2026-10-25 and released by the release workflow. Next: package as a Claude Code plugin.
 - 0.11.2 (Chrome drawer close button, ⚙ toggles, Esc closes; turning Select off clears the selection; PR #13) merged 2026-10-24 and released by the release workflow.
 - 0.11.1 (settings page grouped into sections with labels/descriptions; settings links open
