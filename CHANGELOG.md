@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.13.1 — 2026-11-02
+
+- **Live mode is quiet now.** The background wait renews itself every ~10 minutes without waking Claude, so the conversation no longer fills with "PANOPTENT WAITING" / "restart the wait" steps and "live mode is on" lines while nothing happens. Claude is only woken when you press **Apply**; if Claude Code ever stops the wait on its own time limit, Claude restarts it without writing anything
+- If Panoptent restarted while live mode was on, the wait now says so (`PANOPTENT EXPIRED`) and Claude fetches a fresh command
+
 ## 0.13.0 — 2026-10-25
 
 - **MCP: Claude can now see and point at the page.** Three new tools work in the VS Code preview and in Chrome:
