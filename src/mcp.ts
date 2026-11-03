@@ -67,7 +67,11 @@ const UNTRUSTED =
 const LIVE_WAIT = 50;
 const LIVE_MAX_WAIT = 240;
 
-/** Saniye: arka plandaki `curl` beklemesi (Claude Code arka plan görevini bitince haber verir, ekranda satır birikmez). */
+/**
+ * Saniye: arka plandaki komutun her `curl` turu. Komut bir kabuk döngüsüdür: boş geçen turlarda kendini sessizce yeniler,
+ * yalnızca Uygula'ya basıldığında (ya da Panoptent kapandığında) biter. Böylece Claude Code ekranında her 10 dakikada bir
+ * "bekleniyor / yeniden başlat" adımları birikmez.
+ */
 const LIVE_POLL = 590;
 
 const LIVE_PROMPT = [
@@ -263,12 +267,17 @@ export class McpHost {
   private liveToken = randomBytes(12).toString('hex');
 
   private get liveCommand() {
-    return `curl -sS -X POST --max-time ${LIVE_POLL + 20} "http://127.0.0.1:${this.port}/live/wait?t=${this.liveToken}"`;
+    const curl = `curl -sS -X POST --max-time ${LIVE_POLL + 20} "http://127.0.0.1:${this.port}/live/wait?t=${this.liveToken}"`;
+    // boş turlar Claude'a hiç ulaşmaz; curl hatası (Panoptent kapandı) komutu bitirir
+    return `while :; do r=$(${curl}) || exit 1; case "$r" in "PANOPTENT WAITING"*) sleep 1 ;; *) printf '%s\n' "$r"; exit 0 ;; esac; done`;
   }
 
   /** Arka plandaki `curl`: kullanıcı Uygula'ya basana kadar (ya da LIVE_POLL saniye) bekler, düz metin döner. */
   private async liveWait(req: http.IncomingMessage, res: http.ServerResponse, token: string | null) {
-    if (token !== this.liveToken) return void res.writeHead(403).end();
+    if (token !== this.liveToken)
+      return void res
+        .writeHead(403, { 'content-type': 'text/plain; charset=utf-8' })
+        .end('PANOPTENT EXPIRED: Panoptent restarted. Call the Panoptent MCP tool start_live again for a fresh command.\n');
     const ac = new AbortController();
     res.on('close', () => ac.abort());
     req.resume();
@@ -276,7 +285,7 @@ export class McpHost {
     if (ac.signal.aborted) return;
     const text = got
       ? `PANOPTENT CHANGE SET ${got.id}\n\n${got.prompt}\n\n${LIVE_AFTER}\n`
-      : `PANOPTENT WAITING: nothing applied yet. Start the same command again in the background, silently.\n`;
+      : `PANOPTENT WAITING: nothing applied yet. Start the same command again in the background without writing anything.\n`;
     res.writeHead(200, { 'content-type': 'text/plain; charset=utf-8' }).end(text);
   }
 
@@ -510,8 +519,8 @@ export class McpHost {
       {
         title: 'Start live mode',
         description:
-          'Live mode: returns a shell command that waits until the user presses Apply in Panoptent and then prints that ' +
-          'change set. Run it in the background (Claude Code: Bash with run_in_background) so nothing piles up on screen; ' +
+          'Live mode: returns a shell command that waits (for hours if needed) until the user presses Apply in Panoptent and ' +
+          'then prints that change set. Run it in the background (Claude Code: Bash with run_in_background) so nothing piles up on screen; ' +
           'when it finishes, apply the change set and start it again. Clients without background commands can loop on ' +
           'wait_for_apply instead.',
         inputSchema: {},
@@ -521,17 +530,22 @@ export class McpHost {
         this.text({
           command: this.liveCommand,
           instructions: [
-            'Run `command` with your shell tool in the background (Claude Code: run_in_background: true). Do not wait for it ' +
-              'in the foreground and do not poll it or sleep: you are notified when it finishes.',
+            'Run `command` with your shell tool in the background (Claude Code: run_in_background: true; if the tool takes a ' +
+              'timeout, give it the largest one allowed). Do not wait for it in the foreground and do not poll it, read its ' +
+              'output file or sleep: you are notified when it finishes. It keeps waiting on its own and only finishes when I ' +
+              'press Apply.',
             'Tell me in one line that live mode is on and I can press Apply in Panoptent. Then end your turn.',
-            'When it finishes, read its output. "PANOPTENT WAITING" means nothing happened: start the same command again in the ' +
-              'background without writing anything. "PANOPTENT CHANGE SET PT-…" is a change set: FIRST start the same command ' +
+            'When it finishes, read its output. "PANOPTENT CHANGE SET PT-…" is a change set: FIRST start the same command ' +
               'again in the background (so the next Apply is not lost), then make the edits, call mark_applied with that id and ' +
               'tell me in one short line what you changed.',
+            'If it finished without a change set (empty output, "PANOPTENT WAITING", or it was stopped by a time limit), ' +
+              'nothing happened: start the same command again in the background and end your turn WITHOUT writing any text ' +
+              '(no status line such as "live mode is still on").',
             'If I write to you about something else while live mode is on, answer me and keep live mode on: make sure the ' +
               'command is running in the background (start it again if it is not).',
             'If a change set is unclear, make your best reading and say so in that line instead of asking.',
-            'If the command fails (connection refused), Panoptent restarted: call start_live again for a fresh command.',
+            'If the command fails (connection refused) or prints "PANOPTENT EXPIRED", Panoptent restarted: call start_live ' +
+              'again for a fresh command, silently.',
             'Stop when I ask you to stop: then stop the background command and do not start it again.',
           ],
         }),

@@ -2,7 +2,7 @@
   "name": "panoptent",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "publisher": "ceritli",
   "author": {
     "name": "Fatih Ceritli",
