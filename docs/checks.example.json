@@ -1,0 +1,44 @@
+{
+  "v": 1,
+  "id": "order-export",
+  "name": "Order export",
+  "date": "2026-11-23",
+  "lead": "The orders page got a CSV export button.",
+  "tests": [
+    {
+      "id": "t1",
+      "t": "Download the CSV",
+      "url": "/admin/orders",
+      "d": "Orders → press **Export** above the table.",
+      "e": "A file orders.csv downloads with 2 rows and a header row.",
+      "agent": true,
+      "result": { "state": "bad", "note": "The file is empty.", "by": "Ada Lovelace", "at": "2026-11-23T09:41:12.000Z" }
+    },
+    {
+      "id": "t2",
+      "t": "Filtered list",
+      "url": "/admin/orders?tab=open",
+      "d": "Switch to the Open tab, then press Export.",
+      "e": "Only the 1 open order is in the file.",
+      "result": { "state": "none" }
+    }
+  ],
+  "decisions": [
+    {
+      "id": "k1",
+      "t": "CSV separator",
+      "o": [
+        "Comma (current behaviour)",
+        "Semicolon: Excel in Turkish and German locales opens it directly, other tools may need a setting"
+      ],
+      "pick": { "index": 1, "option": "Semicolon: Excel in Turkish and German locales opens it directly, other tools may need a setting", "by": "Ada Lovelace", "at": "2026-11-23T09:42:30.000Z" }
+    }
+  ],
+  "infos": [
+    "**Info:** no database migration.",
+    "**Not tried:** sending the file by e-mail (no mail server in the dev setup)."
+  ],
+  "createdBy": "Ada Lovelace",
+  "createdAt": "2026-11-23T09:30:00.000Z",
+  "updatedAt": "2026-11-23T09:42:30.000Z"
+}

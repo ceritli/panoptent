@@ -10,6 +10,7 @@ import { resolveFile, openAt, quickEditText } from './source';
 import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClaude, sendToOpenConversation } from './claudePanel';
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
+import { CHECKS_DIR, CheckError, ChecksStore, UserResolver, summarize } from './checks';
 
 /**
  * Canlı mod: bir bekleme bittikten sonra Claude'un yenisini başlatması için tanınan süre. Claude beklemeyi
@@ -116,16 +117,25 @@ export class Engine {
   private changed = new Set<string>();
   private changeTimer?: NodeJS.Timeout;
   private pages = new Map<string, PageState>();
+  /** Test ve Karar konuları (.panoptent/checks). */
+  readonly checks: ChecksStore;
+  readonly users: UserResolver;
+  private checksWatcher: vscode.FileSystemWatcher;
+  private checksTimer?: NodeJS.Timeout;
 
   constructor(
     public readonly context: vscode.ExtensionContext,
     public readonly root: string,
     public readonly output: vscode.OutputChannel,
   ) {
+    // Kişi adı: ayar → GitHub CLI → git github.user → git user.name → işletim sistemi (checks.ts)
+    this.users = new UserResolver(root, { setting: () => this.cfg().get<string>('checks.userName') });
+    this.checks = new ChecksStore(root, { who: () => this.users.name() });
     this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, '**/*'));
     const onChange = (u: vscode.Uri) => {
       const rel = path.relative(this.root, u.fsPath);
-      if (/(^|[\\/])(node_modules|\.git|\.next|\.nuxt|\.output|dist|build|bin|obj|\.vs|\.claude)([\\/]|$)/.test(rel)) return;
+      // .panoptent: Test ve Karar dosyaları uygulamanın kodu değil (sayfa yenilenmesin, önizlemeler geri alınmasın)
+      if (/(^|[\\/])(node_modules|\.git|\.next|\.nuxt|\.output|dist|build|bin|obj|\.vs|\.claude|\.panoptent)([\\/]|$)/.test(rel)) return;
       this.changed.add(rel);
       clearTimeout(this.changeTimer);
       this.changeTimer = setTimeout(() => {
@@ -135,6 +145,82 @@ export class Engine {
     };
     this.watcher.onDidChange(onChange);
     this.watcher.onDidCreate(onChange);
+    // Konu dosyaları elle, git ile ya da başka bir pencereden değişince sayfalardaki paneli yenile
+    this.checksWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, CHECKS_DIR.split(path.sep).join('/') + '/**/*.json'));
+    const onChecks = () => this.checksChanged();
+    this.checksWatcher.onDidChange(onChecks);
+    this.checksWatcher.onDidCreate(onChecks);
+    this.checksWatcher.onDidDelete(onChecks);
+  }
+
+  /** Açık konuların son hali (sayfa paneli ve çubuk rozeti için). */
+  checksSnapshot() {
+    const { topics, errors } = this.checks.list('open');
+    if (topics.length) void this.users.warm(); // ilk işaretten önce gh arka planda bir kez sorulsun
+    const list = topics.map((tp) => ({ ...tp, counts: summarize(tp), file: this.checks.rel('open', tp.id) }));
+    return {
+      type: 'checks',
+      topics: list,
+      errors,
+      pending: list.reduce((n, tp) => n + tp.counts.pending, 0),
+      bad: list.reduce((n, tp) => n + tp.counts.bad, 0),
+    };
+  }
+
+  /** Konular değişti: kısa bir beklemeden sonra herkese yayınla (art arda yazmalar tek yayın olsun). */
+  checksChanged(to?: string) {
+    if (to) return this.emit(this.checksSnapshot(), to);
+    clearTimeout(this.checksTimer);
+    this.checksTimer = setTimeout(() => {
+      this.emit(this.checksSnapshot());
+      this.checksListeners.forEach((f) => f());
+    }, 150);
+  }
+
+  private checksListeners = new Set<() => void>();
+  onChecks(f: () => void): vscode.Disposable {
+    this.checksListeners.add(f);
+    return { dispose: () => this.checksListeners.delete(f) };
+  }
+
+  /**
+   * Sayfa panelinden (önizleme ya da Chrome) gelen Test ve Karar istekleri. `list`: güncel hali bu istemciye
+   * gönder; `result` / `pick`: tek alanı yaz. Yanıt (`checksRes`) yalnızca isteyene, yeni hal herkese gider.
+   */
+  checksMessage(m: any, client: string) {
+    const reply = (ok: boolean, error?: string) => this.emit({ type: 'checksRes', reqId: m.reqId, op: m.op, ok, error }, client);
+    try {
+      switch (m.op) {
+        case 'list':
+          this.checksChanged(client);
+          return reply(true);
+        case 'result':
+          this.checks.setResult(String(m.topic), String(m.test), String(m.state), m.note === undefined ? undefined : String(m.note));
+          break;
+        case 'pick':
+          this.checks.setPick(String(m.topic), String(m.decision), m.index);
+          break;
+        default:
+          return reply(false, 'Unknown request ' + m.op);
+      }
+      reply(true);
+      this.checksChanged();
+    } catch (err: any) {
+      let msg = String(err?.message || err);
+      if (!(err instanceof CheckError)) {
+        this.output.appendLine(t('ext.log.error', msg));
+        // sayfaya diskteki tam yol gitmesin: proje köküne göre göster
+        let real = this.root;
+        try {
+          real = fs.realpathSync(this.root);
+        } catch {
+          /* yok say */
+        }
+        for (const r of [this.root, real]) msg = msg.split(r + path.sep).join('');
+      }
+      reply(false, msg);
+      this.checksChanged(client); // sayfa diskteki doğru hali görsün
+    }
   }
 
   on(l: Listener): vscode.Disposable {
@@ -160,7 +246,9 @@ export class Engine {
   dispose() {
     this.runner.stop();
     this.watcher.dispose();
+    this.checksWatcher.dispose();
     clearTimeout(this.changeTimer);
+    clearTimeout(this.checksTimer);
   }
 
   settings() {

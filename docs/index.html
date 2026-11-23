@@ -223,6 +223,7 @@
     <a href="#kuyruk"><span lang="tr">Kuyruk ve Uygula</span><span lang="en">Queue &amp; Apply</span></a>
     <a href="#claude"><span lang="tr">Claude Code'a gönderim</span><span lang="en">Sending to Claude Code</span></a>
     <a href="#mcp"><span lang="tr">MCP sunucusu</span><span lang="en">MCP server</span></a>
+    <a href="#test-karar"><span lang="tr">Test ve Karar</span><span lang="en">Test and Decisions</span></a>
     <a href="#geri-al"><span lang="tr">Geri alma</span><span lang="en">Undo</span></a>
     <a href="#chrome"><span lang="tr">Chrome eklentisi</span><span lang="en">Chrome extension</span></a>
     <a href="#code-inspector">code-inspector</a>
@@ -446,6 +447,7 @@
           <tr><td><code>highlight</code></td><td><span lang="tr">Claude sayfadaki öğeleri etiketli mor bir çerçeveyle gösterir (“bu ikisi”); kod değişmez</span><span lang="en">Claude points at elements on the page with a labelled purple outline (“these two”); no code changes</span></td></tr>
           <tr><td><code>preview_style</code></td><td><span lang="tr">Önerilen stili koda dokunmadan sayfada canlı gösterir; seçenekleri karşılaştırıp sonra koda yazdırırsın. Sayfa yenilenince kaybolur</span><span lang="en">Shows a proposed style live on the page without touching the code, so you can compare options before Claude edits the source. Gone on reload</span></td></tr>
           <tr><td><code>mark_applied</code></td><td><span lang="tr">Claude işini bitirdiğini bildirir; doğrudan uygulanan girdiler kuyruktan düşer</span><span lang="en">Claude reports it is done; entries applied directly leave the queue</span></td></tr>
+          <tr><td><code>save_check_topic</code>, <code>get_check_topics</code>, <code>get_check_changes</code>, <code>close_check_topic</code></td><td><span lang="tr">Test ve Karar konuları (<a href="#test-karar">ayrıntılar</a>)</span><span lang="en">Test and Decisions topics (<a href="#test-karar">details</a>)</span></td></tr>
         </tbody>
       </table></div>
       <p lang="tr"><b>Gönderim yeri: Claude Code (MCP).</b> Bu seçenekle <b>Uygula</b> istek dosyası eklemez. Claude Code'a yapıştıracağın tek satırlık bir komut kopyalar (<code>Panoptent değişiklik paketi PT-…’i uygula…</code>); Claude ayrıntıları <code>get_apply</code> ile alır, bitince <code>mark_applied</code> çağırır. Geri alma aynen çalışır. Uygula'ya hiç basmadan Claude Code'a <code>/mcp__panoptent__apply_queue</code> yazarsan tüm kuyruk doğrudan uygulanır.</p>
@@ -454,9 +456,81 @@
       <p lang="en"><b>Live mode: <code>/panoptent live</code>.</b> <i>Panoptent: Connect Claude Code (MCP)</i> also installs a <code>/panoptent</code> command for Claude Code. Type <code>/panoptent live</code> once: Claude waits, and every time you press <b>Apply</b> in the preview or in Chrome the change set goes straight to that conversation; Claude makes the edits and waits for the next one. Nothing to paste. To stop, tell Claude to stop (or <code>/panoptent stop</code>). Claude Code also lists it as <code>/panoptent:live (MCP)</code>; both do the same. Also: <code>/panoptent apply</code> applies the queue, <code>/panoptent selection …</code> works on the selected elements.</p>
     </section>
 
+    <!-- ===================== TEST VE KARAR ===================== -->
+    <section class="s" id="test-karar">
+      <h2><span class="n">08</span><span lang="tr">Test ve Karar</span><span lang="en">Test and Decisions</span></h2>
+      <p lang="tr">Ajan bir işi bitirince "ne denenecek, neye karar verilecek" listesini sohbete yazıp kaybetmez: MCP aracı <code>save_check_topic</code> ile projene bir <b>konu</b> olarak kaydeder. Sen adımları ve kararları çalışan uygulamanın üstündeki panelden işaretlersin; her işaret anında dosyaya yazılır. Ajan sonuçları okur, sorunları düzeltir, seçtiğin kararları uygular ve konuyu kapatır. "Sonuçları kopyala, sohbete yapıştır" adımı yoktur.</p>
+      <p lang="en">When an agent finishes a piece of work, "what to try" and "what to decide" don't get lost in the chat: with the MCP tool <code>save_check_topic</code> it records them as one <b>topic</b> in your project. You tick steps and pick options in a panel on top of your running app; every mark is written to the file at once. The agent reads the results, fixes problems, applies the options you picked and closes the topic. No "copy the results, paste them into the chat" step.</p>
+      <figure class="shot">
+        <img src="assets/checks.webp" data-en-src="assets/checks-en.webp" alt="" loading="lazy" width="1600" height="950">
+        <figcaption lang="tr">Çubukta <b>Test</b> düğmesi ve rozet (bekleyen 1). Panelde bu sayfaya ait adım en üstte; bir adımda sorun ve not, bir adım tamam, karar verilmiş.</figcaption>
+        <figcaption lang="en">The <b>Test</b> button and its badge (1 waiting) in the bar. In the panel the step for this page is on top; one step has a problem and a note, one is done, the decision is made.</figcaption>
+      </figure>
+      <h3 lang="tr">Panel</h3><h3 lang="en">The panel</h3>
+      <ul lang="tr">
+        <li><b>Test düğmesi ve rozet:</b> Panoptent çubuğunda (VS Code önizlemesi ve Chrome) açık konu varken görünür. Rozet, <b>bakılmamış testler + seçilmemiş kararlar</b> sayısıdır; yalnız sorunlu adım kaldıysa kırmızıdır.</li>
+        <li><b>1 · Test et:</b> adımı tamamlayınca kutuyu işaretle. Olmadıysa <b>Sorun</b>'a bas ve ne gördüğünü yaz. <b>Aç ↗</b> adımın sayfasına gider. <b>Ajan denedi</b> etiketi, adımı ajanın kendisinin denediğini gösterir.</li>
+        <li><b>Bu sayfada:</b> bulunduğun sayfaya ait adımlar en üstte ve bu rozetle görünür (yol aynı, adımdaki sorgu parametreleri sayfada da aynı; <code>#12</code> gibi çapalar yok sayılır, <code>#/yol</code> yönlendirmesi yol sayılır).</li>
+        <li><b>2 · Karar ver:</b> seçeneklerden birini seç. İlk seçenek her zaman <b>bugünkü durumdur</b>; sen seçmeden ajan hiçbir kararı uygulamaz.</li>
+        <li><b>3 · Bilgi:</b> okuman yeterli satırlar (migration adı, yeni ayar, denenemeyenler).</li>
+        <li><b>Kuyruğa da ekle:</b> sorunlu adımda notunu, seçili öğelerle birlikte var olan değişiklik kuyruğuna ekler.</li>
+        <li>İşaret kaydedilemezse panelde <b>Kaydedilmedi</b> yazar ve işaret geri alınır; sessiz kayıp olmaz. Panel klavyeyle kullanılır (<kbd>Tab</kbd>, sekmelerde oklar, <kbd>Esc</kbd> kapatır).</li>
+        <li><b>Taşı, boyutlandır, küçült:</b> paneli başlığından sürükle, kenar ya da köşesinden boyutlandır (en az 300×160 px, en fazla görünüm alanı). <b>–</b> yalnız başlık şeridini ve sayacı bırakır, <b>□</b> büyütür (başlığa çift tık da). Başlık odaktayken oklar taşır, <kbd>Shift</kbd>+oklar boyutlandırır. Panel ekrandan çıkmaz; yeri ve ölçüsü sayfa yenilense de hatırlanır.</li>
+        <li><b>⧉ Tam sayfa:</b> bütün konuları VS Code'da bir editör sekmesinde açar (aşağıda).</li>
+      </ul>
+      <ul lang="en">
+        <li><b>Test button and badge:</b> appears in the Panoptent bar (VS Code preview and Chrome) when there are open topics. The badge counts <b>untested steps + unanswered decisions</b>; it turns red when only problems are left.</li>
+        <li><b>1 · Test:</b> tick a step when it works. If it doesn't, press <b>Problem</b> and write what you saw. <b>Open ↗</b> goes to the step's page. <b>Agent tried</b> means the agent ran the step itself.</li>
+        <li><b>On this page:</b> steps for the page you are on come first with this tag (same path, and the step's query parameters have the same values on the page; anchors like <code>#12</code> are ignored, a <code>#/path</code> route counts as the path).</li>
+        <li><b>2 · Decide:</b> pick an option. The first one is always <b>today's behaviour</b>; the agent applies nothing until you pick.</li>
+        <li><b>3 · Info:</b> lines to read only (migration names, new settings, what could not be tried).</li>
+        <li><b>Also add to queue:</b> on a problem step, puts your note (with the selected elements) into the normal change queue.</li>
+        <li>If a mark cannot be saved, the panel says <b>Not saved</b> and the mark goes back; nothing is lost silently. The panel works with the keyboard (<kbd>Tab</kbd>, arrow keys on the tabs, <kbd>Esc</kbd> closes).</li>
+        <li><b>Move, resize, minimize:</b> drag the panel by its title bar, resize it from an edge or corner (at least 300×160 px, at most the visible area). <b>–</b> leaves only the title bar with a counter, <b>□</b> maximizes it (so does a double-click on the title). With the title bar focused, arrow keys move it and <kbd>Shift</kbd>+arrows resize it. The panel never leaves the screen, and its position and size are remembered across reloads.</li>
+        <li><b>⧉ Full page:</b> opens every topic in a VS Code editor tab (below).</li>
+      </ul>
+      <h3 lang="tr">VS Code'da tam sayfa</h3><h3 lang="en">Full page in VS Code</h3>
+      <p lang="tr"><b>Panoptent: Test ve Kararları Tam Sayfa Aç</b> (ya da paneldeki <b>⧉</b>, Panoptent görünümündeki <b>Test ve Kararlar</b> listesinin başlık düğmesi) bütün açık konuları bir editör sekmesinde açar: sayaçlar, <b>Sorunlu / Bakılmamış / Kararsız</b> süzgeçleri, adım işaretleme, not ve karar. Sayfadaki panelle aynı yoldan yazar ve dosyalar değişince (panelden, git'ten, ajandan) kendini yeniler. <b>Sayfayı aç ↗</b> adımın adresini önizleme açıksa orada, değilse tarayıcıda açar.</p>
+      <p lang="en"><b>Panoptent: Open Test and Decisions as a Page</b> (or <b>⧉</b> in the panel, or the title button of the <b>Test and Decisions</b> list in the Panoptent view) opens every open topic in an editor tab: counters, <b>Problems / Not looked at / Undecided</b> filters, marking, notes and decisions. It writes through the same path as the panel and refreshes itself when the files change (from the panel, git or an agent). <b>Open page ↗</b> opens the step's address in the preview if it is open, otherwise in the browser.</p>
+      <h3 lang="tr">Dosyalar: <code>.panoptent/checks</code></h3><h3 lang="en">Files: <code>.panoptent/checks</code></h3>
+      <p lang="tr">Her konu düz bir JSON dosyasıdır: açıklar <code>.panoptent/checks/open/&lt;konu&gt;.json</code>, kapatılanlar <code>.panoptent/checks/archive/</code> altında (silinmez). Klasör <b>commit edilmek</b> için tasarlandı: başka bir geliştirici ya da ajan açık konuları devralır, geçmiş git'te kalır. Konu başına bir dosya olduğu için farklı konularda çalışan iki kişi çakışmaz. Elle ya da git ile değişen dosya panele yeniden gelir. Biçim: <a href="https://github.com/ceritli/panoptent/blob/main/docs/checks.md">docs/checks.md</a>.</p>
+      <p lang="en">Each topic is a plain JSON file: open ones in <code>.panoptent/checks/open/&lt;topic&gt;.json</code>, closed ones in <code>.panoptent/checks/archive/</code> (never deleted). The folder is meant to be <b>committed</b>: another developer or agent can take over open topics, and the history stays in git. One file per topic, so two people on different topics don't conflict. Files changed by hand or by git show up in the panel again. Format: <a href="https://github.com/ceritli/panoptent/blob/main/docs/checks.md">docs/checks.md</a>.</p>
+      <div class="note warn" lang="tr"><p><b>Panel geliştirdiğin sayfanın içinde çalışır; sayfadaki betikler konu metnini okuyabilir.</b> Test adımlarına ve notlara şifre, jeton ya da müşteri verisi yazma. Dosyalar commit edildiği için de içlerinde gizli bilgi olmamalı.</p></div>
+      <div class="note warn" lang="en"><p><b>The panel runs inside the page you are developing, so scripts on that page can read the topic text.</b> Never write passwords, tokens or customer data into test steps or notes. The files are committed too, so keep secrets out of them.</p></div>
+      <h3 lang="tr">İşaretlerdeki ad</h3><h3 lang="en">Your name on marks</h3>
+      <p lang="tr">Kimin neyi ne zaman işaretlediği dosyaya yazılır. Ad, <b>GitHub kullanıcı adındır</b> ve şu sırayla bulunur: <code>panoptent.checks.userName</code> ayarı → GitHub CLI (<code>gh api user</code>; oturumda bir kez, kısa zaman aşımıyla) → <code>git config github.user</code> → son çare <code>git config user.name</code>, sonra işletim sistemi kullanıcısı. Depo adresinden ad tahmin edilmez; e-posta hiçbir zaman yazılmaz. Hangi kaynağın kullanıldığı <b>Panoptent: Test ve Kararlar</b> komutunda ve Panoptent görünümündeki <b>Test ve Kararlar</b> listesinde yazar; yanlışsa ayardan düzelt.</p>
+      <p lang="en">Who marked what and when is written to the file. The name is your <b>GitHub user name</b>, taken from the first of: the <code>panoptent.checks.userName</code> setting → the GitHub CLI (<code>gh api user</code>; once per session, short time limit) → <code>git config github.user</code> → as a last resort <code>git config user.name</code>, then the system user. The repository address is never used to guess a name, and e-mail addresses are never written. <b>Panoptent: Test and Decisions</b> and the <b>Test and Decisions</b> list in the Panoptent view show the source in use; fix it in the setting if it's wrong.</p>
+      <h3 lang="tr">Ajan tarafı</h3><h3 lang="en">The agent's side</h3>
+      <p lang="tr">Claude Code'da <code>/panoptent checks</code> (ya da <code>/mcp__panoptent__checks</code>) sonuçlarını okutur ve uygulatır. Araçlar ve kurallar:</p>
+      <p lang="en">In Claude Code, <code>/panoptent checks</code> (or <code>/mcp__panoptent__checks</code>) has the agent read and act on your results. Tools and rules:</p>
+      <div class="tbl"><table>
+        <thead><tr><th lang="tr">Araç</th><th lang="en">Tool</th><th lang="tr">Ne yapar</th><th lang="en">What it does</th></tr></thead>
+        <tbody>
+          <tr><td><code>save_check_topic</code></td><td><span lang="tr">Konu ekler ya da günceller (sonuçların kimlikle korunur); düzeltilen adım <code>retest</code> ile yeniden "bakılmadı" olur</span><span lang="en">Adds or updates a topic (your results are kept by id); a fixed step goes back to "not looked at" with <code>retest</code></span></td></tr>
+          <tr><td><code>get_check_topics</code></td><td><span lang="tr">Açık konular, sonuçlar, kimin ne zaman işaretlediği</span><span lang="en">Open topics with results, who marked what and when</span></td></tr>
+          <tr><td><code>get_check_changes</code></td><td><span lang="tr">Yalnız ajanın son okumasından beri değişenler</span><span lang="en">Only what changed since the agent's last read</span></td></tr>
+          <tr><td><code>close_check_topic</code></td><td><span lang="tr">Bütün testler tamam ve bütün kararlar verilmişse konuyu arşive taşır</span><span lang="en">Moves the topic to the archive when every step is ok and every decision is made</span></td></tr>
+        </tbody>
+      </table></div>
+      <ul lang="tr">
+        <li>Her adım tek şeyi sınar; sayfa, kayıt ve düğme adıyla yazılır; beklenen sonuç somuttur.</li>
+        <li><code>agent: true</code> yalnız ajanın gerçekten denediği adımda; denenemeyen şey denenmiş gibi yazılmaz.</li>
+        <li>Ajanın sormadan seçtiği her kural bir karardır; ilk seçenek bugünkü durumdur, sen seçmeden uygulanmaz.</li>
+        <li>Kalıcı kararlar konu kapanmadan projenin kendi belgelerine yazılır; arşiv geçmiştir, belge değildir.</li>
+      </ul>
+      <ul lang="en">
+        <li>Each step checks one thing and names the page, record and button; the expected result is concrete.</li>
+        <li><code>agent: true</code> only for steps the agent actually ran; untried things are never written as tried.</li>
+        <li>Every rule the agent chose by itself is a decision; the first option is today's behaviour, and nothing is applied until you pick.</li>
+        <li>Lasting decisions go into the project's own docs before the topic is closed; the archive is history, not documentation.</li>
+      </ul>
+      <div class="note" lang="tr"><p><b>Yalnız yerel geliştirme.</b> Panel, önizlemedeki proxy'nin ya da Chrome eklentisinin sayfaya eklediği katmanda çalışır; uygulamanın kendi derlemesine (production) hiçbir betik eklenmez. VS Code'da <b>Test ve Kararlar</b> görünümü açık konuları listeler (tıklayınca JSON açılır); <b>Panoptent: Test ve Kararları Sayfada Göster</b> paneli açar.</p></div>
+      <div class="note" lang="en"><p><b>Local development only.</b> The panel lives in the layer the preview proxy or the Chrome extension adds to the page; nothing is added to your app's own (production) build. In VS Code the <b>Test and Decisions</b> view lists open topics (click to open the JSON); <b>Panoptent: Show Test and Decisions on the Page</b> opens the panel.</p></div>
+    </section>
+
     <!-- ===================== GERİ AL ===================== -->
     <section class="s" id="geri-al">
-      <h2><span class="n">08</span><span lang="tr">Geri alma</span><span lang="en">Undo</span></h2>
+      <h2><span class="n">09</span><span lang="tr">Geri alma</span><span lang="en">Undo</span></h2>
       <p lang="tr"><b>↶ Son uygulamayı geri al</b>, son Uygula'da <b>yalnızca Panoptent'in ve onun gönderdiği isteğin</b> yaptığı değişiklikleri geri alır.</p>
       <p lang="en"><b>↶ Undo last apply</b> reverts <b>only</b> what Panoptent and the request it sent changed in the last Apply.</p>
       <ol class="steps" lang="tr">
@@ -489,7 +563,7 @@
 
     <!-- ===================== CHROME ===================== -->
     <section class="s" id="chrome">
-      <h2><span class="n">09</span><span lang="tr">Chrome eklentisi</span><span lang="en">Chrome extension</span></h2>
+      <h2><span class="n">10</span><span lang="tr">Chrome eklentisi</span><span lang="en">Chrome extension</span></h2>
       <p lang="tr">Aynı deneyimi <b>kendi Chrome'unda</b> kullanmanı sağlar: giriş yaptığın sayfalar, eklentilerin, DevTools ve gerçek cihaz emülasyonu yanında. Düzenlemeyi yine VS Code'daki Panoptent ve Claude Code yapar.</p>
       <p lang="en">Use the same experience <b>in your own Chrome</b>: logged-in pages, your extensions, DevTools and real device emulation. The editing is still done by Panoptent and Claude Code in VS Code.</p>
       <div class="two">
@@ -512,8 +586,8 @@
         <li>VS Code asks "Chrome wants to connect" → <b>Allow</b>. Chrome stores a key; later connections are silent.</li>
       </ol>
       <h3 lang="tr">Sayfadaki çubuk</h3><h3 lang="en">The in-page bar</h3>
-      <p lang="tr">Bağlantı durumu, <b>Seç</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), kuyruk sayısı, ↶ ↷, <b>Listele</b>, <b>Uygula</b>, <b>Son uygulamayı geri al</b>, ⚙ ayarlar ve <b>–</b> ile küçültme (sağ altta küçük bir göze dönüşür). Logoya basınca Kuyruk / Etkinlik / Ayarlar paneli açılır.</p>
-      <p lang="en">Connection status, <b>Select</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), queue count, ↶ ↷, <b>List</b>, <b>Apply</b>, <b>Undo last apply</b>, ⚙ settings and <b>–</b> to minimize (collapses to a small eye bottom-right). Click the logo for the Queue / Activity / Settings drawer.</p>
+      <p lang="tr">Bağlantı durumu, <b>Seç</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), kuyruk sayısı, ↶ ↷, <b>Listele</b>, <b>Uygula</b>, <b>Son uygulamayı geri al</b>, ⚙ ayarlar ve <b>–</b> ile küçültme (sağ altta küçük bir göze dönüşür). Logoya basınca Kuyruk / Etkinlik / Ayarlar paneli açılır. Açık bir <a href="#test-karar">Test ve Karar</a> konusu varsa rozetli <b>Test</b> düğmesi de görünür.</p>
+      <p lang="en">Connection status, <b>Select</b> (<kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>E</kbd>), queue count, ↶ ↷, <b>List</b>, <b>Apply</b>, <b>Undo last apply</b>, ⚙ settings and <b>–</b> to minimize (collapses to a small eye bottom-right). Click the logo for the Queue / Activity / Settings drawer. With an open <a href="#test-karar">Test and Decisions</a> topic, a <b>Test</b> button with a badge appears too.</p>
       <h3 lang="tr">Dil</h3><h3 lang="en">Language</h3>
       <p lang="tr">Çekmecedeki <b>Ayarlar</b> sekmesinde <b>Dil</b> seçimi var: <b>VS Code ayarı (otomatik)</b>, English, Türkçe. Bağlıyken Chrome, VS Code'daki <code>panoptent.language</code> ayarını izler (orada değiştirirsen sayfadaki çubuk da anında değişir); bağlı değilken kendi seçimini ya da tarayıcının dilini kullanır. Eklenti penceresi de aynı dili izler.</p>
       <p lang="en">The drawer's <b>Settings</b> tab has a <b>Language</b> select: <b>VS Code setting (auto)</b>, English, Türkçe. Once connected, Chrome follows the <code>panoptent.language</code> setting in VS Code (change it there and the in-page bar switches instantly); when not connected it uses its own choice or the browser language. The popup follows the same language.</p>
@@ -527,7 +601,7 @@
 
     <!-- ===================== CODE-INSPECTOR ===================== -->
     <section class="s" id="code-inspector">
-      <h2><span class="n">10</span><span lang="tr">code-inspector ile kesin eşleştirme</span><span lang="en">Exact mapping with code-inspector</span></h2>
+      <h2><span class="n">11</span><span lang="tr">code-inspector ile kesin eşleştirme</span><span lang="en">Exact mapping with code-inspector</span></h2>
       <p lang="tr"><a href="https://github.com/zh-lx/code-inspector">code-inspector-plugin</a>, geliştirme sırasında her öğeye <code>data-insp-path="src/app/page.tsx:17:9:button"</code> gibi görünmez bir etiket ekler. Panoptent bunu okuyarak Claude'a "şu dosyanın şu satırı" der; Claude aramaya zaman ve token harcamaz. <b>Yalnızca geliştirme modunda</b> çalışır, canlı siteyi etkilemez.</p>
       <p lang="en"><a href="https://github.com/zh-lx/code-inspector">code-inspector-plugin</a> adds an invisible tag like <code>data-insp-path="src/app/page.tsx:17:9:button"</code> to each element during development. Panoptent reads it and tells Claude "this file, this line" — no searching, fewer tokens. <b>Dev mode only</b>; production builds are untouched.</p>
       <h3 lang="tr">Otomatik kurulum</h3><h3 lang="en">Automatic setup</h3>
@@ -591,7 +665,7 @@ export default defineNuxtConfig({
 
     <!-- ===================== PANEL ===================== -->
     <section class="s" id="panel">
-      <h2><span class="n">11</span><span lang="tr">VS Code paneli</span><span lang="en">The VS Code panel</span></h2>
+      <h2><span class="n">12</span><span lang="tr">VS Code paneli</span><span lang="en">The VS Code panel</span></h2>
       <figure class="shot">
         <img src="assets/vscode-panel.webp" data-en-src="assets/vscode-panel-en.webp" alt="" loading="lazy" width="1600" height="950">
         <figcaption lang="tr">VS Code içinde önizleme, sağda panel: seçilenler, istek kutusu, gönderme yeri.</figcaption>
@@ -601,6 +675,7 @@ export default defineNuxtConfig({
         <li><b>Panel konumu:</b> sağ üstteki sol / alt / sağ simgeleri. Altta konumlanınca panel üç sütuna bölünür.</li>
         <li><b>Boyut:</b> ayırıcıyı sürükle; çift tık paneli gizler.</li>
         <li><b>Gizle/göster:</b> ☰ (rozet bekleyen değişiklik sayısını gösterir).</li>
+        <li><b>Test:</b> açık <a href="#test-karar">Test ve Karar</a> konusu varken görünür; rozet seni bekleyen adım ve karar sayısıdır, tıklayınca panel sayfada açılır.</li>
         <li><b>Ekran genişliği:</b> Tam / Tablet (1024px) / Mobil (390px).</li>
         <li><b>Hızlı metin:</b> seçilenler kartındaki metin kutusu + <b>Kaydet</b> doğrudan dosyaya yazar.</li>
         <li><b>Dil:</b> araç çubuğundaki dil seçimi (<b>Otomatik (VS Code)</b> / English / Türkçe). Panel, sayfa üstü araçlar ve bağlı Chrome anında değişir.</li>
@@ -609,6 +684,7 @@ export default defineNuxtConfig({
         <li><b>Dock:</b> left / bottom / right icons top-right. Docked at the bottom, the panel splits into three columns.</li>
         <li><b>Size:</b> drag the splitter; double-click hides the panel.</li>
         <li><b>Hide/show:</b> ☰ (badge shows pending changes).</li>
+        <li><b>Test:</b> appears when there is an open <a href="#test-karar">Test and Decisions</a> topic; the badge counts steps and decisions waiting for you, and a click opens the panel on the page.</li>
         <li><b>Viewport:</b> Full / Tablet (1024px) / Mobile (390px).</li>
         <li><b>Quick text:</b> the field in a selection card + <b>Save</b> writes straight to the file.</li>
         <li><b>Language:</b> the language select in the toolbar (<b>Auto (VS Code)</b> / English / Türkçe). The panel, the page overlay and connected Chrome tabs switch instantly.</li>
@@ -622,7 +698,7 @@ export default defineNuxtConfig({
 
     <!-- ===================== AYARLAR ===================== -->
     <section class="s" id="ayarlar">
-      <h2><span class="n">12</span><span lang="tr">Ayarlar</span><span lang="en">Settings</span></h2>
+      <h2><span class="n">13</span><span lang="tr">Ayarlar</span><span lang="en">Settings</span></h2>
       <p lang="tr">VS Code → Ayarlar → "Panoptent" ile ara.</p>
       <p lang="en">VS Code → Settings → search "Panoptent".</p>
       <div class="tbl"><table>
@@ -637,6 +713,7 @@ export default defineNuxtConfig({
           <tr><td><code>panoptent.bridgePort</code></td><td><code>47811</code></td><td><span lang="tr">Köprünün ilk denediği port (doluysa sonraki 9)</span><span lang="en">First bridge port tried (then the next 9)</span></td></tr>
           <tr><td><code>panoptent.mcpServer</code></td><td><code>true</code></td><td><span lang="tr">Yapay zekâ araçları için yerel MCP sunucusu</span><span lang="en">Local MCP server for AI agents</span></td></tr>
           <tr><td><code>panoptent.mcpPort</code></td><td><code>47821</code></td><td><span lang="tr">MCP sunucusunun ilk denediği port (doluysa sonraki 9)</span><span lang="en">First MCP port tried (then the next 9)</span></td></tr>
+          <tr><td><code>panoptent.checks.userName</code></td><td>—</td><td><span lang="tr">Test ve Karar işaretlerindeki ad (GitHub kullanıcı adın). Boş: otomatik (GitHub CLI → <code>git config github.user</code> → <code>git config user.name</code> → sistem kullanıcısı)</span><span lang="en">Name on Test and Decisions marks (your GitHub user name). Empty: automatic (GitHub CLI → <code>git config github.user</code> → <code>git config user.name</code> → system user)</span></td></tr>
           <tr><td><code>panoptent.claudePath</code></td><td><code>claude</code></td><td><span lang="tr">CLI modu için komut ya da tam yol</span><span lang="en">Command or full path for CLI mode</span></td></tr>
           <tr><td><code>panoptent.permissionMode</code></td><td><code>acceptEdits</code></td><td><span lang="tr">CLI modunda Claude Code izin modu</span><span lang="en">Claude Code permission mode in CLI mode</span></td></tr>
           <tr><td><code>panoptent.model</code></td><td>—</td><td><span lang="tr">CLI modunda model (<code>sonnet</code>, <code>opus</code>…)</span><span lang="en">Model in CLI mode (<code>sonnet</code>, <code>opus</code>…)</span></td></tr>
@@ -647,7 +724,7 @@ export default defineNuxtConfig({
 
     <!-- ===================== KISAYOLLAR ===================== -->
     <section class="s" id="kisayollar">
-      <h2><span class="n">13</span><span lang="tr">Kısayollar</span><span lang="en">Shortcuts</span></h2>
+      <h2><span class="n">14</span><span lang="tr">Kısayollar</span><span lang="en">Shortcuts</span></h2>
       <div class="tbl"><table>
         <thead><tr><th lang="tr">Kısayol</th><th lang="en">Shortcut</th><th lang="tr">Ne yapar</th><th lang="en">Action</th></tr></thead>
         <tbody>
@@ -668,30 +745,32 @@ export default defineNuxtConfig({
 
     <!-- ===================== GÜVENLİK ===================== -->
     <section class="s" id="guvenlik">
-      <h2><span class="n">14</span><span lang="tr">Güvenlik ve gizlilik</span><span lang="en">Security &amp; privacy</span></h2>
+      <h2><span class="n">15</span><span lang="tr">Güvenlik ve gizlilik</span><span lang="en">Security &amp; privacy</span></h2>
       <ul lang="tr">
         <li><b>Her şey yerel.</b> Panoptent'in kendi sunucusu yok; veri yalnızca bilgisayarındaki VS Code, Chrome ve Claude Code arasında dolaşır. Claude'a giden içerik, Claude Code'u normal kullanırken gidenle aynıdır.</li>
         <li><b>Köprü yalnızca <code>127.0.0.1</code></b> üzerinde dinler ve <b>yalnızca tarayıcı eklentisi kökenlerinden</b> (<code>chrome-extension://</code>) bağlantı kabul eder. Normal web siteleri bağlanamaz.</li>
         <li><b>İlk bağlantı onay ister.</b> Onaylanan tarayıcıya bir anahtar verilir. Silmek için: <b>Panoptent: Chrome Eşleştirmelerini Sil</b>. Köprüyü tamamen kapatmak için <code>panoptent.chromeBridge</code>.</li>
-        <li><b>MCP sunucusu</b> da yalnızca <code>127.0.0.1</code> üzerinde dinler, yalnızca seçimini ve kuyruğunu okur (bir de Claude'un işin bittiğini bildirmesine izin verir) ve web sayfalarından gelen istekleri (<code>Origin</code> başlığı olanları) reddeder. Kapatmak için <code>panoptent.mcpServer</code>.</li>
+        <li><b>MCP sunucusu</b> da yalnızca <code>127.0.0.1</code> üzerinde dinler, yalnızca seçimini ve kuyruğunu okur (bir de Claude'un işin bittiğini bildirmesine ve Test ve Karar konularını yalnız <code>.panoptent/checks</code> altına yazmasına izin verir) ve web sayfalarından gelen istekleri (<code>Origin</code> başlığı olanları) reddeder. Kapatmak için <code>panoptent.mcpServer</code>.</li>
         <li><b>Sayfa kodu istek üretemez.</b> Chrome'da değişiklikler yalnızca senin gerçek tıklaman ya da tuşa basmanla kabul edilir.</li>
         <li><b>Commit yok.</b> Panoptent git geçmişine, dallara ya da staging alanına dokunmaz. İstek dosyaları <code>.claude/panoptent/</code> altında, git'te yok sayılır.</li>
+        <li><b>Test ve Karar</b> dosyaları (<code>.panoptent/checks</code>) commit edilmek için tasarlandı; panel geliştirdiğin sayfanın içinde çalıştığı için sayfadaki betikler konu metnini okuyabilir. İçlerine şifre, jeton ya da müşteri verisi yazma. Adın GitHub kullanıcı adıdır, e-posta yazılmaz. Aynı MCP sunucusundaki <code>/checks/…</code> HTTP uçları jeton ister; jeton VS Code her açıldığında değişir.</li>
         <li><b>CLI modu</b> varsayılan olarak <code>acceptEdits</code> ile çalışır: dosya düzenlemelerine izin verir, diğer terminal komutlarını reddeder.</li>
       </ul>
       <ul lang="en">
         <li><b>Everything is local.</b> Panoptent has no server of its own; data moves only between VS Code, Chrome and Claude Code on your machine. What reaches Claude is the same as when you use Claude Code directly.</li>
         <li><b>The bridge listens on <code>127.0.0.1</code> only</b> and accepts connections <b>only from browser-extension origins</b> (<code>chrome-extension://</code>). Regular websites can't connect.</li>
         <li><b>First connection requires approval.</b> The approved browser gets a key. Remove keys with <b>Panoptent: Remove Chrome Pairings</b>; disable the bridge with <code>panoptent.chromeBridge</code>.</li>
-        <li><b>The MCP server</b> also listens on <code>127.0.0.1</code> only, only reads your selection and queue (and lets Claude mark changes as done), and refuses requests from web pages (those with an <code>Origin</code> header). Turn it off with <code>panoptent.mcpServer</code>.</li>
+        <li><b>The MCP server</b> also listens on <code>127.0.0.1</code> only, only reads your selection and queue (and lets Claude mark changes as done and write Test and Decisions topics, only under <code>.panoptent/checks</code>), and refuses requests from web pages (those with an <code>Origin</code> header). Turn it off with <code>panoptent.mcpServer</code>.</li>
         <li><b>Page scripts can't inject requests.</b> In Chrome, changes are accepted only right after a real click or key press.</li>
         <li><b>No commits.</b> Panoptent never touches git history, branches or the index. Request files live in <code>.claude/panoptent/</code>, git-ignored.</li>
+        <li><b>Test and Decisions</b> files (<code>.panoptent/checks</code>) are meant to be committed; since the panel runs inside the page you are developing, scripts on that page can read the topic text. Keep passwords, tokens and customer data out of them. Your name is your GitHub user name; e-mail addresses are never written. The <code>/checks/…</code> HTTP endpoints on the same MCP server need a token that changes every time VS Code starts.</li>
         <li><b>CLI mode</b> defaults to <code>acceptEdits</code>: file edits allowed, other shell commands refused.</li>
       </ul>
     </section>
 
     <!-- ===================== SORUN GİDERME ===================== -->
     <section class="s" id="sorun">
-      <h2><span class="n">15</span><span lang="tr">Sorun giderme</span><span lang="en">Troubleshooting</span></h2>
+      <h2><span class="n">16</span><span lang="tr">Sorun giderme</span><span lang="en">Troubleshooting</span></h2>
 
       <details lang="tr"><summary>Chrome: "VS Code bulunamadı"</summary>
         <ul><li>VS Code'da Panoptent 0.8+ kurulu ve pencere yenilenmiş mi (<b>Developer: Reload Window</b>)?</li>
@@ -740,7 +819,7 @@ export default defineNuxtConfig({
 
     <!-- ===================== GELİŞTİRME ===================== -->
     <section class="s" id="gelistirme">
-      <h2><span class="n">16</span><span lang="tr">Geliştirme</span><span lang="en">Development</span></h2>
+      <h2><span class="n">17</span><span lang="tr">Geliştirme</span><span lang="en">Development</span></h2>
       <pre><code>git clone https://github.com/ceritli/panoptent.git
 cd panoptent
 npm install

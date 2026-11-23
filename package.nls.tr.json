@@ -11,6 +11,9 @@
   "command.chooseDesignFile": "Tasarım Kuralları Dosyasını Seç",
   "command.connectClaudeCode": "Claude Code'u Bağla (MCP)",
   "command.copyMcpCommand": "MCP Bağlantı Komutunu Kopyala (Claude Code)",
+  "command.checks": "Test ve Kararlar",
+  "command.showChecks": "Test ve Kararları Sayfada Göster",
+  "command.checksPage": "Test ve Kararları Tam Sayfa Aç",
   "config.section.general": "Genel",
   "config.section.sending": "Claude'a gönderim",
   "config.section.cli": "Arka plan modu (CLI)",
@@ -42,6 +45,10 @@
   "config.bridgePort": "Chrome köprüsünün ilk denediği port; doluysa sonraki 9 port denenir.",
   "config.mcpServer": "Yerel bir MCP sunucusu aç (yalnızca 127.0.0.1); Claude Code, Cursor veya Windsurf gibi yapay zekâ araçları seçili öğeleri, kuyruğu ve sayfa bağlamını okuyabilsin, uygulanan değişiklikleri işaretleyebilsin. Claude Code'u bağlamak için: [Panoptent: Claude Code'u Bağla (MCP)](command:panoptent.connectClaudeCode).",
   "config.mcpPort": "MCP sunucusunun ilk denediği port; doluysa sonraki 9 port denenir. Adres: `http://127.0.0.1:PORT/mcp`.",
+  "config.section.checks": "Test ve Karar",
+  "config.checks.userName": "Test ve Karar işaretlerinin yanına yazılan ad (`.panoptent/checks` içindeki `by`, `createdBy`, `closedBy`); normalde **GitHub kullanıcı adın**. Boş: otomatik, bu sırayla: GitHub CLI (`gh api user`), `git config github.user`, `git config user.name`, işletim sistemi kullanıcısı. Kullanılan kaynak *Panoptent: Test ve Kararlar* komutunda görünür. E-posta adresi hiçbir zaman yazılmaz.",
   "view.home": "Başlarken",
-  "view.home.welcome": "Uygulamanı önizle, bir öğeye tıkla, ne istediğini yaz — Claude Code kodu düzenlesin.\n[$(eye) Önizlemeyi Aç](command:panoptent.open)\nÖnce projende dev sunucusunu başlat (ör. npm run dev).\nÖğeleri tam dosya ve satıra bağla, Claude aramaya zaman ve token harcamasın: [code-inspector'ı otomatik kur](command:panoptent.setupCodeInspector) · [kurulum rehberi](command:panoptent.setupGuide)\n[Ayarlar](command:workbench.action.openSettings?%5B%22%40ext%3Aceritli.panoptent%22%5D) · [Dil: Türkçe / English](command:panoptent.changeLanguage)"
+  "view.home.welcome": "Uygulamanı önizle, bir öğeye tıkla, ne istediğini yaz — Claude Code kodu düzenlesin.\n[$(eye) Önizlemeyi Aç](command:panoptent.open)\nÖnce projende dev sunucusunu başlat (ör. npm run dev).\nÖğeleri tam dosya ve satıra bağla, Claude aramaya zaman ve token harcamasın: [code-inspector'ı otomatik kur](command:panoptent.setupCodeInspector) · [kurulum rehberi](command:panoptent.setupGuide)\n[Ayarlar](command:workbench.action.openSettings?%5B%22%40ext%3Aceritli.panoptent%22%5D) · [Dil: Türkçe / English](command:panoptent.changeLanguage)",
+  "view.checks": "Test ve Kararlar",
+  "view.checks.welcome": "Açık konu yok. Yapay zekâ ajanı bir işi bitirince ne denenecek ve neye karar verilecek listesini buraya kaydeder (Panoptent MCP aracı save_check_topic). Adımları ve seçenekleri çalışan uygulamanın üstündeki panelden işaretlersin.\n[$(checklist) Sayfada göster](command:panoptent.showChecks)"
 }

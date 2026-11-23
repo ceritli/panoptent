@@ -17,6 +17,9 @@ Open to every kind of contribution.
 | `src/engine.ts` | apply / hand-off to Claude / undo; one engine per workspace, shared by panel and Chrome |
 | `src/bridge.ts` | Chrome bridge: `ws` on 127.0.0.1:47811–47820, extension origins only, one-time pairing |
 | `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `start_live` (returns a `curl` to `POST /live/wait?t=<token>` that Claude Code runs as a background task, ~590 s per round, like Impeccable's `live-poll`), `wait_for_apply` (MCP long-poll fallback, 50 s: clients time out at ~60 s), `mark_applied`, page tools `screenshot_element` / `highlight` / `preview_style` (engine `pageRequest` → `{type:'mcpRequest', op}` to the panel/Chrome tab → overlay `onAgent` → `mcpResult`; Chrome tries `captureVisibleTab` (needs activeTab) then falls back to the overlay's DOM → SVG foreignObject render), prompts `apply_queue`, `live`, `selection`; connecting also installs `~/.claude/commands/panoptent.md` (`/panoptent live|apply|selection`, never overwrites a file without its marker); reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
+| `src/checks.ts` | Test and Decisions store (no `vscode` import): topics in `.panoptent/checks/{open,archive}/<id>.json`, schema v1 validation, ids `[a-z0-9-]`, per-topic lock + atomic write (tmp + rename), field-level merge, `changes(since)`, `by` = GitHub user name via `UserResolver` (setting `panoptent.checks.userName` → `gh api user` once per session → `git config github.user` → `git config user.name` → OS user; never `origin`, never e-mail). Format doc: `docs/checks.md` |
+| `src/checksPage.ts` | Test and Decisions as a full-page webview (`panoptent.checksPage`): engine client `checksPage`, same `checksMessage` write path, strict CSP + nonce; page script `media/checks-page.js` + `checks-page.css` (textContent only) |
+| `src/checksView.ts` | VS Code side of Test and Decisions: `panoptent.checks` tree view, *Test and Decisions* quick pick (open JSON, show panel, copy HTTP API token) |
 | `src/revert.ts` | precise undo from Claude Code transcripts (`~/.claude/projects/...`), matches the `PT-…` id only |
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |
@@ -25,7 +28,9 @@ Open to every kind of contribution.
 | `src/codeInspector.ts` | code-inspector-plugin auto setup |
 | `src/i18n.ts` | extension-host strings (`addStrings`, `t`, `uiLang`) |
 | `media/i18n.js` | shared browser i18n core (`PanoptentI18n`) for panel, overlay, Chrome |
-| `media/overlay.js` | in-page selection overlay (shared by VS Code preview and Chrome) |
+| `media/overlay.js` | in-page selection overlay (shared by VS Code preview and Chrome); also the Test and Decisions panel (`#ck`, messages `checks` / `checksReq` / `checksRes` / `checksPanel` / `checksPanelState`; hosts relay, Chrome writes need a recent user gesture) |
+| `media/checks.js` | pure helpers for that panel (`PanoptentChecks`: url ↔ page match, Open url, `**bold**` segments, panel geometry `clampGeom` / `moveGeom` / `resizeGeom` / `maximizeGeom` / `packGeom`); loaded before `overlay.js` like `i18n.js`. Panel geometry is stored by the host (panel.js webview state, content.js `ui.checksGeom`), never in the page |
+| `test/` | `npm test`: `node:test` suites bundled by esbuild with `vscode` → `test/vscode-stub.ts`; `npm run test:e2e -- --playwright <path>` drives the real `activate()` + webview in headless Chromium |
 | `media/panel.js`, `panel.css` | VS Code preview panel UI |
 | `chrome/` | MV3 extension (`background.js`, `content.js`, `popup.*`, `_locales/`); `build.sh` copies `media/overlay.js` + `media/i18n.js` in |
 | `docs/` | GitHub Pages site (`index.html` bilingual, `privacy.html`, `assets/` incl. `-en` screenshot variants) |
@@ -35,6 +40,7 @@ Open to every kind of contribution.
 ```bash
 npm ci
 npm run typecheck
+npm test
 npm run package          # → panoptent-x.y.z.vsix
 npm run package:chrome   # → panoptent-chrome-x.y.z.zip
 ```
@@ -62,6 +68,7 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
+- 0.14.0 (Test and Decisions: `.panoptent/checks` topics, in-page panel + bar badge, MCP tools `save_check_topic` / `get_check_topics` / `get_check_changes` / `close_check_topic`, HTTP `/checks/*`, `/panoptent checks`, `npm test`) on branch `test-ve-karar`, not committed / released yet. Chrome path not tested end to end (only the VS Code preview path).
 - 0.13.1 (quiet live mode: the background wait is a shell loop that renews itself, Claude is woken only on Apply; restarts silently; PR #21) merged 2026-11-03 and released by the release workflow.
 - 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3; PR #20) merged 2026-10-26 and released by the release workflow.
 - 0.12.0 (live mode `/panoptent live` / `/panoptent:live (MCP)`: `start_live` background `curl` wait, Apply goes straight to the waiting Claude conversation, unclaimed sets fall back after 30 s; `/panoptent` command; PR #17) merged 2026-10-25 and released by the release workflow. Next: package as a Claude Code plugin.

@@ -89,6 +89,8 @@
       'cx.changed': '✎ Changed',
       'cx.rolledBack': '↶ Panoptent’s changes were reverted: {0}', 'cx.rolledBackToast': '↶ Reverted',
       'cx.untouched': 'Left untouched:',
+      'cx.ck': 'Test', 'cx.ck.title': 'Test and Decisions: steps to try and decisions to make',
+      'cx.ck.count': 'Test and Decisions: {0} waiting for you · {1} problem(s)',
     },
     tr: {
       'cx.tab.queue': 'Kuyruk', 'cx.tab.log': 'Etkinlik', 'cx.tab.settings': 'Ayarlar',
@@ -171,6 +173,8 @@
       'cx.changed': '✎ Değişti',
       'cx.rolledBack': '↶ Panoptent’in değişiklikleri geri alındı: {0}', 'cx.rolledBackToast': '↶ Geri alındı',
       'cx.untouched': 'Dokunulmadı:',
+      'cx.ck': 'Test', 'cx.ck.title': 'Test ve Kararlar: denenecek adımlar ve verilecek kararlar',
+      'cx.ck.count': 'Test ve Kararlar: {0} seni bekliyor · {1} sorun',
     },
   });
   const t = I18N.t;
@@ -200,7 +204,8 @@
   let pairAsked = false;
   let viewport = 'full';
   let lastTrusted = 0;
-  let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false };
+  let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false, checks: false, checksGeom: null };
+  let lastChecks = null; // Test ve Karar: VS Code'dan gelen açık konular
   let settings = { sendTo: 'claudePanel', openOnSelect: true, claudeExt: true, design: null };
   const logs = [];
   // Dil: VS Code ayarı esas; bağlı değilken yerel seçim ('lang') geçici olarak kullanılır.
@@ -317,6 +322,8 @@
     .toast.ok{border-color:rgba(34,197,94,.5)}.toast.err{border-color:rgba(239,68,68,.6);color:#fca5a5}
     .mini{position:fixed;right:16px;bottom:16px;width:40px;height:40px;border-radius:20px;background:#1f2329;border:1px solid #3a3f47;color:#f97316;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
     .mini .n{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:#f97316;color:#fff;font:700 10px/16px ${F};text-align:center;padding:0 4px}
+    .ckn{min-width:16px;height:16px;border-radius:8px;background:#f97316;color:#fff;font:700 10px/16px ${F};text-align:center;padding:0 4px}
+    .ckn.bad{background:#ef4444}
     .spin{width:12px;height:12px;border-radius:50%;border:2px solid #3a3f47;border-top-color:#f97316;animation:r .8s linear infinite;display:inline-block;vertical-align:-2px;margin-right:6px}
     @keyframes r{to{transform:rotate(360deg)}}
   </style>
@@ -340,6 +347,8 @@
       <button class="b pri" id="apply" data-i18n="cx.apply" hidden>Apply</button>
       <span class="sep" id="rsep" hidden></span>
       <button class="b" id="rollback" hidden data-i18n-title="cx.rollbackTitle" data-i18n="cx.rollback">↶ Undo last apply</button>
+      <span class="sep" id="cksep" hidden></span>
+      <button class="b" id="ckBtn" aria-pressed="false" data-i18n-title="cx.ck.title" hidden><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M2.2 3.6 3.3 2.5l1.2 1.2L6.8 1.4l1.1 1.1-3.4 3.4zM9 3h6v1.5H9zM2.2 8.6l1.1-1.1 1.2 1.2 2.3-2.3 1.1 1.1-3.4 3.4zM9 8h6v1.5H9zM2 12h5v1.5H2zm7 0h6v1.5H9z"/></svg><span data-i18n="cx.ck">Test</span><span class="ckn" id="ckN" hidden>0</span></button>
       <span class="sep"></span>
       <button class="b" id="gear" data-i18n-title="cx.gearTitle">⚙</button>
       <button class="b" id="minBtn" data-i18n-title="cx.minTitle">–</button>
@@ -390,7 +399,7 @@
     chrome.storage.local.set({ [KEY_Q]: slim });
   }
   function saveUi() {
-    chrome.storage.local.set({ [KEY_UI]: { popover: ui.popover, cont: ui.cont, min: ui.min } });
+    chrome.storage.local.set({ [KEY_UI]: { popover: ui.popover, cont: ui.cont, min: ui.min, checks: ui.checks, checksGeom: ui.checksGeom } });
   }
 
   // ---------- etkinleştirme ----------
@@ -440,7 +449,8 @@
   function sendConfig() {
     const w = window.innerWidth;
     viewport = w <= 480 ? '390' : w <= 1100 ? '1024' : 'full';
-    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, lang: I18N.lang, nowLabel: nowLabel() });
+    // checksPage: Test ve Kararlar'ı VS Code'da tam sayfa açma düğmesi yalnızca bağlıyken
+    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, lang: I18N.lang, nowLabel: nowLabel(), checksPage: connected() });
   }
   let rz;
   window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(sendConfig, 200); });
@@ -525,7 +535,12 @@
   $('dclose').addEventListener('click', closeDrawer);
   $('minBtn').addEventListener('click', () => { ui.min = true; saveUi(); closeDrawer(); render(); });
   $('mini').addEventListener('click', () => { ui.min = false; saveUi(); render(); });
-  root.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => openDrawer(b.dataset.tab)));
+  // Test ve Karar: panel sayfadaki seçim katmanında açılır
+  $('ckBtn').addEventListener('click', () => toOverlay({ type: 'checksPanel', toggle: true }));
+  function checksList() { if (connected()) bg({ type: 'checksReq', reqId: 'init', op: 'list' }); }
+  // Yalnızca sekme düğmeleri: aynı satırdaki ✕ (dclose) da bir <button>; ona sekme işleyicisi bağlanırsa
+  // closeDrawer'ın hemen ardından openDrawer(undefined) çalışıp çekmeceyi yeniden açar (0.11.2–0.13.1 hatası).
+  root.querySelectorAll('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => openDrawer(b.dataset.tab)));
 
   function connected() {
     return !!(activePort && workspaces.find((w) => w.port === activePort && w.state === 'ready'));
@@ -578,7 +593,7 @@
   const fileLinks = (files) => files.map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ');
 
   function renderDrawer() {
-    root.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === ui.tab));
+    root.querySelectorAll('.tabs button[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === ui.tab));
     dfoot.innerHTML = '';
     if (ui.tab === 'queue') {
       dbody.innerHTML = queue.length
@@ -720,6 +735,16 @@
     $('mini').hidden = !ui.min;
     $('miniN').hidden = !n;
     $('miniN').textContent = String(n);
+    const ckTopics = lastChecks ? lastChecks.topics.length : 0;
+    const ckPending = lastChecks ? lastChecks.pending || 0 : 0;
+    const ckBad = lastChecks ? lastChecks.bad || 0 : 0;
+    $('ckBtn').hidden = $('cksep').hidden = !ckTopics && !ui.checks;
+    $('ckBtn').classList.toggle('on', ui.checks);
+    $('ckBtn').setAttribute('aria-pressed', String(ui.checks));
+    $('ckBtn').title = ckTopics ? t('cx.ck.count', ckPending, ckBad) : t('cx.ck.title');
+    $('ckN').hidden = !ckPending && !ckBad;
+    $('ckN').textContent = String(ckPending || ckBad);
+    $('ckN').classList.toggle('bad', !ckPending && !!ckBad);
     if (ui.drawer) renderDrawer();
   }
 
@@ -729,7 +754,9 @@
     const t = e.composedPath ? e.composedPath()[0] : e.target;
     const inField = t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
     const mod = e.ctrlKey || e.metaKey;
-    if (e.key === 'Escape' && ui.drawer && !inField) { closeDrawer(); return; }
+    // Esc seçim katmanının içinden geldiyse (Test ve Karar paneli, öğe kutusu) onu yalnız katman kapatır; çekmeceye dokunma
+    const fromOverlay = e.composedPath && e.composedPath().some((n) => n && n.tagName === 'PANOPTENT-OVERLAY');
+    if (e.key === 'Escape' && ui.drawer && !inField && !fromOverlay) { closeDrawer(); return; }
     if (!inField && mod && e.key.toLowerCase() === 'z' && (undoStack.length || redoStack.length)) {
       e.preventDefault();
       e.stopPropagation();
@@ -799,6 +826,28 @@
         sendConfig();
         if (selecting) toOverlay({ type: 'mode', on: true });
         if (queue.length) toOverlay({ type: 'reapply', entries: queue });
+        if (lastChecks) toOverlay(Object.assign({}, lastChecks));
+        toOverlay({ type: 'checksPanel', open: !!ui.checks, restore: true, geom: ui.checksGeom || undefined });
+        render();
+        break;
+      case 'checksOpenPage': // Test ve Kararlar'ı VS Code'da tam sayfa aç
+        if (!userJustActed()) return;
+        if (!connected()) return toast(t('cx.notConnected'), 'err');
+        bg({ type: 'checksOpenPage' });
+        break;
+      case 'checksReq':
+        // yazma yalnızca gerçek kullanıcı etkileşiminden hemen sonra (sayfa betikleri işaret uyduramasın)
+        if (m.op !== 'list' && !userJustActed()) return;
+        if (!connected()) {
+          toOverlay({ type: 'checksRes', reqId: m.reqId, ok: false, error: t('cx.notConnected') });
+          return;
+        }
+        bg({ type: 'checksReq', reqId: m.reqId, op: m.op, topic: m.topic, test: m.test, state: m.state, note: m.note, decision: m.decision, index: m.index });
+        break;
+      case 'checksPanelState':
+        ui.checks = !!m.open;
+        if (m.geom && typeof m.geom === 'object') ui.checksGeom = m.geom; // katman her okumada doğrular
+        saveUi();
         render();
         break;
       case 'mode':
@@ -848,6 +897,7 @@
       case 'status': {
         workspaces = m.workspaces || [];
         activePort = m.active;
+        if (enabled) sendConfig();
         if (enabled && !connected() && !pairAsked && workspaces.some((w) => w.state === 'needPair')) {
           pairAsked = true;
           bg({ type: 'pair' });
@@ -865,6 +915,22 @@
         if (m.lang) langFromVS(m.lang);
         sendConfig();
         render();
+        checksList();
+        break;
+      case 'checks':
+        lastChecks = m;
+        render();
+        if (overlayReady) toOverlay(Object.assign({}, m));
+        break;
+      case 'checksRes':
+        if (overlayReady) toOverlay(Object.assign({}, m));
+        break;
+      case 'checksPanel': // "Panoptent: Test ve Kararları Sayfada Göster" (VS Code)
+        if (!enabled) break;
+        ui.checks = m.open !== false;
+        saveUi();
+        render();
+        toOverlay({ type: 'checksPanel', open: ui.checks, geom: ui.checksGeom || undefined });
         break;
       case 'lang':
         langFromVS(m.value);
@@ -885,6 +951,7 @@
           toast(t('cx.notConnectedQueued'), 'err', 5000);
           if (popPending) { popPending = false; popStatus('err', t('cx.notConnectedShort')); }
         }
+        if (m.for === 'checksReq' && m.reqId) toOverlay({ type: 'checksRes', reqId: m.reqId, ok: false, error: t('cx.notConnected') });
         render();
         break;
       case 'design':

@@ -3,6 +3,9 @@ node_modules/**
 docs/**
 chrome/**
 scripts/**
+test/**
+dist/test/**
+.panoptent/**
 .github/**
 build.mjs
 tsconfig.json

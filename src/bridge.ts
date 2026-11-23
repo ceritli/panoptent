@@ -210,6 +210,12 @@ export class Bridge {
       case 'mcpResult':
         e.pageResult(client, m);
         break;
+      case 'checksReq':
+        e.checksMessage(m, client);
+        break;
+      case 'checksOpenPage':
+        vscode.commands.executeCommand('panoptent.checksPage');
+        break;
       case 'applyEntries':
         await e.applyEntries(m.entries || [], m.pageUrl || '', !!m.continueSession, !!m.fromQueue, client);
         break;

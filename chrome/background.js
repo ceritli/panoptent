@@ -224,7 +224,7 @@ chrome.runtime.onConnect.addListener((p) => {
   p.onMessage.addListener(async (m) => {
     switch (m.type) {
       case 'injectOverlay':
-        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['i18n.js', 'overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: t('bg.overlayFail', e.message) }));
+        chrome.scripting.executeScript({ target: { tabId, allFrames: false }, files: ['i18n.js', 'checks.js', 'overlay.js'], world: 'MAIN' }).catch((e) => send(p, { type: 'toast', kind: 'err', text: t('bg.overlayFail', e.message) }));
         return;
       case 'pair':
         wantPair = true;
@@ -265,7 +265,7 @@ chrome.runtime.onConnect.addListener((p) => {
         if (!toVS(tabId, m)) send(p, { type: 'status', workspaces: readyList(), active: pickFor(tabId) });
         return;
       default:
-        if (!toVS(tabId, m)) send(p, { type: 'notConnected', for: m.type, tokens: (m.entries || []).map((e) => e.token) });
+        if (!toVS(tabId, m)) send(p, { type: 'notConnected', for: m.type, reqId: m.reqId, tokens: (m.entries || []).map((e) => e.token) });
     }
   });
 });

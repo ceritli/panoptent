@@ -102,6 +102,47 @@
       'ov.truncated': '…(truncated)',
       'ov.agent': 'Claude',
       'ov.agent.preview': 'Claude’s preview',
+      'ov.ck.title': 'Test and Decisions',
+      'ov.ck.tabs': 'Topics',
+      'ov.ck.tests': '1 · Test',
+      'ov.ck.decisions': '2 · Decide',
+      'ov.ck.infos': '3 · Info',
+      'ov.ck.testCount': '{0}/{1} ok',
+      'ov.ck.badCount': ' · {0} problem(s)',
+      'ov.ck.decCount': '{0}/{1} decided',
+      'ov.ck.infoNote': 'Reading is enough',
+      'ov.ck.here': 'on this page',
+      'ov.ck.agent': 'Agent tried',
+      'ov.ck.expected': 'Expected: ',
+      'ov.ck.done': 'Done',
+      'ov.ck.open': 'Open ↗',
+      'ov.ck.openTitle': 'Go to the page of this step',
+      'ov.ck.bad': 'Problem',
+      'ov.ck.badOn': 'Problem ✕',
+      'ov.ck.badTitle': 'Report a problem with this step (with a note)',
+      'ov.ck.notePh': 'What did you see?',
+      'ov.ck.toQueue': 'Also add to queue',
+      'ov.ck.toQueueTitle': 'Add this note (and the selected elements) to the Panoptent change queue',
+      'ov.ck.queueText': 'Test problem: {0} / {1}. {2}',
+      'ov.ck.queued': 'Added to the change queue.',
+      'ov.ck.noNote': 'Write a note first.',
+      'ov.ck.markedBy': '{0} · {1}',
+      'ov.ck.saving': 'Saving…',
+      'ov.ck.saveFail': 'Not saved: {0}',
+      'ov.ck.timeout': 'VS Code did not answer; this mark was not saved. Try again.',
+      'ov.ck.empty': 'No open topics. When an agent finishes a piece of work, it adds what to try and what to decide here.',
+      'ov.ck.fileErr': '{0} file(s) could not be read: {1}',
+      'ov.ck.noTests': 'No test steps.',
+      'ov.ck.noDecisions': 'No decisions.',
+      'ov.ck.moveTitle': 'Drag to move · double-click: maximize · arrow keys move, Shift+arrows resize',
+      'ov.ck.moveAria': 'Test and Decisions panel title. Arrow keys move the panel, Shift with arrow keys resizes it.',
+      'ov.ck.page': 'Open as a full page in VS Code',
+      'ov.ck.min': 'Minimize',
+      'ov.ck.unmin': 'Expand',
+      'ov.ck.max': 'Maximize',
+      'ov.ck.unmax': 'Restore size',
+      'ov.ck.sum': '{0} topic(s) · {1} waiting',
+      'ov.ck.pageAsked': 'Opening in VS Code…',
     },
     tr: {
       'ov.act.text': 'Metni yerinde düzenle (çift tık)',
@@ -163,6 +204,47 @@
       'ov.truncated': '…(kısaltıldı)',
       'ov.agent': 'Claude',
       'ov.agent.preview': 'Claude’un önizlemesi',
+      'ov.ck.title': 'Test ve Kararlar',
+      'ov.ck.tabs': 'Konular',
+      'ov.ck.tests': '1 · Test et',
+      'ov.ck.decisions': '2 · Karar ver',
+      'ov.ck.infos': '3 · Bilgi',
+      'ov.ck.testCount': '{0}/{1} tamam',
+      'ov.ck.badCount': ' · {0} sorun',
+      'ov.ck.decCount': '{0}/{1} karar',
+      'ov.ck.infoNote': 'Okuman yeterli',
+      'ov.ck.here': 'bu sayfada',
+      'ov.ck.agent': 'Ajan denedi',
+      'ov.ck.expected': 'Beklenen: ',
+      'ov.ck.done': 'Tamam',
+      'ov.ck.open': 'Aç ↗',
+      'ov.ck.openTitle': 'Bu adımın sayfasına git',
+      'ov.ck.bad': 'Sorun',
+      'ov.ck.badOn': 'Sorun ✕',
+      'ov.ck.badTitle': 'Bu adımda sorun var (not yaz)',
+      'ov.ck.notePh': 'Ne gördün?',
+      'ov.ck.toQueue': 'Kuyruğa da ekle',
+      'ov.ck.toQueueTitle': 'Bu notu (ve seçili öğeleri) Panoptent değişiklik kuyruğuna ekle',
+      'ov.ck.queueText': 'Test sorunu: {0} / {1}. {2}',
+      'ov.ck.queued': 'Değişiklik kuyruğuna eklendi.',
+      'ov.ck.noNote': 'Önce not yaz.',
+      'ov.ck.markedBy': '{0} · {1}',
+      'ov.ck.saving': 'Kaydediliyor…',
+      'ov.ck.saveFail': 'Kaydedilmedi: {0}',
+      'ov.ck.timeout': 'VS Code yanıt vermedi; bu işaret kaydedilmedi. Yeniden dene.',
+      'ov.ck.empty': 'Açık konu yok. Ajan bir işi bitirince ne denenecek ve neye karar verilecek listesini buraya ekler.',
+      'ov.ck.fileErr': '{0} dosya okunamadı: {1}',
+      'ov.ck.noTests': 'Test adımı yok.',
+      'ov.ck.noDecisions': 'Karar yok.',
+      'ov.ck.moveTitle': 'Taşımak için sürükle · çift tık: büyüt · oklar taşır, Shift+oklar boyutlandırır',
+      'ov.ck.moveAria': 'Test ve Kararlar paneli başlığı. Ok tuşları paneli taşır, Shift ile ok tuşları boyutlandırır.',
+      'ov.ck.page': 'VS Code’da tam sayfa aç',
+      'ov.ck.min': 'Küçült',
+      'ov.ck.unmin': 'Aç',
+      'ov.ck.max': 'Büyüt',
+      'ov.ck.unmax': 'Eski ölçü',
+      'ov.ck.sum': '{0} konu · {1} bekliyor',
+      'ov.ck.pageAsked': 'VS Code’da açılıyor…',
     },
   });
 
@@ -258,6 +340,58 @@
     '.agent{outline:2px dashed #a855f7;outline-offset:2px;background:rgba(168,85,247,.08)}' +
     '.alb{position:fixed;pointer-events:none;font:600 11px/1.4 ' + FONT + ';background:#7c3aed;color:#fff;padding:2px 7px;border-radius:3px;' +
     'white-space:nowrap;max-width:50vw;overflow:hidden;text-overflow:ellipsis}' +
+    // Test ve Karar paneli
+    // yer ve ölçü satır içi stil olarak (left/top/width/height) checks.js'in sınırladığı değerlerle verilir
+    '.ck{position:fixed;pointer-events:auto;left:0;top:0;width:400px;max-width:calc(100vw - 16px);' +
+    'display:flex;flex-direction:column;background:#1f2329;color:#e6e8eb;border:1px solid #3a3f47;border-radius:10px;' +
+    'box-shadow:0 12px 32px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2);font:13px/1.45 ' + FONT + ';text-align:left}' +
+    '.ckHead{display:flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;border-bottom:1px solid #2c3138;cursor:move;' +
+    'touch-action:none;user-select:none;-webkit-user-select:none;flex-shrink:0;min-height:38px;box-sizing:border-box}' +
+    '.ck.max .ckHead{cursor:default}.ck.min .ckHead{border-bottom:0}' +
+    '.ckH{font-weight:700;font-size:13px;margin:0;white-space:nowrap}' +
+    '.ckSum{flex:1;min-width:0;font-size:11.5px;color:#9aa4b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:4px}' +
+    '.ckIc{all:unset;cursor:pointer;width:24px;height:24px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;' +
+    'color:#9aa4b2;font-size:13px;flex-shrink:0}.ckIc:hover{background:#2c3138;color:#fff}' +
+    '.ck.min .ckTabs,.ck.min .ckBody,.ck.min .ckMsg,.ck.min .ckRz,.ck.max .ckRz{display:none!important}' +
+    '.ck.drag,.ck.drag *{user-select:none!important;-webkit-user-select:none!important}' +
+    '.ckRz{position:absolute;touch-action:none;z-index:2}' +
+    '.ckRz[data-edge=e]{right:-4px;top:14px;bottom:14px;width:8px;cursor:ew-resize}' +
+    '.ckRz[data-edge=w]{left:-4px;top:14px;bottom:14px;width:8px;cursor:ew-resize}' +
+    '.ckRz[data-edge=s]{bottom:-4px;left:14px;right:14px;height:8px;cursor:ns-resize}' +
+    '.ckRz[data-edge=se]{right:-4px;bottom:-4px;width:16px;height:16px;cursor:nwse-resize}' +
+    '.ckRz[data-edge=sw]{left:-4px;bottom:-4px;width:16px;height:16px;cursor:nesw-resize}' +
+    '.ckTabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px 0}' +
+    '.ckTab{all:unset;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid #3a3f47;font-size:12px;color:#9aa4b2;max-width:100%;' +
+    'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box}' +
+    '.ckTab[aria-selected=true]{border-color:#f97316;color:#fff;background:#2c3138}.ckTab .cn{margin-left:6px;color:#6b7380;font-variant-numeric:tabular-nums}' +
+    '.ckTab .hd{display:inline-block;width:6px;height:6px;border-radius:3px;background:#f97316;margin-left:6px;vertical-align:1px}' +
+    '.ckBody{overflow:auto;padding:6px 10px 10px;flex:1;min-height:0;overscroll-behavior:contain}' +
+    '.ckLead{font-size:12px;color:#9aa4b2;margin:4px 0 2px;white-space:pre-wrap;word-break:break-word}' +
+    '.ckSec{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:12px 0 6px;font-size:11px;font-weight:700;' +
+    'text-transform:uppercase;letter-spacing:.04em;color:#9aa4b2}.ckSec span{font-weight:400;text-transform:none;letter-spacing:0;color:#6b7380}' +
+    '.ckRow{display:grid;grid-template-columns:20px minmax(0,1fr);gap:2px 8px;padding:8px;border:1px solid #2f343c;border-radius:7px;margin-bottom:6px;background:#191c21}' +
+    '.ckRow.here{border-color:rgba(249,115,22,.55)}.ckRow.ok .ckTt{text-decoration:line-through;color:#8a93a0}' +
+    '.ckRow.bad{border-color:rgba(248,113,113,.55);background:rgba(248,113,113,.06)}.ckRow.saving{opacity:.7}' +
+    '.ckRow input[type=checkbox]{width:16px;height:16px;margin:2px 0 0;accent-color:#22c55e;cursor:pointer}' +
+    '.ckT{font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0;word-break:break-word}' +
+    '.ckCode{font:700 10px/1.6 ' + MONO + ';color:#6b7380}' +
+    '.ckTag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#2c3138;color:#9aa4b2}' +
+    '.ckTag.here{background:#3a2a1c;color:#fdba74}.ckTag.tried{background:rgba(34,197,94,.12);color:#4ade80}' +
+    '.ckD{grid-column:2;font-size:12px;color:#cbd2da;white-space:pre-wrap;word-break:break-word}' +
+    '.ckE{grid-column:2;font-size:12px;color:#4ade80;white-space:pre-wrap;word-break:break-word}' +
+    '.ckActs{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}' +
+    '.ckBtn{all:unset;cursor:pointer;font-size:11.5px;line-height:1.5;padding:2px 8px;border-radius:5px;background:#2c3138;color:#e6e8eb}' +
+    '.ckBtn:hover{background:#363c44}.ckBtn.on{background:rgba(248,113,113,.18);color:#fca5a5}.ckBtn.link{color:#93c5fd}' +
+    '.ckBy{font-size:10.5px;color:#6b7380}' +
+    'textarea.ckNote{grid-column:2;min-height:44px;margin-top:6px;font-size:12.5px}' +
+    '.ckDec{padding:8px;border:1px solid #2f343c;border-radius:7px;margin-bottom:6px;background:#191c21}' +
+    '.ckOpt{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;margin-top:5px;cursor:pointer;word-break:break-word}' +
+    '.ckOpt input{margin:3px 0 0;accent-color:#f97316;flex-shrink:0}' +
+    '.ckInfo{font-size:12px;color:#cbd2da;padding:6px 0;border-top:1px solid #2c3138;white-space:pre-wrap;word-break:break-word}' +
+    '.ckInfo:first-of-type{border-top:0}.ckInfo b{color:#fff}' +
+    '.ckMsg{padding:6px 12px;font-size:12px;border-top:1px solid #2c3138;color:#9aa4b2}.ckMsg.err{color:#f87171}.ckMsg.ok{color:#4ade80}' +
+    '.ckEmpty{color:#8a93a0;font-size:12.5px;padding:6px 0}' +
+    '.ck :focus-visible{outline:2px solid #f97316;outline-offset:1px}.ckHead:focus-visible{outline-offset:-2px;border-radius:9px 9px 0 0}' +
     '</style>' +
     '<div id="hover" class="box hover" hidden></div><div id="lbl" class="lbl" hidden></div><div id="sels"></div><div id="agentMarks"></div>' +
     '<div id="pop" class="pop" hidden>' +
@@ -279,7 +413,18 @@
     '<div class="popFoot"><span class="hint" id="popHint"></span>' +
     '<button class="btn sec" id="popNow" data-i18n-title="ov.now.title" title="Kuyruğu beklemeden hemen gönder">Hemen gönder</button>' +
     '<button class="btn pri" id="popQueue" data-i18n="ov.queue">Kuyruğa ekle</button></div>' +
-    '<div class="st" id="popSt" hidden></div></div>';
+    '<div class="st" id="popSt" hidden></div></div>' +
+    '<div id="ck" class="ck" role="dialog" aria-labelledby="ckH" hidden>' +
+    '<div class="ckHead" id="ckHead" tabindex="0" data-i18n-title="ov.ck.moveTitle" data-i18n-aria="ov.ck.moveAria">' +
+    '<h2 class="ckH" id="ckH" data-i18n="ov.ck.title">Test ve Kararlar</h2><span class="ckSum" id="ckSum"></span>' +
+    '<button class="ckIc" id="ckPage" hidden data-i18n-title="ov.ck.page" data-i18n-aria="ov.ck.page">⧉</button>' +
+    '<button class="ckIc" id="ckMin">–</button><button class="ckIc" id="ckMax">□</button>' +
+    '<button class="x" id="ckX" data-i18n-title="ov.close" data-i18n-aria="ov.close" title="Kapat (Esc)">×</button></div>' +
+    '<div class="ckTabs" id="ckTabs" role="tablist" data-i18n-aria="ov.ck.tabs"></div>' +
+    '<div class="ckBody" id="ckBody"></div>' +
+    '<div class="ckMsg" id="ckMsg" role="status" aria-live="polite" hidden></div>' +
+    '<div class="ckRz" data-edge="e"></div><div class="ckRz" data-edge="w"></div><div class="ckRz" data-edge="s"></div>' +
+    '<div class="ckRz" data-edge="se"></div><div class="ckRz" data-edge="sw"></div></div>';
 
   var q = function (id) { return root.getElementById ? root.getElementById(id) : root.querySelector('#' + id); };
   var hoverBox = q('hover'), label = q('lbl'), selsLayer = q('sels'), agentLayer = q('agentMarks');
@@ -1586,9 +1731,496 @@
     reply(m, { ok: false, error: 'Unknown request ' + m.op });
   }
 
+  // ---------- Test ve Karar paneli ----------
+  // Ajanın kaydettiği konular (.panoptent/checks) VS Code'dan gelir; işaretler anında oraya yazılır. Bütün metinler
+  // düz metin olarak basılır (innerHTML yok); bilgi satırlarında yalnızca **kalın** biçimi tanınır.
+  var CK = window.PanoptentChecks || (function () {
+    // checks.js yüklenemediyse (eski Chrome eklentisi): sabit yer, taşıma / boyut yok
+    var fixed = function () { return { x: Math.max(0, window.innerWidth - 412), y: 12, w: Math.min(400, window.innerWidth - 16), h: null, min: false, max: false, prev: null }; };
+    return {
+      matchUrl: function () { return false; },
+      openUrl: function () { return null; },
+      segments: function (s) { return [{ b: false, s: String(s == null ? '' : s) }]; },
+      GEO: { head: 38, margin: 8, step: 16 },
+      clampGeom: fixed, moveGeom: fixed, resizeGeom: fixed, maximizeGeom: fixed, restoreGeom: fixed,
+      packGeom: function () { return {}; },
+    };
+  })();
+  var ck = q('ck'), ckTabs = q('ckTabs'), ckBody = q('ckBody'), ckMsgEl = q('ckMsg'), ckX = q('ckX');
+  var ckTopics = [], ckErrors = [], ckCur = null, ckOpen = false, ckSeq = 0;
+  var ckPending = {}; // reqId -> { key, timer }
+  var ckOptim = {}; // 'r|konu|test' -> { state, note } · 'p|konu|karar' -> index; yanıt beklenirken gösterilen değer
+  var ckMsg = null; // { kind, text }
+  var ckNoteTimers = {};
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = String(text);
+    return e;
+  }
+  function richText(parent, s) {
+    CK.segments(s).forEach(function (sg) {
+      parent.appendChild(sg.b ? el('b', null, sg.s) : document.createTextNode(sg.s));
+    });
+    return parent;
+  }
+  function ckTime(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleString(I18N.lang === 'tr' ? 'tr-TR' : 'en-US', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+  function ckTopic() {
+    for (var i = 0; i < ckTopics.length; i++) if (ckTopics[i].id === ckCur) return ckTopics[i];
+    return ckTopics[0] || null;
+  }
+  function here(test) { return !!test.url && CK.matchUrl(test.url, location.href); }
+  function resultOf(tp, test) {
+    var o = ckOptim['r|' + tp.id + '|' + test.id];
+    return o ? o.v : (test.result || { state: 'none' });
+  }
+  function ckCurrentResult(topicId, testId) {
+    var tp = null, x = null;
+    ckTopics.forEach(function (a) { if (a.id === topicId) tp = a; });
+    if (tp) (tp.tests || []).forEach(function (b) { if (b.id === testId) x = b; });
+    return tp && x ? resultOf(tp, x) : null;
+  }
+  function pickOf(tp, dec) {
+    var o = ckOptim['p|' + tp.id + '|' + dec.id];
+    return o ? o.v : (dec.pick ? dec.pick.index : null);
+  }
+
+  function ckSetMsg(kind, text) {
+    ckMsg = text ? { kind: kind, text: text } : null;
+    ckMsgEl.hidden = !ckMsg;
+    ckMsgEl.className = 'ckMsg' + (ckMsg ? ' ' + ckMsg.kind : '');
+    ckMsgEl.textContent = ckMsg ? ckMsg.text : '';
+  }
+
+  /** Yazma isteği: iyimser gösterim, VS Code'un yanıtı gelmezse ya da hata dönerse kullanıcı görür. */
+  function ckWrite(op, data, key, value) {
+    var reqId = 'ck' + Date.now().toString(36) + (++ckSeq);
+    ckOptim[key] = { v: value, reqId: reqId, done: false };
+    var timer = setTimeout(function () { ckDone(reqId, false, t('ov.ck.timeout')); }, 8000);
+    ckPending[reqId] = { key: key, timer: timer };
+    data.type = 'checksReq';
+    data.reqId = reqId;
+    data.op = op;
+    post(data);
+    ckSetMsg('', t('ov.ck.saving'));
+    ckRender();
+  }
+  function ckDone(reqId, ok, error) {
+    var p = ckPending[reqId];
+    if (!p) return;
+    clearTimeout(p.timer);
+    delete ckPending[reqId];
+    var o = ckOptim[p.key];
+    if (o && o.reqId === reqId) {
+      if (ok) o.done = true; // yeni hal gelene kadar iyimser değer kalsın (titreme olmasın)
+      else delete ckOptim[p.key];
+    }
+    if (!ok) ckSetMsg('err', t('ov.ck.saveFail', error || '?'));
+    else if (!Object.keys(ckPending).length && ckMsg && ckMsg.kind === '') ckSetMsg('', '');
+    ckRender();
+  }
+
+  function ckSetOpen(open, quiet) {
+    // yazılmayı bekleyen notlar kapanırken kaybolmasın
+    if (!open) Object.keys(ckNoteTimers).forEach(function (k) { var p = ckNoteTimers[k]; if (p) p.flush(); });
+    ckOpen = !!open && active;
+    ck.hidden = !ckOpen;
+    if (ckOpen) {
+      ckApplyGeom();
+      ckRender();
+    }
+    if (!quiet) ckSaveState();
+  }
+
+  // ---------- Panelin yeri ve ölçüsü: taşı, boyutlandır, küçült, büyüt ----------
+  // ckGeom kullanıcının istediği hal (saklanan); ekrana basılan, görünüm alanına göre sınırlanmış halidir. Pencere
+  // küçülüp büyüyünce ölçü kaybolmasın diye sınırlanmış hal geri yazılmaz. Saklama host'ta (VS Code webview durumu /
+  // Chrome eklenti deposu); buraya gelen her değer CK.packGeom ile doğrulanır.
+  var ckHead = q('ckHead'), ckSum = q('ckSum'), ckPageBtn = q('ckPage'), ckMinBtn = q('ckMin'), ckMaxBtn = q('ckMax');
+  var ckGeom = CK.packGeom({});
+  var ckShown = null;
+  var ckPageAvail = false;
+  var ckDrag = null;
+  var ckSaveTimer = null;
+
+  function vwh() { return [window.innerWidth || document.documentElement.clientWidth, window.innerHeight || document.documentElement.clientHeight]; }
+
+  function ckApplyGeom() {
+    var v = vwh();
+    var g = (ckShown = CK.clampGeom(ckGeom, v[0], v[1]));
+    ck.style.left = g.x + 'px';
+    ck.style.top = g.y + 'px';
+    ck.style.width = g.w + 'px';
+    ck.style.maxWidth = 'none';
+    if (g.min) { ck.style.height = ''; ck.style.maxHeight = ''; }
+    else if (g.h != null) { ck.style.height = g.h + 'px'; ck.style.maxHeight = ''; }
+    else { ck.style.height = ''; ck.style.maxHeight = Math.max(CK.GEO.head, v[1] - g.y - CK.GEO.margin) + 'px'; }
+    ck.classList.toggle('min', !!g.min);
+    ck.classList.toggle('max', !!g.max);
+    var label = function (b, key, glyph) { b.textContent = glyph; b.title = t(key); b.setAttribute('aria-label', t(key)); };
+    label(ckMinBtn, g.min ? 'ov.ck.unmin' : 'ov.ck.min', g.min ? '▾' : '–');
+    label(ckMaxBtn, g.max ? 'ov.ck.unmax' : 'ov.ck.max', g.max ? '❐' : '□');
+    ckMinBtn.setAttribute('aria-expanded', String(!g.min));
+    ckMaxBtn.setAttribute('aria-pressed', String(!!g.max));
+    ckPageBtn.hidden = !ckPageAvail;
+    ckRenderSum();
+  }
+
+  function ckRenderSum() {
+    var pending = 0;
+    ckTopics.forEach(function (x) { pending += (x.counts && x.counts.pending) || 0; });
+    ckSum.textContent = ckShown && ckShown.min ? t('ov.ck.sum', ckTopics.length, pending) : '';
+  }
+
+  /** Host'a bildir: açık mı ve yer / ölçü (host saklar, sayfa yenilenince geri gönderir). */
+  function ckSaveState() {
+    clearTimeout(ckSaveTimer);
+    post({ type: 'checksPanelState', open: ckOpen, geom: CK.packGeom(ckGeom) });
+  }
+  function ckSaveSoon() {
+    clearTimeout(ckSaveTimer);
+    ckSaveTimer = setTimeout(ckSaveState, 300);
+  }
+
+  function ckSetGeom(g, save) {
+    ckGeom = CK.packGeom(g);
+    ckApplyGeom();
+    if (save === 'now') ckSaveState();
+    else if (save) ckSaveSoon();
+  }
+
+  function ckToggleMin() {
+    var v = vwh();
+    var g = CK.clampGeom(ckGeom, v[0], v[1]);
+    g.min = !g.min;
+    ckSetGeom(g, 'now');
+    if (!g.min) ckRender();
+  }
+  function ckToggleMax() {
+    var v = vwh();
+    var g = ckShown && ckShown.max ? CK.restoreGeom(ckGeom, v[0], v[1]) : CK.maximizeGeom(ckGeom, v[0], v[1]);
+    g.min = false;
+    ckSetGeom(g, 'now');
+    ckRender();
+  }
+
+  ckMinBtn.addEventListener('click', ckToggleMin);
+  ckMaxBtn.addEventListener('click', ckToggleMax);
+  ckPageBtn.addEventListener('click', function () {
+    post({ type: 'checksOpenPage' });
+    ckSetMsg('', t('ov.ck.pageAsked'));
+    setTimeout(function () { if (ckMsg && ckMsg.text === t('ov.ck.pageAsked')) ckSetMsg('', ''); }, 2500);
+  });
+  ckHead.addEventListener('dblclick', function (e) {
+    if (e.target.closest && e.target.closest('button')) return;
+    ckToggleMax();
+  });
+
+  // İşaretçi (fare, dokunma, kalem): başlıktan taşı, kenar / köşeden boyutlandır. Olay başlığa / tutamağa kilitlenir
+  // (setPointerCapture): sürüklerken sayfa ya da önizleme çerçevesi olayları almaz, metin seçilmez, sayfa kaymaz.
+  function ckStartDrag(e, kind, edge, el) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (!ckShown || (kind === 'move' && ckShown.max)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    ckDrag = { kind: kind, edge: edge, el: el, id: e.pointerId, sx: e.clientX, sy: e.clientY, g: ckShown, curH: ck.getBoundingClientRect().height };
+    try { el.setPointerCapture(e.pointerId); } catch (err) { /* yok say */ }
+    ck.classList.add('drag');
+  }
+  function ckMoveDrag(e) {
+    if (!ckDrag || e.pointerId !== ckDrag.id) return;
+    e.preventDefault();
+    var v = vwh(), dx = e.clientX - ckDrag.sx, dy = e.clientY - ckDrag.sy;
+    ckSetGeom(ckDrag.kind === 'move'
+      ? CK.moveGeom(ckDrag.g, dx, dy, v[0], v[1])
+      : CK.resizeGeom(ckDrag.g, ckDrag.edge, dx, dy, v[0], v[1], ckDrag.curH), false);
+  }
+  function ckEndDrag(e) {
+    if (!ckDrag || (e && e.pointerId !== ckDrag.id)) return;
+    try { ckDrag.el.releasePointerCapture(ckDrag.id); } catch (err) { /* yok say */ }
+    ckDrag = null;
+    ck.classList.remove('drag');
+    ckSaveState();
+  }
+  ckHead.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('button')) return; // başlıktaki düğmeler normal tıklanır
+    ckStartDrag(e, 'move', '', ckHead);
+  });
+  Array.prototype.forEach.call(ck.querySelectorAll('.ckRz'), function (h) {
+    h.addEventListener('pointerdown', function (e) { ckStartDrag(e, 'resize', h.getAttribute('data-edge'), h); });
+  });
+  ['pointermove'].forEach(function (ev) { ck.addEventListener(ev, ckMoveDrag); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) { ck.addEventListener(ev, ckEndDrag); });
+
+  // Klavye: başlık odaktayken oklar taşır, Shift+oklar boyutlandırır (sağ / alt kenar)
+  ckHead.addEventListener('keydown', function (e) {
+    if (e.target !== ckHead) return;
+    var k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!k || !ckShown) return;
+    e.preventDefault();
+    var v = vwh(), s = CK.GEO.step || 16;
+    if (e.shiftKey) {
+      if (ckShown.max || ckShown.min) return;
+      ckSetGeom(CK.resizeGeom(ckShown, k[0] ? 'e' : 's', k[0] * s, k[1] * s, v[0], v[1], ck.getBoundingClientRect().height), true);
+    } else if (!ckShown.max) {
+      ckSetGeom(CK.moveGeom(ckShown, k[0] * s, k[1] * s, v[0], v[1]), true);
+    }
+  });
+
+  // Pencere boyutu değişince yeniden sınırla (saklanan ölçüye dokunmadan)
+  window.addEventListener('resize', function () { if (ckOpen) ckApplyGeom(); });
+
+  /** Odaktaki denetim yeniden çizimden sonra da odakta kalsın (klavye ve not yazarken). */
+  function ckFocusKey() {
+    var a = root.activeElement;
+    if (!a || !ck.contains(a)) return null;
+    return { key: a.getAttribute('data-k'), start: a.selectionStart, end: a.selectionEnd, value: a.tagName === 'TEXTAREA' ? a.value : null };
+  }
+
+  var ckRendering = false;
+  function ckRender() {
+    if (ck.hidden || ckRendering) return;
+    ckRendering = true;
+    try { ckDraw(); } finally { ckRendering = false; }
+  }
+
+  function ckDraw() {
+    var keep = ckFocusKey();
+    var scroll = ckBody.scrollTop;
+    var tp = ckTopic();
+    ckCur = tp ? tp.id : null;
+    ckTabs.textContent = '';
+    ckTabs.hidden = ckTopics.length < 2;
+    ckTopics.forEach(function (x) {
+      var b = el('button', 'ckTab', x.name);
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(x === tp));
+      b.setAttribute('data-k', 'tab|' + x.id);
+      b.setAttribute('data-topic', x.id);
+      b.tabIndex = x === tp ? 0 : -1;
+      var c = x.counts || {};
+      b.appendChild(el('span', 'cn', (c.ok || 0) + '/' + (c.tests || 0)));
+      if ((x.tests || []).some(here)) b.appendChild(el('span', 'hd'));
+      b.title = x.name;
+      ckTabs.appendChild(b);
+    });
+    ckBody.textContent = '';
+    if (ckErrors.length) {
+      ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.fileErr', ckErrors.length, ckErrors.map(function (e) { return e.file + ' (' + e.error + ')'; }).join('; '))));
+    }
+    if (!tp) {
+      ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.empty')));
+      ckRestore(keep, scroll);
+      return;
+    }
+    if (tp.lead || tp.date) ckBody.appendChild(el('div', 'ckLead', [tp.date, tp.lead].filter(Boolean).join(' · ')));
+
+    // 1 · Test et — bu sayfaya ait adımlar önce
+    var tests = (tp.tests || []).map(function (x, i) { return { x: x, i: i, here: here(x) }; });
+    tests.sort(function (a, b) { return (b.here - a.here) || (a.i - b.i); });
+    var okN = 0, badN = 0;
+    tests.forEach(function (r) { var s = resultOf(tp, r.x).state; if (s === 'ok') okN++; else if (s === 'bad') badN++; });
+    var sec = el('div', 'ckSec', t('ov.ck.tests'));
+    sec.appendChild(el('span', null, t('ov.ck.testCount', okN, tests.length) + (badN ? t('ov.ck.badCount', badN) : '')));
+    ckBody.appendChild(sec);
+    if (!tests.length) ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.noTests')));
+    tests.forEach(function (r) {
+      var x = r.x, res = resultOf(tp, x), key = 'r|' + tp.id + '|' + x.id;
+      var o = ckOptim[key];
+      var row = el('div', 'ckRow' + (r.here ? ' here' : '') + (res.state === 'ok' ? ' ok' : '') + (res.state === 'bad' ? ' bad' : '') + (o && !o.done ? ' saving' : ''));
+      var cb = el('input');
+      cb.type = 'checkbox';
+      cb.checked = res.state === 'ok';
+      cb.setAttribute('aria-label', t('ov.ck.done') + ': T' + (r.i + 1) + ' ' + x.t);
+      cb.setAttribute('data-k', 'ok|' + x.id);
+      cb.addEventListener('change', function () {
+        ckWrite('result', { topic: tp.id, test: x.id, state: cb.checked ? 'ok' : 'none' }, key, { state: cb.checked ? 'ok' : 'none', note: res.note });
+      });
+      row.appendChild(cb);
+      var head = el('div', 'ckT');
+      head.appendChild(el('span', 'ckCode', 'T' + (r.i + 1)));
+      head.appendChild(el('span', 'ckTt', x.t));
+      if (r.here) head.appendChild(el('span', 'ckTag here', t('ov.ck.here')));
+      if (x.agent) head.appendChild(el('span', 'ckTag tried', t('ov.ck.agent')));
+      row.appendChild(head);
+      if (x.d) row.appendChild(el('div', 'ckD', x.d));
+      if (x.e) row.appendChild(el('div', 'ckE', t('ov.ck.expected') + x.e));
+      var acts = el('div', 'ckActs');
+      var go = CK.openUrl(x.url, location.href, !CHROME);
+      if (go && !r.here) {
+        var ob = el('button', 'ckBtn link', t('ov.ck.open'));
+        ob.title = t('ov.ck.openTitle');
+        ob.setAttribute('data-k', 'open|' + x.id);
+        ob.addEventListener('click', function () {
+          var u = new URL(go);
+          if (u.origin === location.origin) location.assign(go);
+          else window.open(go, '_blank', 'noopener');
+        });
+        acts.appendChild(ob);
+      }
+      var bb = el('button', 'ckBtn' + (res.state === 'bad' ? ' on' : ''), res.state === 'bad' ? t('ov.ck.badOn') : t('ov.ck.bad'));
+      bb.title = t('ov.ck.badTitle');
+      bb.setAttribute('aria-pressed', String(res.state === 'bad'));
+      bb.setAttribute('data-k', 'bad|' + x.id);
+      bb.addEventListener('click', function () {
+        var on = res.state !== 'bad';
+        ckWrite('result', { topic: tp.id, test: x.id, state: on ? 'bad' : 'none' }, key, { state: on ? 'bad' : 'none', note: res.note });
+        if (on) setTimeout(function () { var n = ck.querySelector('[data-k="note|' + x.id + '"]'); if (n) n.focus(); }, 0);
+      });
+      acts.appendChild(bb);
+      if (res.state === 'bad') {
+        var qb = el('button', 'ckBtn', t('ov.ck.toQueue'));
+        qb.title = t('ov.ck.toQueueTitle');
+        qb.setAttribute('data-k', 'queue|' + x.id);
+        qb.addEventListener('click', function () {
+          var nEl = ck.querySelector('[data-k="note|' + x.id + '"]');
+          var note = (nEl ? nEl.value : res.note || '').trim();
+          if (!note) { ckSetMsg('err', t('ov.ck.noNote')); if (nEl) nEl.focus(); return; }
+          post({ type: 'commit', mode: 'queue', entries: [{ token: newToken(), kind: 'prompt', text: t('ov.ck.queueText', tp.name, 'T' + (r.i + 1) + ' ' + x.t, note), items: selectedSnaps() }] });
+          ckSetMsg('ok', t('ov.ck.queued'));
+        });
+        acts.appendChild(qb);
+      }
+      if (res.by && res.state !== 'none') acts.appendChild(el('span', 'ckBy', (res.state === 'ok' ? '✓ ' : '✕ ') + t('ov.ck.markedBy', res.by, ckTime(res.at))));
+      row.appendChild(acts);
+      if (res.state === 'bad') {
+        var ta = el('textarea', 'ckNote');
+        ta.value = res.note || '';
+        ta.placeholder = t('ov.ck.notePh');
+        ta.setAttribute('aria-label', t('ov.ck.notePh') + ' T' + (r.i + 1));
+        ta.setAttribute('data-k', 'note|' + x.id);
+        ta.maxLength = 4000;
+        var flush = function () {
+          var p = ckNoteTimers[key];
+          if (p) clearTimeout(p.timer);
+          delete ckNoteTimers[key];
+          var value = p ? p.value : ta.value;
+          var cur = ckCurrentResult(tp.id, x.id); // panel bu arada yeniden çizilmiş olabilir: güncel hali al
+          if (!cur) return;
+          if (cur.state !== 'bad' || value === (cur.note || '')) return;
+          if (ckRendering) return void setTimeout(function () { ckWrite('result', { topic: tp.id, test: x.id, state: 'bad', note: value }, key, { state: 'bad', note: value, by: cur.by, at: cur.at }); }, 0);
+          ckWrite('result', { topic: tp.id, test: x.id, state: 'bad', note: value }, key, { state: 'bad', note: value, by: cur.by, at: cur.at });
+        };
+        ta.addEventListener('input', function () {
+          var p = ckNoteTimers[key];
+          if (p) clearTimeout(p.timer);
+          ckNoteTimers[key] = { value: ta.value, flush: flush, timer: setTimeout(flush, 700) };
+        });
+        ta.addEventListener('blur', function () { if (!ckRendering) flush(); });
+        row.appendChild(ta);
+      }
+      ckBody.appendChild(row);
+    });
+
+    // 2 · Karar ver
+    var decs = tp.decisions || [];
+    var decided = decs.filter(function (d) { return pickOf(tp, d) != null; }).length;
+    sec = el('div', 'ckSec', t('ov.ck.decisions'));
+    sec.appendChild(el('span', null, t('ov.ck.decCount', decided, decs.length)));
+    ckBody.appendChild(sec);
+    if (!decs.length) ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.noDecisions')));
+    decs.forEach(function (d, i) {
+      var box = el('div', 'ckDec');
+      box.setAttribute('role', 'radiogroup');
+      var dh = el('div', 'ckT');
+      dh.appendChild(el('span', 'ckCode', 'K' + (i + 1)));
+      dh.appendChild(el('span', null, d.t));
+      box.appendChild(dh);
+      box.setAttribute('aria-label', 'K' + (i + 1) + ' ' + d.t);
+      var cur = pickOf(tp, d);
+      (d.o || []).forEach(function (opt, j) {
+        var lab = el('label', 'ckOpt');
+        var rb = el('input');
+        rb.type = 'radio';
+        rb.name = 'ck-' + tp.id + '-' + d.id;
+        rb.checked = cur === j;
+        rb.setAttribute('data-k', 'pick|' + d.id + '|' + j);
+        rb.addEventListener('change', function () {
+          if (rb.checked) ckWrite('pick', { topic: tp.id, decision: d.id, index: j }, 'p|' + tp.id + '|' + d.id, j);
+        });
+        lab.appendChild(rb);
+        lab.appendChild(el('span', null, opt));
+        box.appendChild(lab);
+      });
+      if (d.pick && d.pick.by && cur === d.pick.index) box.appendChild(el('div', 'ckBy', '✓ ' + t('ov.ck.markedBy', d.pick.by, ckTime(d.pick.at))));
+      ckBody.appendChild(box);
+    });
+
+    // 3 · Bilgi
+    var infos = tp.infos || [];
+    if (infos.length) {
+      sec = el('div', 'ckSec', t('ov.ck.infos'));
+      sec.appendChild(el('span', null, t('ov.ck.infoNote')));
+      ckBody.appendChild(sec);
+      infos.forEach(function (s) { ckBody.appendChild(richText(el('div', 'ckInfo'), s)); });
+    }
+    ckRestore(keep, scroll);
+  }
+
+  function ckRestore(keep, scroll) {
+    ckBody.scrollTop = scroll;
+    if (!keep || !keep.key) return;
+    var n = ck.querySelector('[data-k="' + keep.key.replace(/["\\]/g, '\\$&') + '"]');
+    if (!n) return;
+    if (keep.value != null) n.value = keep.value;
+    n.focus({ preventScroll: true });
+    try { if (keep.start != null) n.setSelectionRange(keep.start, keep.end); } catch (e) { /* seçim yok */ }
+  }
+
+  function onChecks(m) {
+    ckTopics = Array.isArray(m.topics) ? m.topics : [];
+    ckErrors = Array.isArray(m.errors) ? m.errors : [];
+    // yanıtı gelmiş iyimser değerler artık diskteki halde
+    Object.keys(ckOptim).forEach(function (k) { if (ckOptim[k].done) delete ckOptim[k]; });
+    if (ckCur && !ckTopics.some(function (x) { return x.id === ckCur; })) ckCur = null;
+    if (!ckCur) {
+      var withHere = ckTopics.filter(function (x) { return (x.tests || []).some(here); })[0];
+      if (withHere) ckCur = withHere.id;
+    }
+    if (ckOpen) ckRenderSum();
+    ckRender();
+  }
+
+  ckX.addEventListener('click', function () { ckSetOpen(false); });
+  ckTabs.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('[data-topic]') : null;
+    if (!b) return;
+    ckCur = b.getAttribute('data-topic');
+    ckRender();
+  });
+  ckTabs.addEventListener('keydown', function (e) {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    var i = ckTopics.findIndex(function (x) { return x.id === ckCur; });
+    var n = ckTopics[(i + (e.key === 'ArrowRight' ? 1 : -1) + ckTopics.length) % ckTopics.length];
+    if (!n) return;
+    e.preventDefault();
+    ckCur = n.id;
+    ckRender();
+    var b = ckTabs.querySelector('[data-topic="' + n.id + '"]');
+    if (b) b.focus();
+  });
+  // Panelde yazarken / tıklarken sayfanın kendi kısayolları ve dinleyicileri devreye girmesin
+  ['keydown', 'keyup', 'keypress', 'input', 'beforeinput', 'paste', 'copy', 'cut'].forEach(function (ev) {
+    ck.addEventListener(ev, function (e) {
+      if (ev === 'keydown' && e.key === 'Escape') { e.preventDefault(); ckSetOpen(false); }
+      e.stopPropagation();
+    });
+  });
+  ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick', 'wheel',
+    'touchstart', 'touchmove', 'touchend'].forEach(function (ev) {
+    ck.addEventListener(ev, function (e) { e.stopPropagation(); });
+  });
+
   // ---------- Dil değişimi: açık kutuyu yeniden çevir ----------
   function relocalize() {
     localizeStatic();
+    if (ckOpen) ckApplyGeom();
+    ckRender();
     if (pop.hidden) { tabStyle.dataset.built = ''; return; }
     popTitle();
     if (activeTab === 'style' && !tabStyle.hidden) buildStylePanel(); // taslak stiller korunur
@@ -1617,9 +2249,10 @@
       case 'config':
         if (typeof m.active === 'boolean') {
           active = m.active;
-          if (!active) { setMode(false, false); selected.clear(); closePopover(); hoverEl = null; }
+          if (!active) { setMode(false, false); selected.clear(); closePopover(); hoverEl = null; ckSetOpen(false, true); }
         }
         if (typeof m.popover === 'boolean') { popEnabled = m.popover; if (!popEnabled) closePopover(); }
+        if (typeof m.checksPage === 'boolean') { ckPageAvail = m.checksPage; ckPageBtn.hidden = !ckPageAvail; }
         if (m.nowLabel) { nowLabel = m.nowLabel; popNow.textContent = m.nowLabel; }
         if (m.lang && I18N.setLang(m.lang)) relocalize();
         if (m.viewport) { viewport = String(m.viewport); if (!pop.hidden) popTitle(); }
@@ -1691,12 +2324,24 @@
         if (last !== null) openPopover(last, true);
         break;
       }
+      case 'checks': // Test ve Karar: açık konuların son hali
+        onChecks(m);
+        break;
+      case 'checksRes':
+        ckDone(m.reqId, !!m.ok, m.error);
+        break;
+      case 'checksPanel':
+        // host'un sakladığı yer / ölçü (doğrulanır; sayfa betikleri bunu bozsa da yalnız panelin yeri değişir)
+        if (m.geom && typeof m.geom === 'object') ckGeom = CK.packGeom(m.geom);
+        ckSetOpen(m.toggle ? !ckOpen : m.open !== false, !!m.restore);
+        break;
     }
   });
 
   // ---------- Sayfa konumu ----------
   function reportLocation() {
     post({ type: 'location', href: location.href, title: document.title });
+    ckRender(); // "bu sayfada" adımları değişir
   }
   ['pushState', 'replaceState'].forEach(function (fn) {
     var orig = history[fn];

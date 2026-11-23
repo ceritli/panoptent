@@ -53,6 +53,9 @@ input, textarea { font: inherit; }
 }
 .tool:hover { background: var(--vscode-toolbar-hoverBackground, rgba(128,128,128,.15)); }
 #sideToggle[aria-pressed="true"] { background: var(--vscode-toolbar-activeBackground, rgba(128,128,128,.22)); }
+.tool.ck { gap: 5px; }
+#checksBtn[aria-pressed="true"] { background: var(--vscode-toolbar-activeBackground, rgba(128,128,128,.22)); }
+.badge.bad { background: #ef4444; }
 #selBtn[aria-pressed="true"] {
   background: var(--sel); border-color: var(--sel); color: #fff;
 }

@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.14.0 — unreleased (branch `test-ve-karar`)
+
+- **Test and Decisions.** An agent records what you should try and what you must decide as one topic in your project (`.panoptent/checks/open/<id>.json`, plain JSON, meant to be committed; closed topics move to `.panoptent/checks/archive/`). Format: [docs/checks.md](docs/checks.md)
+  - A **Test** button with a badge in the Panoptent bar (VS Code preview and Chrome) opens a panel on top of your app: tick steps, report a **Problem** with a note, pick options, read the info lines. Steps for the page you are on come first (**on this page**). Every mark is saved to the file immediately with who and when; a failed save is shown and the mark goes back
+  - **Also add to queue** turns a problem note (with the selected elements) into a normal queued change request
+  - MCP tools `save_check_topic`, `get_check_topics`, `get_check_changes` (only what changed since the last read) and `close_check_topic`; prompt `/mcp__panoptent__checks`; `/panoptent checks` in Claude Code (the installed command text is updated on the next connect)
+  - Local HTTP API on the MCP server (`POST /checks/list|get|result|pick|close|reopen`, `127.0.0.1` only, token required; copy it with *Panoptent: Test and Decisions*)
+  - VS Code: **Test and Decisions** view in the Panoptent sidebar, commands *Panoptent: Test and Decisions* and *Panoptent: Show Test and Decisions on the Page*
+  - Marks are signed with your **GitHub user name**: new setting `panoptent.checks.userName`, else the GitHub CLI (`gh api user`, asked once per session), else `git config github.user`; `git config user.name` / the system user only as a last resort. The view and the command show which source is used. E-mail addresses are never written
+  - The in-page panel can be **moved** (title bar), **resized** (edges / corners, 300×160 px up to the visible area), **minimized** to its title bar with a "topics · waiting" counter and **maximized** (also double-click the title); arrow keys move it, Shift+arrows resize it. It always stays reachable on screen. Position, size and state are remembered by the host (VS Code webview state / Chrome extension storage), validated and clamped on every read
+  - **Full page in VS Code**: *Panoptent: Open Test and Decisions as a Page*, the **⧉** button in the panel (from the preview or Chrome) or the view's title button opens every open topic in an editor tab, with counters and filters (problems / not looked at / undecided), marking, notes and decisions; it refreshes when files change. Strict CSP with nonce scripts; topic text is drawn as plain text
+  - The panel runs inside the page you are developing, so scripts on that page can read the topic text: keep passwords, tokens and customer data out of topics (also stated in the tool descriptions for agents)
+- Files under `.panoptent/` no longer count as "files changed" (no preview reload, no activity line)
+- Chrome: the **✕** button of the drawer (Queue / Activity / Settings) closes it again. Since 0.11.2 the tab handler was also bound to ✕ and reopened the drawer right away. Esc pressed inside the page overlay (Test panel, element box) no longer closes the drawer as well
+- `npm test`: unit and integration tests (Node's built-in test runner); CI runs them. `npm run test:e2e` also runs the Chrome bar (`chrome/content.js`) in headless Chromium with stubbed `chrome.*` APIs
+
 ## 0.13.1 — 2026-11-02
 
 - **Live mode is quiet now.** The background wait renews itself every ~10 minutes without waking Claude, so the conversation no longer fills with "PANOPTENT WAITING" / "restart the wait" steps and "live mode is on" lines while nothing happens. Claude is only woken when you press **Apply**; if Claude Code ever stops the wait on its own time limit, Claude restarts it without writing anything

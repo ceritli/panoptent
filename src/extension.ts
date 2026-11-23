@@ -6,6 +6,8 @@ import { pickCandidate, setupPrompt, runInstall } from './codeInspector';
 import { Engine } from './engine';
 import { Bridge } from './bridge';
 import { McpHost } from './mcp';
+import { ChecksTree, pickChecks } from './checksView';
+import { ChecksPage } from './checksPage';
 import { uiLang, addStrings, t } from './i18n';
 
 addStrings({
@@ -87,6 +89,14 @@ export function activate(context: vscode.ExtensionContext) {
       getTreeItem: (x: vscode.TreeItem) => x,
     }),
   );
+  // Test ve Kararlar: açık konular (dosyalar değişince yenilenir)
+  const checksTree = new ChecksTree(() => getEngine(context));
+  context.subscriptions.push(vscode.window.registerTreeDataProvider('panoptent.checks', checksTree));
+  const watchChecks = () => {
+    const e = getEngine(context);
+    if (e) context.subscriptions.push(e.onChecks(() => checksTree.refresh()));
+  };
+  watchChecks();
 
   const startBridge = () => {
     const e = getEngine(context);
@@ -113,8 +123,13 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     // proje klasörü sonradan açılırsa köprüyü o zaman başlat
     vscode.workspace.onDidChangeWorkspaceFolders(() => {
+      const had = !!engine;
       startBridge();
       startMcp();
+      if (!had) {
+        watchChecks();
+        checksTree.refresh();
+      }
     }),
     vscode.workspace.onDidChangeConfiguration((ev) => {
       if (ev.affectsConfiguration('panoptent.designFile') && engine) {
@@ -123,6 +138,11 @@ export function activate(context: vscode.ExtensionContext) {
       if (ev.affectsConfiguration('panoptent.language')) {
         engine?.emit({ type: 'lang', value: uiLang() });
         bridge?.refreshLang();
+        checksTree.refresh();
+      }
+      if (ev.affectsConfiguration('panoptent.checks.userName')) {
+        checksTree.refresh(); // ad ve kaynağı
+        ChecksPage.refreshWho();
       }
       // MCP gönderimi seçildiyse ve Claude Code henüz bağlı değilse bağlamayı öner
       if (ev.affectsConfiguration('panoptent.sendTo') && engine?.sendTo() === 'mcp' && mcp && !mcp.connected) {
@@ -205,6 +225,28 @@ export function activate(context: vscode.ExtensionContext) {
       await mcp.connectClaudeCode(false);
       if (mcp.connected) vscode.window.showInformationMessage(t('ext.mcp.connected'));
     }),
+    vscode.commands.registerCommand('panoptent.checks', () => {
+      const e = getEngine(context);
+      if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
+      return pickChecks(e, () => vscode.commands.executeCommand('panoptent.showChecks'), () => mcp?.checksApi);
+    }),
+    vscode.commands.registerCommand('panoptent.checksPage', () => {
+      const e = getEngine(context);
+      if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
+      ChecksPage.show(context, e, {
+        openUrl: (url) => openStepUrl(context, url),
+        showOnPage: () => vscode.commands.executeCommand('panoptent.showChecks'),
+      });
+    }),
+    vscode.commands.registerCommand('panoptent.showChecks', async () => {
+      const e = getEngine(context);
+      if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
+      // Chrome'da açık sekmeler de paneli açar; önizleme kapalıysa ve Chrome bağlı değilse önizlemeyi aç
+      if (!current && !e.pageStates().some((p) => p.via === 'chrome')) await vscode.commands.executeCommand('panoptent.open');
+      current?.showChecks();
+      // Chrome sekmeleri (önizlemeyi showChecks açar; webview hazır olmasa da kaybolmaz)
+      for (const p of e.pageStates()) if (p.via === 'chrome') e.emit({ type: 'checksPanel', open: true }, p.client);
+    }),
     vscode.commands.registerCommand('panoptent.copyMcpCommand', async () => {
       if (!mcp?.port) {
         vscode.window.showWarningMessage(t('ext.mcp.notRunning'));
@@ -232,11 +274,14 @@ class PreviewPanel {
   static async create(context: vscode.ExtensionContext, engine: Engine, url: string) {
     const overlayPath = path.join(context.extensionPath, 'media', 'overlay.js');
     const i18nPath = path.join(context.extensionPath, 'media', 'i18n.js');
+    const checksPath = path.join(context.extensionPath, 'media', 'checks.js');
     const proxy = new DevProxy({
       target: url,
       overlayScript: () =>
         fs.readFileSync(i18nPath, 'utf8') +
         `\n;PanoptentI18n.setLang(${JSON.stringify(uiLang())});\n` +
+        fs.readFileSync(checksPath, 'utf8') +
+        '\n;' +
         fs.readFileSync(overlayPath, 'utf8'),
       log: (m) => engine.output.appendLine(m),
     });
@@ -284,6 +329,20 @@ class PreviewPanel {
     this.post({ type: 'toggleSelect' });
   }
 
+  /** Önizlemede uygulama içi bir yola git (Test ve Kararlar sayfasındaki "Sayfayı aç"). */
+  navigate(pathAndQuery: string) {
+    this.reveal();
+    this.post({ type: 'navigatePath', path: pathAndQuery });
+  }
+
+  /** Test ve Karar panelini sayfada aç; webview henüz yüklenmediyse `ready` gelince yeniden gönderilir. */
+  private checksWanted = false;
+  showChecks() {
+    this.checksWanted = true;
+    this.reveal();
+    this.post({ type: 'checksPanel', open: true });
+  }
+
   dispose() {
     if (this.disposed) return;
     this.disposed = true;
@@ -310,6 +369,10 @@ class PreviewPanel {
           layout: this.context.globalState.get('panoptent.layout'),
           ...e.settings(),
         });
+        if (this.checksWanted) {
+          this.checksWanted = false;
+          this.post({ type: 'checksPanel', open: true });
+        }
         break;
       case 'saveLayout':
         await this.context.globalState.update('panoptent.layout', m.layout);
@@ -363,6 +426,12 @@ class PreviewPanel {
         break;
       case 'mcpResult':
         e.pageResult('panel', m);
+        break;
+      case 'checksReq':
+        e.checksMessage(m, 'panel');
+        break;
+      case 'checksOpenPage':
+        vscode.commands.executeCommand('panoptent.checksPage');
         break;
       case 'applyEntries':
         await e.applyEntries(m.entries || [], m.pageUrl || this.proxy.targetOrigin, !!m.continueSession, !!m.fromQueue, 'panel');
@@ -434,6 +503,11 @@ class PreviewPanel {
       <button data-dock="bottom" data-i18n-title="pn.dock.bottom" title="Panel altta"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="2" y="9" width="12" height="4" fill="currentColor"/></svg></button>
       <button data-dock="right" data-i18n-title="pn.dock.right" title="Panel sağda"><svg viewBox="0 0 16 16" width="16" height="16"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor"/><rect x="9.5" y="3" width="4.5" height="10" fill="currentColor"/></svg></button>
     </div>
+    <button id="checksBtn" class="tool square ck" aria-pressed="false" hidden data-i18n-title="pn.checks.title" title="Test ve Kararlar">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path fill="currentColor" d="M2.2 3.6 3.3 2.5l1.2 1.2L6.8 1.4l1.1 1.1-3.4 3.4zM9 3h6v1.5H9zM2.2 8.6l1.1-1.1 1.2 1.2 2.3-2.3 1.1 1.1-3.4 3.4zM9 8h6v1.5H9zM2 12h5v1.5H2zm7 0h6v1.5H9z"/></svg>
+      <span data-i18n="pn.checks">Test</span>
+      <span id="checksCount" class="badge" hidden>0</span>
+    </button>
     <select id="langSel" class="langSel" data-i18n-title="pn.lang.title" data-i18n-aria="pn.lang.title" title="Arayüz dili" aria-label="Arayüz dili">
       <option value="auto" data-i18n="pn.lang.auto">Otomatik (VS Code)</option>
       <option value="en">English</option>
@@ -506,6 +580,23 @@ class PreviewPanel {
 </body>
 </html>`;
   }
+}
+
+/**
+ * Test ve Kararlar sayfasından bir adımın adresi: önizleme açıksa orada (uygulama içi yol olarak), değilse tarayıcıda.
+ * Göreli yol son kullanılan dev sunucusu adresine göre çözülür. Yalnızca http(s).
+ */
+function openStepUrl(context: vscode.ExtensionContext, url: string) {
+  const base = context.workspaceState.get<string>('panoptent.lastUrl') || vscode.workspace.getConfiguration('panoptent').get<string>('defaultUrl') || 'http://localhost:3000';
+  let u: URL;
+  try {
+    u = new URL(url, base);
+  } catch {
+    return;
+  }
+  if (!/^https?:$/.test(u.protocol)) return;
+  if (current) return current.navigate(u.pathname + u.search + u.hash);
+  vscode.env.openExternal(vscode.Uri.parse(u.toString()));
 }
 
 function showSetupGuide(context: vscode.ExtensionContext) {
