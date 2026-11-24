@@ -78,7 +78,7 @@ workflows (push to `main`, or `workflow_dispatch` via the API).
   `@ext:ceritli.panoptent`; panel Options card; compact Get Started view; PR #10) merged 2026-10-22 and released by the release workflow.
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
   0.10.0 added the MCP server + `sendTo: mcp` (PR #6).
-- Chrome Web Store: live since 2026-10-24 at https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc.
+- Chrome Web Store: live since 2026-10-24 at https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc. README and `docs/` point there (and to Open VSX) as the main install path; zip kept as manual fallback.
 - Open VSX (#4, done 2026-10-24): namespace claim approved, `ceritli` verified; 0.11.2 live at
   https://open-vsx.org/extension/ceritli/panoptent (published by the release workflow).
 - Chrome Web Store automation (#2, done 2026-10-25): service account `panoptent-publisher@panoptent.iam.gserviceaccount.com`

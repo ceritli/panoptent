@@ -175,6 +175,7 @@
           <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M7.2 1h1.6v7.1l2.6-2.6 1.1 1.1L8 11.1 3.5 6.6l1.1-1.1 2.6 2.6zM2 12.5h12V14H2z"/></svg>
           <span lang="tr">İndir</span><span lang="en">Download</span>
         </a>
+        <a class="btn sec" href="https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc"><span lang="tr">Chrome eklentisi</span><span lang="en">Chrome extension</span></a>
         <a class="btn sec" href="#kurulum"><span lang="tr">Kurulum rehberi</span><span lang="en">Setup guide</span></a>
         <a class="btn sec" href="https://github.com/ceritli/panoptent">GitHub</a>
       </div>
@@ -285,26 +286,22 @@
         <li>In VS Code open <b>Extensions</b> (<kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>), search <b>Panoptent</b> and press <b>Install</b> — or install from the <a href="https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent">Marketplace page</a>. Updates arrive automatically.</li>
         <li>An <b>eye</b> icon appears in the activity bar, and a small eye in the status bar.</li>
       </ol>
-      <p lang="tr"><small>İnternetsiz kurulum: <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a>'tan <code>.vsix</code> indir → Extensions → <b>⋯</b> → <b>Install from VSIX…</b></small></p>
-      <p lang="en"><small>Offline install: download the <code>.vsix</code> from <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a> → Extensions → <b>⋯</b> → <b>Install from VSIX…</b></small></p>
+      <p lang="tr"><small>Cursor, Windsurf, VSCodium: <a href="https://open-vsx.org/extension/ceritli/panoptent">Open VSX</a>'ten kur (eklenti panelinde <b>Panoptent</b> ara). İnternetsiz kurulum: <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a>'tan <code>.vsix</code> indir → Extensions → <b>⋯</b> → <b>Install from VSIX…</b></small></p>
+      <p lang="en"><small>Cursor, Windsurf, VSCodium: install from <a href="https://open-vsx.org/extension/ceritli/panoptent">Open VSX</a> (search <b>Panoptent</b> in their Extensions panel). Offline install: download the <code>.vsix</code> from <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a> → Extensions → <b>⋯</b> → <b>Install from VSIX…</b></small></p>
       <div class="note" lang="tr"><p>Daha önce <b>Visual Edit</b> ya da <b>Panoptes Edit</b> adıyla kurduysan önce onu kaldır. Ayar adları <code>panoptent.*</code> olarak değişti; değiştirdiğin ayarları bir kez yeniden seçmen gerekir.</p></div>
       <div class="note" lang="en"><p>If you installed an earlier build named <b>Visual Edit</b> or <b>Panoptes Edit</b>, uninstall it first. Settings moved to <code>panoptent.*</code>, so re-apply any custom values once.</p></div>
 
       <h3 lang="tr">Chrome eklentisi (isteğe bağlı)</h3><h3 lang="en">Chrome extension (optional)</h3>
       <ol class="steps" lang="tr">
-        <li>Releases'tan <code>panoptent-chrome-x.y.z.zip</code> dosyasını indir ve kalıcı bir klasöre aç (Chrome bu klasörü kullanmaya devam eder).</li>
-        <li>Chrome'da <code>chrome://extensions</code> → sağ üstten <b>Geliştirici modu</b>nu aç.</li>
-        <li><b>Paketlenmemiş öğe yükle</b> → açtığın klasörü seç.</li>
+        <li><a href="https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc">Chrome Web Store sayfasını</a> aç ve <b>Chrome'a ekle</b>'ye bas. Güncellemeler otomatik gelir.</li>
         <li>Araç çubuğuna sabitlemek için yapboz simgesi → Panoptent → raptiye.</li>
       </ol>
       <ol class="steps" lang="en">
-        <li>Download <code>panoptent-chrome-x.y.z.zip</code> from Releases and unzip it to a permanent folder (Chrome keeps using it).</li>
-        <li>Open <code>chrome://extensions</code> → enable <b>Developer mode</b> (top right).</li>
-        <li><b>Load unpacked</b> → select the folder.</li>
+        <li>Open the <a href="https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc">Chrome Web Store page</a> and press <b>Add to Chrome</b>. Updates arrive automatically.</li>
         <li>Pin it: puzzle icon → Panoptent → pin.</li>
       </ol>
-      <p lang="tr"><b>Güncelleme:</b> yeni zip'i aynı klasöre aç (üzerine yaz) ve <code>chrome://extensions</code> sayfasında Panoptent kartındaki <b>⟳</b>'a bas.</p>
-      <p lang="en"><b>Updating:</b> unzip the new version over the same folder and press <b>⟳</b> on the Panoptent card in <code>chrome://extensions</code>.</p>
+      <p lang="tr"><small>Elle kurulum: <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a>'tan <code>panoptent-chrome-x.y.z.zip</code> dosyasını indirip kalıcı bir klasöre aç → <code>chrome://extensions</code> → <b>Geliştirici modu</b> → <b>Paketlenmemiş öğe yükle</b> → klasörü seç. Güncellemek için yeni zip'i aynı klasöre aç ve Panoptent kartındaki <b>⟳</b>'a bas. Store sürümüne geçersen elle kurduğun kopyayı kaldır.</small></p>
+      <p lang="en"><small>Manual install: download <code>panoptent-chrome-x.y.z.zip</code> from <a href="https://github.com/ceritli/panoptent/releases/latest">Releases</a> and unzip it to a permanent folder → <code>chrome://extensions</code> → <b>Developer mode</b> → <b>Load unpacked</b> → pick the folder. To update, unzip the new version over it and press <b>⟳</b> on the Panoptent card. If you switch to the store version, remove the manually loaded copy.</small></p>
     </section>
 
     <!-- ===================== İLK KULLANIM ===================== -->
@@ -341,7 +338,7 @@
         <tbody>
           <tr><td>Öğe seçmek</td><td><b>Seç</b> butonu, ya da seç modu kapalıyken <kbd>Alt</kbd> basılı tutup tıkla</td></tr>
           <tr><td>Birden çok öğe</td><td><kbd>Shift</kbd> ile tıkla; istek ve stil hepsine uygulanır</td></tr>
-          <tr><td>İstek yazmak</td><td><b>İstek</b> sekmesi → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> kuyruğa, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> hemen gönder</td></tr>
+          <tr><td>İstek yazmak</td><td><b>İstek</b> sekmesi → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> kuyruğa, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> hemen gönder (gönderince <b>Seç</b> kapanır)</td></tr>
           <tr><td>Metni değiştirmek</td><td>Öğeye <b>çift tıkla</b> (veya kutudaki <b>T</b>), yaz, <kbd>Enter</kbd>. <kbd>Esc</kbd> iptal</td></tr>
           <tr><td>Silmek</td><td>Kutudaki çöp kutusu. Önizlemede hemen gizlenir, Uygula'da koddan kaldırılır</td></tr>
           <tr><td>Görsel değiştirmek</td><td>Bir <code>&lt;img&gt;</code> seç → görsel simgesi → dosya seç (en fazla 8 MB) veya adres yapıştır. Uygula'da <code>public/panoptent/</code> altına kaydedilir</td></tr>
@@ -355,7 +352,7 @@
         <tbody>
           <tr><td>Select an element</td><td><b>Select</b> button, or hold <kbd>Alt</kbd> and click while select mode is off</td></tr>
           <tr><td>Several elements</td><td><kbd>Shift</kbd>-click; the request or style applies to all of them</td></tr>
-          <tr><td>Write a request</td><td><b>Request</b> tab → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> to send now</td></tr>
+          <tr><td>Write a request</td><td><b>Request</b> tab → <kbd>Ctrl/⌘</kbd>+<kbd>Enter</kbd> to queue, <kbd>Ctrl/⌘</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> to send now (Select turns off once it is sent)</td></tr>
           <tr><td>Change text</td><td><b>Double-click</b> the element (or <b>T</b> in the popover), type, <kbd>Enter</kbd>. <kbd>Esc</kbd> cancels</td></tr>
           <tr><td>Delete</td><td>Trash icon. Hidden instantly in the preview, removed from code on Apply</td></tr>
           <tr><td>Replace an image</td><td>Select an <code>&lt;img&gt;</code> → image icon → pick a file (max 8 MB) or paste a URL. Saved under <code>public/panoptent/</code> on Apply</td></tr>
@@ -474,7 +471,8 @@
         <li><b>2 · Karar ver:</b> seçeneklerden birini seç. İlk seçenek her zaman <b>bugünkü durumdur</b>; sen seçmeden ajan hiçbir kararı uygulamaz.</li>
         <li><b>3 · Bilgi:</b> okuman yeterli satırlar (migration adı, yeni ayar, denenemeyenler).</li>
         <li><b>Kuyruğa da ekle:</b> sorunlu adımda notunu, seçili öğelerle birlikte var olan değişiklik kuyruğuna ekler.</li>
-        <li>İşaret kaydedilemezse panelde <b>Kaydedilmedi</b> yazar ve işaret geri alınır; sessiz kayıp olmaz. Panel klavyeyle kullanılır (<kbd>Tab</kbd>, sekmelerde oklar, <kbd>Esc</kbd> kapatır).</li>
+        <li>İşaret kaydedilemezse panelde <b>Kaydedilmedi</b> yazar ve işaret geri alınır; sessiz kayıp olmaz. Panel klavyeyle kullanılır (<kbd>Tab</kbd>, konular arasında oklar, <kbd>Esc</kbd> önce açık listeyi, sonra paneli kapatır).</li>
+        <li><b>Konu seçici:</b> iki ya da daha çok konu varsa üstte tek satırlık seçici çıkar: ‹ › düğmeleri, konunun adı, sayacı ve sırası. Tıklayınca konu listesi açılır (altıdan çok konuda arama kutusuyla); sayaç konu bitince yeşil, sorunlu adım varsa kırmızıdır.</li>
         <li><b>Taşı, boyutlandır, küçült:</b> paneli başlığından sürükle, kenar ya da köşesinden boyutlandır (en az 300×160 px, en fazla görünüm alanı). <b>–</b> yalnız başlık şeridini ve sayacı bırakır, <b>□</b> büyütür (başlığa çift tık da). Başlık odaktayken oklar taşır, <kbd>Shift</kbd>+oklar boyutlandırır. Panel ekrandan çıkmaz; yeri ve ölçüsü sayfa yenilense de hatırlanır.</li>
         <li><b>⧉ Tam sayfa:</b> bütün konuları VS Code'da bir editör sekmesinde açar (aşağıda).</li>
       </ul>
@@ -485,7 +483,8 @@
         <li><b>2 · Decide:</b> pick an option. The first one is always <b>today's behaviour</b>; the agent applies nothing until you pick.</li>
         <li><b>3 · Info:</b> lines to read only (migration names, new settings, what could not be tried).</li>
         <li><b>Also add to queue:</b> on a problem step, puts your note (with the selected elements) into the normal change queue.</li>
-        <li>If a mark cannot be saved, the panel says <b>Not saved</b> and the mark goes back; nothing is lost silently. The panel works with the keyboard (<kbd>Tab</kbd>, arrow keys on the tabs, <kbd>Esc</kbd> closes).</li>
+        <li>If a mark cannot be saved, the panel says <b>Not saved</b> and the mark goes back; nothing is lost silently. The panel works with the keyboard (<kbd>Tab</kbd>, arrow keys step through topics, <kbd>Esc</kbd> closes the open list first, then the panel).</li>
+        <li><b>Topic picker:</b> with two or more topics a one-line picker sits on top: ‹ › buttons and the current topic with its count and position. A click opens the topic list (with search above six topics); counts are green when a topic is complete and red when a step has a problem.</li>
         <li><b>Move, resize, minimize:</b> drag the panel by its title bar, resize it from an edge or corner (at least 300×160 px, at most the visible area). <b>–</b> leaves only the title bar with a counter, <b>□</b> maximizes it (so does a double-click on the title). With the title bar focused, arrow keys move it and <kbd>Shift</kbd>+arrows resize it. The panel never leaves the screen, and its position and size are remembered across reloads.</li>
         <li><b>⧉ Full page:</b> opens every topic in a VS Code editor tab (below).</li>
       </ul>
@@ -524,8 +523,8 @@
         <li>Every rule the agent chose by itself is a decision; the first option is today's behaviour, and nothing is applied until you pick.</li>
         <li>Lasting decisions go into the project's own docs before the topic is closed; the archive is history, not documentation.</li>
       </ul>
-      <div class="note" lang="tr"><p><b>Yalnız yerel geliştirme.</b> Panel, önizlemedeki proxy'nin ya da Chrome eklentisinin sayfaya eklediği katmanda çalışır; uygulamanın kendi derlemesine (production) hiçbir betik eklenmez. VS Code'da <b>Test ve Kararlar</b> görünümü açık konuları listeler (tıklayınca JSON açılır); <b>Panoptent: Test ve Kararları Sayfada Göster</b> paneli açar.</p></div>
-      <div class="note" lang="en"><p><b>Local development only.</b> The panel lives in the layer the preview proxy or the Chrome extension adds to the page; nothing is added to your app's own (production) build. In VS Code the <b>Test and Decisions</b> view lists open topics (click to open the JSON); <b>Panoptent: Show Test and Decisions on the Page</b> opens the panel.</p></div>
+      <div class="note" lang="tr"><p><b>Yalnız yerel geliştirme.</b> Panel, önizlemedeki proxy'nin ya da Chrome eklentisinin sayfaya eklediği katmanda çalışır; uygulamanın kendi derlemesine (production) hiçbir betik eklenmez. VS Code'da <b>Test ve Kararlar</b> görünümü açık konuları listeler (tıklayınca tam sayfa o konuda açılır; JSON dosyası <b>Panoptent: Test ve Kararlar</b> komutundan bir adım uzakta); <b>Panoptent: Test ve Kararları Sayfada Göster</b> paneli açar.</p></div>
+      <div class="note" lang="en"><p><b>Local development only.</b> The panel lives in the layer the preview proxy or the Chrome extension adds to the page; nothing is added to your app's own (production) build. In VS Code the <b>Test and Decisions</b> view lists open topics (a click opens the full page on that topic; the JSON file is one step away in <b>Panoptent: Test and Decisions</b>); <b>Panoptent: Show Test and Decisions on the Page</b> opens the panel.</p></div>
     </section>
 
     <!-- ===================== GERİ AL ===================== -->
