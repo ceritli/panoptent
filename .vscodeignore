@@ -4,6 +4,9 @@ docs/**
 chrome/**
 !chrome/content.js
 scripts/**
+test/**
+dist/test/**
+.panoptent/**
 .github/**
 build.mjs
 tsconfig.json

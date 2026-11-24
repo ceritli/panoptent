@@ -78,3 +78,13 @@ module.exports = {
 ## Düz HTML/CSS projeleri
 
 Build aracı olmayan sitelerde bu adıma gerek yok. Claude öğeyi HTML dosyalarında metin ve sınıflarından bulur. Hot reload olmadığı için önizleme, Claude dosyaları değiştirdikten sonra kendiliğinden yenilenir.
+
+## Test ve Karar (isteğe bağlı)
+
+Ajan bir işi bitirince ne denenecek ve neye karar verilecek listesini `.panoptent/checks/` altına bir konu olarak kaydedebilir (MCP aracı `save_check_topic`). Bu durumda Panoptent çubuğunda rozetli bir **Test** düğmesi çıkar; uygulamanın üstünde açılan panelde adımları işaretler, sorun bildirir ve kararları seçersin. Claude Code'da `/panoptent checks` ajana sonuçlarını okutur ve uygulatır.
+
+- Kurulum: Claude Code'u bir kez **Panoptent: Claude Code'u Bağla (MCP)** ile bağla. Başka bir şey kurman gerekmez.
+- `.panoptent/checks/` klasörünü projenle birlikte commit et; açık konuları başkası devralabilir. İçinde yalnız kilit ve geçici dosyalar yok sayılır.
+- İşaretlerin **GitHub kullanıcı adınla** yazılır (GitHub CLI, sonra `git config github.user`). **Panoptent: Test ve Kararlar** komutunda ad ya da kaynak yanlışsa `panoptent.checks.userName` ayarını yaz.
+- Panel geliştirdiğin sayfanın içinde çalışır; sayfadaki betikler konu metnini okuyabilir. Adımlara ve notlara şifre, jeton ya da müşteri verisi yazma.
+- Yalnız yerel geliştirmede çalışır (önizleme proxy'si ya da Chrome eklentisi); canlı (production) çıktıya hiçbir şey eklenmez.

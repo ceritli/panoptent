@@ -144,10 +144,17 @@
       'pn.ho.mcp.long': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: click your Claude Code conversation, press <b>Cmd/Ctrl+V</b> and <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> in Claude Code instead of pressing Apply.',
       'pn.ho.mcpPrompt.short': 'Claude Code took the queue over MCP',
       'pn.ho.mcpPrompt.long': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them here as usual.',
+      'pn.ho.live.short': 'Claude Code (live mode) is applying it',
+      'pn.ho.live.long': 'Claude Code is in live mode (<code>/panoptent live</code>) and took this change set right away. You can undo it here as usual.',
+      'pn.ho.liveQueued.short': 'Waiting for Claude Code (live mode)',
+      'pn.ho.liveQueued.long': 'Claude Code is in live mode but is not waiting right now; if it does not pick this one up within 30 seconds, Panoptent sends it the usual way.',
       'pn.ho.failShort': "Couldn't open the Claude Code panel",
       'pn.ho.failLong': 'Couldn\'t open the Claude Code panel. Try setting the destination to "In the background (CLI)".',
       'pn.changed': '✎ Changed',
       'pn.auto': 'Auto',
+      'pn.checks': 'Test',
+      'pn.checks.title': 'Test and Decisions: steps to try and decisions to make',
+      'pn.checks.count': 'Test and Decisions: {0} waiting for you · {1} problem(s)',
     },
     tr: {
       'pn.select.title': 'Seçim modu (Ctrl/Cmd+Shift+E) — Alt basılı tutarak da tıklayabilirsin',
@@ -286,10 +293,17 @@
       'pn.ho.mcp.long': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: Claude Code konuşmana tıkla, <b>Cmd/Ctrl+V</b> ve <b>Enter</b>. İpucu: Uygula’ya basmadan Claude Code’a <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
       'pn.ho.mcpPrompt.short': 'Claude Code kuyruğu MCP üzerinden aldı',
       'pn.ho.mcpPrompt.long': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi buradan geri alabilirsin.',
+      'pn.ho.live.short': 'Claude Code (canlı mod) uyguluyor',
+      'pn.ho.live.long': 'Claude Code canlı modda (<code>/panoptent live</code>) ve bu değişiklik paketini hemen aldı. Her zamanki gibi buradan geri alabilirsin.',
+      'pn.ho.liveQueued.short': 'Claude Code bekleniyor (canlı mod)',
+      'pn.ho.liveQueued.long': 'Claude Code canlı modda ama şu an beklemiyor; 30 saniye içinde almazsa Panoptent bunu her zamanki yoldan gönderir.',
       'pn.ho.failShort': 'Claude Code paneli açılamadı',
       'pn.ho.failLong': 'Claude Code paneli açılamadı. Gönderme yerini "Arka planda (CLI)" yapmayı dene.',
       'pn.changed': '✎ Değişti',
       'pn.auto': 'Otomatik',
+      'pn.checks': 'Test',
+      'pn.checks.title': 'Test ve Kararlar: denenecek adımlar ve verilecek kararlar',
+      'pn.checks.count': 'Test ve Kararlar: {0} seni bekliyor · {1} sorun',
     },
   });
   I18N.localize(document.body);
@@ -893,6 +907,7 @@
       viewport,
       lang: I18N.lang,
       nowLabel: sendTo !== 'cli' ? t('pn.now.panel') : t('pn.now.cli'),
+      checksPage: true, // Test ve Kararlar'ı VS Code'da tam sayfa açma düğmesi
     });
     syncSoon();
   }
@@ -984,6 +999,29 @@
     }
   });
 
+  // ---------- Test ve Karar ----------
+  // Konular VS Code'dan gelir (`checks`), panel sayfadaki seçim katmanında açılır; çubuktaki düğme bekleyenleri sayar.
+  const checksBtn = $('#checksBtn');
+  const checksCount = $('#checksCount');
+  let lastChecks = null;
+  let checksOpen = false;
+  // panelin yeri / ölçüsü: webview durumunda saklanır (sayfa yenilense de kalır); katman doğrulayıp sınırlar
+  let checksGeom = (vscode.getState() || {}).checksGeom || null;
+  function renderChecksBtn() {
+    if (!checksBtn) return;
+    const n = lastChecks ? lastChecks.topics.length : 0;
+    checksBtn.hidden = !n && !checksOpen;
+    checksBtn.setAttribute('aria-pressed', String(checksOpen));
+    const pending = lastChecks ? lastChecks.pending || 0 : 0;
+    const bad = lastChecks ? lastChecks.bad || 0 : 0;
+    checksCount.hidden = !pending && !bad;
+    checksCount.textContent = String(pending || bad);
+    checksCount.classList.toggle('bad', !pending && !!bad);
+    checksBtn.title = n ? t('pn.checks.count', pending, bad) : t('pn.checks.title');
+  }
+  if (checksBtn) checksBtn.addEventListener('click', () => toFrame({ type: 'checksPanel', toggle: true }));
+  I18N.onChange(renderChecksBtn);
+
   // ---------- mesajlar ----------
   function onOverlay(m) {
     switch (m.type) {
@@ -996,6 +1034,23 @@
         if (selecting) toFrame({ type: 'mode', on: true });
         sendFrameConfig();
         if (queue.length) toFrame({ type: 'reapply', entries: queue });
+        if (lastChecks) toFrame(Object.assign({}, lastChecks));
+        // sayfa değişse de panel açık kalsın, yeri ve ölçüsü korunsun
+        toFrame({ type: 'checksPanel', open: checksOpen, restore: true, geom: checksGeom || undefined });
+        break;
+      case 'checksReq':
+        vscode.postMessage({ type: 'checksReq', reqId: m.reqId, op: m.op, topic: m.topic, test: m.test, state: m.state, note: m.note, decision: m.decision, index: m.index });
+        break;
+      case 'checksPanelState':
+        checksOpen = !!m.open;
+        if (m.geom && typeof m.geom === 'object') {
+          checksGeom = m.geom;
+          persist({ checksGeom });
+        }
+        renderChecksBtn();
+        break;
+      case 'checksOpenPage': // sayfadaki paneldeki "tam sayfa" düğmesi
+        vscode.postMessage({ type: 'checksOpenPage' });
         break;
       case 'location':
         pageHref = m.href;
@@ -1035,11 +1090,17 @@
           if (!dispatchEntries(m.entries, false)) {
             popPending = false;
             toFrame({ type: 'revert', tokens: m.entries.map((x) => x.token) });
+          } else if (selecting) {
+            // Doğrudan işleme gönderildi: Seç kapanır (kuyruğa eklemede açık kalır, sıradaki öğe seçilebilsin)
+            setSelect(false);
           }
         }
         break;
       case 'openSourceReq':
         vscode.postMessage({ type: 'openSource', item: m.item });
+        break;
+      case 'mcpResult': // Claude'un MCP isteğine (highlight, preview_style, screenshot_element) yanıt
+        vscode.postMessage(m);
         break;
     }
   }
@@ -1070,6 +1131,9 @@
         break;
       case 'lang':
         if (m.value) setLangFromHost(m.value);
+        break;
+      case 'navigatePath': // Test ve Kararlar sayfasından "Sayfayı aç"
+        if (typeof m.path === 'string' && m.path[0] === '/' && m.path[1] !== '/') navigate(m.path);
         break;
       case 'retarget':
         target = m.target;
@@ -1135,7 +1199,7 @@
         if (m.ok && supportKind === 'none') setTimeout(reloadFrame, 300);
         break;
       case 'handoff': {
-        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt', 'live', 'liveQueued'].includes(m.how) ? m.how : 'newTab';
         if (popPending) {
           popPending = false;
           popStatus(m.ok ? 'ok' : 'err', m.ok ? t('pn.ho.' + how + '.short') : t('pn.ho.failShort'), 2600);
@@ -1177,6 +1241,22 @@
       case 'reload':
         reloadFrame();
         break;
+      case 'mcpRequest':
+        toFrame(m);
+        break;
+      case 'checks':
+        lastChecks = m;
+        renderChecksBtn();
+        toFrame(Object.assign({}, m));
+        break;
+      case 'checksRes':
+        toFrame(Object.assign({}, m));
+        break;
+      case 'checksPanel': // "Panoptent: Test ve Kararları Sayfada Göster"
+        checksOpen = m.open !== false;
+        renderChecksBtn();
+        toFrame({ type: 'checksPanel', open: checksOpen, geom: checksGeom || undefined });
+        break;
     }
   }
 
@@ -1193,4 +1273,5 @@
   renderQueue();
   showLangPref();
   vscode.postMessage({ type: 'ready' });
+  vscode.postMessage({ type: 'checksReq', reqId: 'init', op: 'list' });
 })();

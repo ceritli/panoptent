@@ -20,7 +20,7 @@
       'cx.claudeRunning': 'Claude is working…',
       'cx.rollbackTitle': 'Undo only the changes Panoptent made in the last apply',
       'cx.rollback': '↶ Undo last apply',
-      'cx.gearTitle': 'Settings', 'cx.minTitle': 'Minimize',
+      'cx.gearTitle': 'Settings', 'cx.minTitle': 'Minimize', 'cx.closeTitle': 'Close (Esc)',
       'cx.notConnected': 'Not connected to VS Code.',
       'cx.notConnectedShort': 'Not connected to VS Code',
       'cx.notConnectedLong': 'Not connected to VS Code. Your project must be open in VS Code with Panoptent installed.',
@@ -78,6 +78,10 @@
       'cx.ho.mcpLong': 'Claude Code will fetch this change set from Panoptent over MCP. A one-line command was <b>copied</b>: paste it into your Claude Code conversation in VS Code and press <b>Enter</b>. Tip: you can also type <code>/mcp__panoptent__apply_queue</code> there instead of pressing Apply.',
       'cx.ho.mcpPrompt': 'Claude Code took the queue over MCP',
       'cx.ho.mcpPromptLong': 'Claude Code took the queued changes over MCP (<code>apply_queue</code>). You can undo them as usual.',
+      'cx.ho.live': 'Claude Code (live mode) is applying it',
+      'cx.ho.liveLong': 'Claude Code is in live mode (<code>/panoptent live</code>) and took this change set right away. You can undo it as usual.',
+      'cx.ho.liveQueued': 'Waiting for Claude Code (live mode)',
+      'cx.ho.liveQueuedLong': 'Claude Code is in live mode but is not waiting right now; if it does not pick this one up within 30 seconds, Panoptent sends it the usual way.',
       'cx.panelFail': 'Couldn’t open the Claude Code panel', 'cx.panelFailLog': 'Couldn’t open the Claude Code panel.',
       'cx.done': '✓ Done', 'cx.changedFiles': 'Changed: {0}', 'cx.noFiles': ' · no files changed',
       'cx.claudeFail': 'Claude couldn’t finish the job.', 'cx.claudeFailShort': 'Claude couldn’t finish the job',
@@ -85,6 +89,8 @@
       'cx.changed': '✎ Changed',
       'cx.rolledBack': '↶ Panoptent’s changes were reverted: {0}', 'cx.rolledBackToast': '↶ Reverted',
       'cx.untouched': 'Left untouched:',
+      'cx.ck': 'Test', 'cx.ck.title': 'Test and Decisions: steps to try and decisions to make',
+      'cx.ck.count': 'Test and Decisions: {0} waiting for you · {1} problem(s)',
     },
     tr: {
       'cx.tab.queue': 'Kuyruk', 'cx.tab.log': 'Etkinlik', 'cx.tab.settings': 'Ayarlar',
@@ -98,7 +104,7 @@
       'cx.claudeRunning': 'Claude çalışıyor…',
       'cx.rollbackTitle': "Son uygulamada yalnızca Panoptent'in yaptığı değişiklikleri geri al",
       'cx.rollback': '↶ Son uygulamayı geri al',
-      'cx.gearTitle': 'Ayarlar', 'cx.minTitle': 'Küçült',
+      'cx.gearTitle': 'Ayarlar', 'cx.minTitle': 'Küçült', 'cx.closeTitle': 'Kapat (Esc)',
       'cx.notConnected': 'VS Code’a bağlı değil.',
       'cx.notConnectedShort': 'VS Code’a bağlı değil',
       'cx.notConnectedLong': 'VS Code’a bağlı değil. VS Code’da proje açık ve Panoptent kurulu olmalı.',
@@ -156,6 +162,10 @@
       'cx.ho.mcpLong': 'Claude Code bu değişiklik paketini MCP üzerinden Panoptent’ten kendisi alacak. Tek satırlık bir komut <b>kopyalandı</b>: VS Code’daki Claude Code konuşmana yapıştırıp <b>Enter</b>’a bas. İpucu: Uygula’ya basmadan oraya <code>/mcp__panoptent__apply_queue</code> da yazabilirsin.',
       'cx.ho.mcpPrompt': 'Claude Code kuyruğu MCP üzerinden aldı',
       'cx.ho.mcpPromptLong': 'Claude Code kuyruktaki değişiklikleri MCP üzerinden aldı (<code>apply_queue</code>). Her zamanki gibi geri alabilirsin.',
+      'cx.ho.live': 'Claude Code (canlı mod) uyguluyor',
+      'cx.ho.liveLong': 'Claude Code canlı modda (<code>/panoptent live</code>) ve bu değişiklik paketini hemen aldı. Her zamanki gibi geri alabilirsin.',
+      'cx.ho.liveQueued': 'Claude Code bekleniyor (canlı mod)',
+      'cx.ho.liveQueuedLong': 'Claude Code canlı modda ama şu an beklemiyor; 30 saniye içinde almazsa Panoptent bunu her zamanki yoldan gönderir.',
       'cx.panelFail': 'Claude Code paneli açılamadı', 'cx.panelFailLog': 'Claude Code paneli açılamadı.',
       'cx.done': '✓ Tamamlandı', 'cx.changedFiles': 'Değişen: {0}', 'cx.noFiles': ' · dosya değişmedi',
       'cx.claudeFail': 'Claude işi bitiremedi.', 'cx.claudeFailShort': 'Claude işi bitiremedi',
@@ -163,6 +173,8 @@
       'cx.changed': '✎ Değişti',
       'cx.rolledBack': '↶ Panoptent’in değişiklikleri geri alındı: {0}', 'cx.rolledBackToast': '↶ Geri alındı',
       'cx.untouched': 'Dokunulmadı:',
+      'cx.ck': 'Test', 'cx.ck.title': 'Test ve Kararlar: denenecek adımlar ve verilecek kararlar',
+      'cx.ck.count': 'Test ve Kararlar: {0} seni bekliyor · {1} sorun',
     },
   });
   const t = I18N.t;
@@ -192,7 +204,8 @@
   let pairAsked = false;
   let viewport = 'full';
   let lastTrusted = 0;
-  let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false };
+  let ui = { popover: true, cont: true, drawer: false, tab: 'queue', min: false, checks: false, checksGeom: null };
+  let lastChecks = null; // Test ve Karar: VS Code'dan gelen açık konular
   let settings = { sendTo: 'claudePanel', openOnSelect: true, claudeExt: true, design: null };
   const logs = [];
   // Dil: VS Code ayarı esas; bağlı değilken yerel seçim ('lang') geçici olarak kullanılır.
@@ -269,7 +282,9 @@
     .qn{display:inline-flex;align-items:center;gap:6px;padding:0 6px 0 4px;color:#e6e8eb}
     .qdot{width:8px;height:8px;border-radius:4px;background:#f97316;box-shadow:0 0 0 3px rgba(249,115,22,.25)}
     .drawer{width:380px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);display:flex;flex-direction:column;border-radius:12px;background:#1f2329;border:1px solid #3a3f47;box-shadow:0 12px 32px rgba(0,0,0,.35);overflow:hidden}
-    .tabs{display:flex;gap:2px;padding:6px 8px 0;border-bottom:1px solid #2c3138}
+    .tabs{display:flex;align-items:center;gap:2px;padding:6px 8px 0;border-bottom:1px solid #2c3138}
+    .tabs .grow{flex:1}.tabs .dclose{width:26px;height:26px;margin-bottom:4px;font-size:13px}
+    .b.on{background:#2c3138;color:#fff}
     .tabs button{padding:7px 10px;font-size:12.5px;color:#9aa4b2;border-bottom:2px solid transparent;margin-bottom:-1px}
     .tabs button.on{color:#fff;border-color:#f97316}
     .body{overflow:auto;padding:10px 12px;flex:1}
@@ -307,13 +322,15 @@
     .toast.ok{border-color:rgba(34,197,94,.5)}.toast.err{border-color:rgba(239,68,68,.6);color:#fca5a5}
     .mini{position:fixed;right:16px;bottom:16px;width:40px;height:40px;border-radius:20px;background:#1f2329;border:1px solid #3a3f47;color:#f97316;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 24px rgba(0,0,0,.35)}
     .mini .n{position:absolute;top:-4px;right:-4px;min-width:16px;height:16px;border-radius:8px;background:#f97316;color:#fff;font:700 10px/16px ${F};text-align:center;padding:0 4px}
+    .ckn{min-width:16px;height:16px;border-radius:8px;background:#f97316;color:#fff;font:700 10px/16px ${F};text-align:center;padding:0 4px}
+    .ckn.bad{background:#ef4444}
     .spin{width:12px;height:12px;border-radius:50%;border:2px solid #3a3f47;border-top-color:#f97316;animation:r .8s linear infinite;display:inline-block;vertical-align:-2px;margin-right:6px}
     @keyframes r{to{transform:rotate(360deg)}}
   </style>
   <div class="wrap" id="wrap">
     <div id="toasts"></div>
     <div class="drawer" id="drawer" hidden>
-      <div class="tabs"><button data-tab="queue" data-i18n="cx.tab.queue">Queue</button><button data-tab="log" data-i18n="cx.tab.log">Activity</button><button data-tab="settings" data-i18n="cx.tab.settings">Settings</button></div>
+      <div class="tabs"><button data-tab="queue" data-i18n="cx.tab.queue">Queue</button><button data-tab="log" data-i18n="cx.tab.log">Activity</button><button data-tab="settings" data-i18n="cx.tab.settings">Settings</button><span class="grow"></span><button class="x dclose" id="dclose" data-i18n-title="cx.closeTitle" aria-label="Close">✕</button></div>
       <div class="body" id="dbody"></div>
       <div class="foot" id="dfoot"></div>
     </div>
@@ -330,6 +347,8 @@
       <button class="b pri" id="apply" data-i18n="cx.apply" hidden>Apply</button>
       <span class="sep" id="rsep" hidden></span>
       <button class="b" id="rollback" hidden data-i18n-title="cx.rollbackTitle" data-i18n="cx.rollback">↶ Undo last apply</button>
+      <span class="sep" id="cksep" hidden></span>
+      <button class="b" id="ckBtn" aria-pressed="false" data-i18n-title="cx.ck.title" hidden><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path fill="currentColor" d="M2.2 3.6 3.3 2.5l1.2 1.2L6.8 1.4l1.1 1.1-3.4 3.4zM9 3h6v1.5H9zM2.2 8.6l1.1-1.1 1.2 1.2 2.3-2.3 1.1 1.1-3.4 3.4zM9 8h6v1.5H9zM2 12h5v1.5H2zm7 0h6v1.5H9z"/></svg><span data-i18n="cx.ck">Test</span><span class="ckn" id="ckN" hidden>0</span></button>
       <span class="sep"></span>
       <button class="b" id="gear" data-i18n-title="cx.gearTitle">⚙</button>
       <button class="b" id="minBtn" data-i18n-title="cx.minTitle">–</button>
@@ -380,7 +399,7 @@
     chrome.storage.local.set({ [KEY_Q]: slim });
   }
   function saveUi() {
-    chrome.storage.local.set({ [KEY_UI]: { popover: ui.popover, cont: ui.cont, min: ui.min } });
+    chrome.storage.local.set({ [KEY_UI]: { popover: ui.popover, cont: ui.cont, min: ui.min, checks: ui.checks, checksGeom: ui.checksGeom } });
   }
 
   // ---------- etkinleştirme ----------
@@ -430,7 +449,8 @@
   function sendConfig() {
     const w = window.innerWidth;
     viewport = w <= 480 ? '390' : w <= 1100 ? '1024' : 'full';
-    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, lang: I18N.lang, nowLabel: nowLabel() });
+    // checksPage: Test ve Kararlar'ı VS Code'da tam sayfa açma düğmesi yalnızca bağlıyken
+    toOverlay({ type: 'config', active: enabled, popover: ui.popover, viewport, lang: I18N.lang, nowLabel: nowLabel(), checksPage: connected() });
   }
   let rz;
   window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(sendConfig, 200); });
@@ -511,10 +531,16 @@
     toast(t('cx.rollbackConfirm'), '', 2500);
   });
   $('logo').addEventListener('click', () => (ui.drawer ? closeDrawer() : openDrawer(ui.tab)));
-  $('gear').addEventListener('click', () => openDrawer('settings'));
+  $('gear').addEventListener('click', () => (ui.drawer && ui.tab === 'settings' ? closeDrawer() : openDrawer('settings')));
+  $('dclose').addEventListener('click', closeDrawer);
   $('minBtn').addEventListener('click', () => { ui.min = true; saveUi(); closeDrawer(); render(); });
   $('mini').addEventListener('click', () => { ui.min = false; saveUi(); render(); });
-  root.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => openDrawer(b.dataset.tab)));
+  // Test ve Karar: panel sayfadaki seçim katmanında açılır
+  $('ckBtn').addEventListener('click', () => toOverlay({ type: 'checksPanel', toggle: true }));
+  function checksList() { if (connected()) bg({ type: 'checksReq', reqId: 'init', op: 'list' }); }
+  // Yalnızca sekme düğmeleri: aynı satırdaki ✕ (dclose) da bir <button>; ona sekme işleyicisi bağlanırsa
+  // closeDrawer'ın hemen ardından openDrawer(undefined) çalışıp çekmeceyi yeniden açar (0.11.2–0.13.1 hatası).
+  root.querySelectorAll('.tabs button[data-tab]').forEach((b) => b.addEventListener('click', () => openDrawer(b.dataset.tab)));
 
   function connected() {
     return !!(activePort && workspaces.find((w) => w.port === activePort && w.state === 'ready'));
@@ -567,7 +593,7 @@
   const fileLinks = (files) => files.map((f) => `<a data-file="${esc(f)}">${esc(f)}</a>`).join(', ');
 
   function renderDrawer() {
-    root.querySelectorAll('.tabs button').forEach((b) => b.classList.toggle('on', b.dataset.tab === ui.tab));
+    root.querySelectorAll('.tabs button[data-tab]').forEach((b) => b.classList.toggle('on', b.dataset.tab === ui.tab));
     dfoot.innerHTML = '';
     if (ui.tab === 'queue') {
       dbody.innerHTML = queue.length
@@ -704,10 +730,21 @@
     $('apply').textContent = applying ? t('cx.applying') : running ? t('cx.claudeRunning') : t('cx.applyN', n);
     $('rollback').hidden = $('rsep').hidden = !canRollback;
     drawer.hidden = !ui.drawer;
+    $('gear').classList.toggle('on', ui.drawer && ui.tab === 'settings');
     bar.hidden = ui.min;
     $('mini').hidden = !ui.min;
     $('miniN').hidden = !n;
     $('miniN').textContent = String(n);
+    const ckTopics = lastChecks ? lastChecks.topics.length : 0;
+    const ckPending = lastChecks ? lastChecks.pending || 0 : 0;
+    const ckBad = lastChecks ? lastChecks.bad || 0 : 0;
+    $('ckBtn').hidden = $('cksep').hidden = !ckTopics && !ui.checks;
+    $('ckBtn').classList.toggle('on', ui.checks);
+    $('ckBtn').setAttribute('aria-pressed', String(ui.checks));
+    $('ckBtn').title = ckTopics ? t('cx.ck.count', ckPending, ckBad) : t('cx.ck.title');
+    $('ckN').hidden = !ckPending && !ckBad;
+    $('ckN').textContent = String(ckPending || ckBad);
+    $('ckN').classList.toggle('bad', !ckPending && !!ckBad);
     if (ui.drawer) renderDrawer();
   }
 
@@ -717,6 +754,9 @@
     const t = e.composedPath ? e.composedPath()[0] : e.target;
     const inField = t && (/^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName) || t.isContentEditable);
     const mod = e.ctrlKey || e.metaKey;
+    // Esc seçim katmanının içinden geldiyse (Test ve Karar paneli, öğe kutusu) onu yalnız katman kapatır; çekmeceye dokunma
+    const fromOverlay = e.composedPath && e.composedPath().some((n) => n && n.tagName === 'PANOPTENT-OVERLAY');
+    if (e.key === 'Escape' && ui.drawer && !inField && !fromOverlay) { closeDrawer(); return; }
     if (!inField && mod && e.key.toLowerCase() === 'z' && (undoStack.length || redoStack.length)) {
       e.preventDefault();
       e.stopPropagation();
@@ -724,10 +764,59 @@
     }
   }, true);
 
+  // ---------- Claude'un MCP istekleri (highlight, preview_style, screenshot_element) ----------
+  // Seçim katmanına iletilir. Görüntü için önce sekmenin kendisi denenir (piksel piksel doğru, yalnızca
+  // eklentiye bu sekmede activeTab izni verildiyse); olmazsa katman öğeyi DOM'dan çizer.
+  const agentReqs = new Map(); // reqId -> istek
+  function agentReply(m) {
+    agentReqs.delete(m.reqId);
+    bg(m);
+  }
+  function onAgentRequest(m) {
+    if (!enabled || !overlayReady) {
+      bg({ type: 'mcpResult', reqId: m.reqId, ok: false, error: 'Panoptent is turned off in this Chrome tab. Ask the user to turn it on.' });
+      return;
+    }
+    agentReqs.set(m.reqId, m);
+    if (m.op === 'screenshot') toOverlay(Object.assign({}, m, { op: 'locate', hide: true }));
+    else toOverlay(m);
+  }
+  function onAgentResult(m) {
+    const req = agentReqs.get(m.reqId);
+    if (!req) return; // sayfa betiklerinin uydurduğu yanıtlar
+    if (m.op !== 'locate') return agentReply(m);
+    if (!m.ok) return agentReply(Object.assign({}, m, { op: 'screenshot' }));
+    if (!m.fits) return shotFromDom(req);
+    shotElements.set(m.reqId, m.element);
+    host.style.visibility = 'hidden';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      bg({ type: 'captureTab', reqId: m.reqId, rect: m.rect, vw: m.vw });
+    }));
+  }
+  const shotElements = new Map(); // reqId -> öğe özeti (sekme görüntüsü alınırken)
+  function showUi() {
+    host.style.visibility = '';
+    toOverlay({ type: 'mcpRequest', reqId: 'show', op: 'show' });
+  }
+  function shotFromDom(req) {
+    showUi();
+    toOverlay(Object.assign({}, req, { op: 'screenshot' }));
+  }
+  function onCaptureResult(m) {
+    const req = agentReqs.get(m.reqId);
+    const element = shotElements.get(m.reqId);
+    shotElements.delete(m.reqId);
+    if (!req) return;
+    if (!m.ok) return shotFromDom(req);
+    showUi();
+    agentReply({ type: 'mcpResult', reqId: m.reqId, op: 'screenshot', ok: true, via: 'tab', data: m.data, mime: m.mime, width: m.width, height: m.height, element });
+  }
+
   // ---------- seçim katmanından gelenler ----------
   function popStatus(state, text, closeAfter) { toOverlay({ type: 'popStatus', state, text, closeAfter }); }
 
   function onOverlay(m) {
+    if (m.type === 'mcpResult') return onAgentResult(m);
     if (!enabled) return;
     switch (m.type) {
       case 'ready':
@@ -737,6 +826,28 @@
         sendConfig();
         if (selecting) toOverlay({ type: 'mode', on: true });
         if (queue.length) toOverlay({ type: 'reapply', entries: queue });
+        if (lastChecks) toOverlay(Object.assign({}, lastChecks));
+        toOverlay({ type: 'checksPanel', open: !!ui.checks, restore: true, geom: ui.checksGeom || undefined });
+        render();
+        break;
+      case 'checksOpenPage': // Test ve Kararlar'ı VS Code'da tam sayfa aç
+        if (!userJustActed()) return;
+        if (!connected()) return toast(t('cx.notConnected'), 'err');
+        bg({ type: 'checksOpenPage' });
+        break;
+      case 'checksReq':
+        // yazma yalnızca gerçek kullanıcı etkileşiminden hemen sonra (sayfa betikleri işaret uyduramasın)
+        if (m.op !== 'list' && !userJustActed()) return;
+        if (!connected()) {
+          toOverlay({ type: 'checksRes', reqId: m.reqId, ok: false, error: t('cx.notConnected') });
+          return;
+        }
+        bg({ type: 'checksReq', reqId: m.reqId, op: m.op, topic: m.topic, test: m.test, state: m.state, note: m.note, decision: m.decision, index: m.index });
+        break;
+      case 'checksPanelState':
+        ui.checks = !!m.open;
+        if (m.geom && typeof m.geom === 'object') ui.checksGeom = m.geom; // katman her okumada doğrular
+        saveUi();
         render();
         break;
       case 'mode':
@@ -770,6 +881,8 @@
         } else {
           popPending = true;
           if (!dispatch(m.entries, false)) toOverlay({ type: 'revert', tokens: m.entries.map((x) => x.token) });
+          // Doğrudan işleme gönderildi: Seç kapanır (kuyruğa eklemede açık kalır, sıradaki öğe seçilebilsin)
+          else if (selecting) setSelect(false);
         }
         break;
       case 'openSourceReq':
@@ -786,6 +899,7 @@
       case 'status': {
         workspaces = m.workspaces || [];
         activePort = m.active;
+        if (enabled) sendConfig();
         if (enabled && !connected() && !pairAsked && workspaces.some((w) => w.state === 'needPair')) {
           pairAsked = true;
           bg({ type: 'pair' });
@@ -803,6 +917,22 @@
         if (m.lang) langFromVS(m.lang);
         sendConfig();
         render();
+        checksList();
+        break;
+      case 'checks':
+        lastChecks = m;
+        render();
+        if (overlayReady) toOverlay(Object.assign({}, m));
+        break;
+      case 'checksRes':
+        if (overlayReady) toOverlay(Object.assign({}, m));
+        break;
+      case 'checksPanel': // "Panoptent: Test ve Kararları Sayfada Göster" (VS Code)
+        if (!enabled) break;
+        ui.checks = m.open !== false;
+        saveUi();
+        render();
+        toOverlay({ type: 'checksPanel', open: ui.checks, geom: ui.checksGeom || undefined });
         break;
       case 'lang':
         langFromVS(m.value);
@@ -823,6 +953,7 @@
           toast(t('cx.notConnectedQueued'), 'err', 5000);
           if (popPending) { popPending = false; popStatus('err', t('cx.notConnectedShort')); }
         }
+        if (m.for === 'checksReq' && m.reqId) toOverlay({ type: 'checksRes', reqId: m.reqId, ok: false, error: t('cx.notConnected') });
         render();
         break;
       case 'design':
@@ -871,7 +1002,7 @@
         break;
       }
       case 'handoff': {
-        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt'].includes(m.how) ? m.how : 'newTab';
+        const how = ['mention', 'clipboard', 'mcp', 'mcpPrompt', 'live', 'liveQueued'].includes(m.how) ? m.how : 'newTab';
         const short = () => t('cx.ho.' + how);
         if (popPending) { popPending = false; popStatus(m.ok ? 'ok' : 'err', m.ok ? short() : t('cx.panelFail'), 2600); }
         if (m.ok) {
@@ -930,6 +1061,12 @@
         render();
         break;
       case 'quickEditResult':
+        break;
+      case 'mcpRequest':
+        onAgentRequest(m);
+        break;
+      case 'captureResult':
+        onCaptureResult(m);
         break;
     }
   }

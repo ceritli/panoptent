@@ -2,7 +2,7 @@
   "name": "panoptent",
   "displayName": "%displayName%",
   "description": "%description%",
-  "version": "0.11.1",
+  "version": "0.14.1",
   "publisher": "ceritli",
   "author": {
     "name": "Fatih Ceritli",
@@ -107,8 +107,45 @@
         "command": "panoptent.copyMcpCommand",
         "title": "%command.copyMcpCommand%",
         "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.checks",
+        "title": "%command.checks%",
+        "icon": "$(checklist)",
+        "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.showChecks",
+        "title": "%command.showChecks%",
+        "icon": "$(eye)",
+        "category": "Panoptent"
+      },
+      {
+        "command": "panoptent.checksPage",
+        "title": "%command.checksPage%",
+        "icon": "$(open-preview)",
+        "category": "Panoptent"
       }
     ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "panoptent.showChecks",
+          "when": "view == panoptent.checks",
+          "group": "navigation@1"
+        },
+        {
+          "command": "panoptent.checksPage",
+          "when": "view == panoptent.checks",
+          "group": "navigation@2"
+        },
+        {
+          "command": "panoptent.checks",
+          "when": "view == panoptent.checks",
+          "group": "navigation@3"
+        }
+      ]
+    },
     "keybindings": [
       {
         "command": "panoptent.toggleSelect",
@@ -295,6 +332,18 @@
             "markdownDescription": "%config.mcpPort%"
           }
         }
+      },
+      {
+        "title": "%config.section.checks%",
+        "order": 6,
+        "properties": {
+          "panoptent.checks.userName": {
+            "type": "string",
+            "default": "",
+            "order": 1,
+            "markdownDescription": "%config.checks.userName%"
+          }
+        }
       }
     ],
     "viewsContainers": {
@@ -312,6 +361,11 @@
           "id": "panoptent.home",
           "name": "%view.home%",
           "icon": "media/activity.svg"
+        },
+        {
+          "id": "panoptent.checks",
+          "name": "%view.checks%",
+          "icon": "media/activity.svg"
         }
       ]
     },
@@ -319,6 +373,10 @@
       {
         "view": "panoptent.home",
         "contents": "%view.home.welcome%"
+      },
+      {
+        "view": "panoptent.checks",
+        "contents": "%view.checks.welcome%"
       }
     ]
   },
@@ -326,6 +384,8 @@
     "build": "node build.mjs",
     "watch": "node build.mjs --watch",
     "typecheck": "tsc -p .",
+    "test": "node test/run.mjs",
+    "test:e2e": "node test/e2e/run.mjs",
     "package": "npm run build && vsce package --no-dependencies",
     "package:chrome": "sh chrome/build.sh"
   },

@@ -16,7 +16,10 @@ Open to every kind of contribution.
 | `src/extension.ts` | activation, commands, VS Code preview panel (webview HTML template lives here) |
 | `src/engine.ts` | apply / hand-off to Claude / undo; one engine per workspace, shared by panel and Chrome |
 | `src/bridge.ts` | Chrome bridge: `ws` on 127.0.0.1:47811–47820, extension origins only, one-time pairing |
-| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `mark_applied`, prompt `apply_queue`; reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
+| `src/mcp.ts` | local MCP server (Streamable HTTP, 127.0.0.1:47821–47830, sticky per workspace): tools `get_selection`, `get_queue`, `get_page_context`, `get_apply`, `start_live` (returns a `curl` to `POST /live/wait?t=<token>` that Claude Code runs as a background task, ~590 s per round, like Impeccable's `live-poll`), `wait_for_apply` (MCP long-poll fallback, 50 s: clients time out at ~60 s), `mark_applied`, page tools `screenshot_element` / `highlight` / `preview_style` (engine `pageRequest` → `{type:'mcpRequest', op}` to the panel/Chrome tab → overlay `onAgent` → `mcpResult`; Chrome tries `captureVisibleTab` (needs activeTab) then falls back to the overlay's DOM → SVG foreignObject render), prompts `apply_queue`, `live`, `selection`; connecting also installs `~/.claude/commands/panoptent.md` (`/panoptent live|apply|selection`, never overwrites a file without its marker); reads page state the panel/Chrome push via `syncState`; `sendTo: mcp` makes Apply hand a one-line `PT-…` command instead of a request file; `connectClaudeCode` runs `claude mcp add -s local` |
+| `src/checks.ts` | Test and Decisions store (no `vscode` import): topics in `.panoptent/checks/{open,archive}/<id>.json`, schema v1 validation, ids `[a-z0-9-]`, per-topic lock + atomic write (tmp + rename), field-level merge, `changes(since)`, `by` = GitHub user name via `UserResolver` (setting `panoptent.checks.userName` → `gh api user` once per session → `git config github.user` → `git config user.name` → OS user; never `origin`, never e-mail). Format doc: `docs/checks.md` |
+| `src/checksPage.ts` | Test and Decisions as a full-page webview (`panoptent.checksPage`): engine client `checksPage`, same `checksMessage` write path, strict CSP + nonce; page script `media/checks-page.js` + `checks-page.css` (textContent only) |
+| `src/checksView.ts` | VS Code side of Test and Decisions: `panoptent.checks` tree view, *Test and Decisions* quick pick (open JSON, show panel, copy HTTP API token) |
 | `src/revert.ts` | precise undo from Claude Code transcripts (`~/.claude/projects/...`), matches the `PT-…` id only |
 | `src/entries.ts` | change entries → prompt for Claude (language follows UI), image saving |
 | `src/claudePanel.ts` | sends to the open Claude Code conversation (`claude-vscode.insertAtMention` on `.claude/panoptent/istek-PT-*.md`), CLI helpers |
@@ -25,7 +28,9 @@ Open to every kind of contribution.
 | `src/codeInspector.ts` | code-inspector-plugin auto setup |
 | `src/i18n.ts` | extension-host strings (`addStrings`, `t`, `uiLang`) |
 | `media/i18n.js` | shared browser i18n core (`PanoptentI18n`) for panel, overlay, Chrome |
-| `media/overlay.js` | in-page selection overlay (shared by VS Code preview and Chrome) |
+| `media/overlay.js` | in-page selection overlay (shared by VS Code preview and Chrome); also the Test and Decisions panel (`#ck`, messages `checks` / `checksReq` / `checksRes` / `checksPanel` / `checksPanelState`; hosts relay, Chrome writes need a recent user gesture) |
+| `media/checks.js` | pure helpers for that panel (`PanoptentChecks`: url ↔ page match, Open url, `**bold**` segments, panel geometry `clampGeom` / `moveGeom` / `resizeGeom` / `maximizeGeom` / `packGeom`); loaded before `overlay.js` like `i18n.js`. Panel geometry is stored by the host (panel.js webview state, content.js `ui.checksGeom`), never in the page |
+| `test/` | `npm test`: `node:test` suites bundled by esbuild with `vscode` → `test/vscode-stub.ts`; `npm run test:e2e -- --playwright <path>` drives the real `activate()` + webview in headless Chromium |
 | `media/panel.js`, `panel.css` | VS Code preview panel UI |
 | `chrome/` | MV3 extension (`background.js`, `content.js`, `popup.*`, `_locales/`); `build.sh` copies `media/overlay.js` + `media/i18n.js` in |
 | `docs/` | GitHub Pages site (`index.html` bilingual, `privacy.html`, `assets/` incl. `-en` screenshot variants) |
@@ -35,6 +40,7 @@ Open to every kind of contribution.
 ```bash
 npm ci
 npm run typecheck
+npm test
 npm run package          # → panoptent-x.y.z.vsix
 npm run package:chrome   # → panoptent-chrome-x.y.z.zip
 ```
@@ -53,7 +59,8 @@ protocol (`{source:'panoptent', type, ...}`) and e2e tests depend on them.
 2. Push to `main`. `.github/workflows/release.yml` then:
    - creates GitHub release `vX.Y.Z` with the `.vsix` and Chrome `.zip` (if it doesn't exist yet),
    - publishes to the VS Code Marketplace (secret `VSCE_PAT`, Azure DevOps PAT, Marketplace: Manage, expires ~Oct 2027),
-   - publishes to Open VSX (secret `OVSX_PAT`, namespace `ceritli`),
+   - publishes to Open VSX (namespace `ceritli`, verified): trusted publishing (OIDC, registration for
+     `ceritli/panoptent` + `release.yml` on open-vsx.org), falling back to secret `OVSX_PAT`,
    - uploads + publishes to the Chrome Web Store if `CWS_SA_KEY` (service-account JSON) and `CWS_PUBLISHER_ID` are set.
 3. `pages.yml` redeploys `docs/` on every push touching it. `ci.yml` builds every push/PR.
 
@@ -61,14 +68,20 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
+- 0.14.1 (Test and Decisions: one-line topic picker with search in the in-page panel, topic click in the VS Code view opens the full page on that topic, *Send now* turns Select off) pushed to `main` 2026-11-24 for the release workflow.
+- 0.14.0 (Test and Decisions: `.panoptent/checks` topics, in-page panel + bar badge, MCP tools `save_check_topic` / `get_check_topics` / `get_check_changes` / `close_check_topic`, HTTP `/checks/*`, `/panoptent checks`, `npm test`) released 2026-11-23 by the release workflow. Chrome path not tested end to end (only the VS Code preview path).
+- 0.13.1 (quiet live mode: the background wait is a shell loop that renews itself, Claude is woken only on Apply; restarts silently; PR #21) merged 2026-11-03 and released by the release workflow.
+- 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3; PR #20) merged 2026-10-26 and released by the release workflow.
+- 0.12.0 (live mode `/panoptent live` / `/panoptent:live (MCP)`: `start_live` background `curl` wait, Apply goes straight to the waiting Claude conversation, unclaimed sets fall back after 30 s; `/panoptent` command; PR #17) merged 2026-10-25 and released by the release workflow. Next: package as a Claude Code plugin.
+- 0.11.2 (Chrome drawer close button, ⚙ toggles, Esc closes; turning Select off clears the selection; PR #13) merged 2026-10-24 and released by the release workflow.
 - 0.11.1 (settings page grouped into sections with labels/descriptions; settings links open
   `@ext:ceritli.panoptent`; panel Options card; compact Get Started view; PR #10) merged 2026-10-22 and released by the release workflow.
 - 0.11.0 (design rules file `panoptent.designFile`, PR #7) released on GitHub and VS Code Marketplace;
-  0.10.0 added the MCP server + `sendTo: mcp` (PR #6). Next for #3:
-  `screenshot_element`, `highlight` / `preview_style`.
-- Chrome Web Store: first submission rejected 2026-10-22 for keyword spam (framework list in the
-  description). Description fixed in `store/LISTING.md`; needs resubmission from the dashboard.
-- Open VSX (#4): 0.11.0 uploaded 2026-10-22 but INACTIVE — namespace `ceritli` exists in another
-  gallery, so it stays hidden until the ownership claim ("Claim Ownership" on open-vsx.org) is approved.
-- Chrome Web Store automation: service account + `CWS_SA_KEY` / `CWS_PUBLISHER_ID` secrets not added yet.
+  0.10.0 added the MCP server + `sendTo: mcp` (PR #6).
+- Chrome Web Store: live since 2026-10-24 at https://chromewebstore.google.com/detail/panoptent/kmikbnmoacgjjigohbcbmppccjidmacc.
+- Open VSX (#4, done 2026-10-24): namespace claim approved, `ceritli` verified; 0.11.2 live at
+  https://open-vsx.org/extension/ceritli/panoptent (published by the release workflow).
+- Chrome Web Store automation (#2, done 2026-10-25): service account `panoptent-publisher@panoptent.iam.gserviceaccount.com`
+  (GCP project `panoptent`) linked in the CWS dashboard; secrets `CWS_SA_KEY` / `CWS_PUBLISHER_ID` set. Release run
+  40147704574 uploaded 0.12.0 and submitted it for review (PR #18). Store was on 0.9.1 before that.
 - Open tasks and ideas are tracked as GitHub issues (label `roadmap`).

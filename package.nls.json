@@ -11,6 +11,9 @@
   "command.chooseDesignFile": "Choose Design Rules File",
   "command.connectClaudeCode": "Connect Claude Code (MCP)",
   "command.copyMcpCommand": "Copy MCP Connect Command (Claude Code)",
+  "command.checks": "Test and Decisions",
+  "command.showChecks": "Show Test and Decisions on the Page",
+  "command.checksPage": "Open Test and Decisions as a Page",
   "config.section.general": "General",
   "config.section.sending": "Sending to Claude",
   "config.section.cli": "Background mode (CLI)",
@@ -49,6 +52,10 @@
   "config.bridgePort": "First port the Chrome bridge tries; if it is taken, the next 9 ports are tried.",
   "config.mcpServer": "Run a local MCP server (127.0.0.1 only) so AI agents such as Claude Code, Cursor or Windsurf can read the selected elements, the queue and the page context, and mark changes as applied. Connect Claude Code with [Panoptent: Connect Claude Code (MCP)](command:panoptent.connectClaudeCode).",
   "config.mcpPort": "First port the MCP server tries; if it is taken, the next 9 ports are tried. The address is `http://127.0.0.1:PORT/mcp`.",
+  "config.section.checks": "Test and Decisions",
+  "config.checks.userName": "Name written next to your Test and Decisions marks (`by`, `createdBy`, `closedBy` in `.panoptent/checks`), normally your **GitHub user name**. Empty: automatic, in this order: GitHub CLI (`gh api user`), `git config github.user`, `git config user.name`, the operating-system user. The source in use is shown in *Panoptent: Test and Decisions*. E-mail addresses are never written.",
   "view.home": "Get Started",
-  "view.home.welcome": "Preview your app, click an element, say what to change — Claude Code edits the code.\n[$(eye) Open Preview](command:panoptent.open)\nStart your dev server first (e.g. npm run dev).\nLink elements to their exact file and line so Claude doesn't spend time and tokens searching: [set up code-inspector automatically](command:panoptent.setupCodeInspector) · [setup guide](command:panoptent.setupGuide)\n[Settings](command:workbench.action.openSettings?%5B%22%40ext%3Aceritli.panoptent%22%5D) · [Language: English / Türkçe](command:panoptent.changeLanguage)"
+  "view.home.welcome": "Preview your app, click an element, say what to change — Claude Code edits the code.\n[$(eye) Open Preview](command:panoptent.open)\nStart your dev server first (e.g. npm run dev).\nLink elements to their exact file and line so Claude doesn't spend time and tokens searching: [set up code-inspector automatically](command:panoptent.setupCodeInspector) · [setup guide](command:panoptent.setupGuide)\n[Settings](command:workbench.action.openSettings?%5B%22%40ext%3Aceritli.panoptent%22%5D) · [Language: English / Türkçe](command:panoptent.changeLanguage)",
+  "view.checks": "Test and Decisions",
+  "view.checks.welcome": "No open topics. When an AI agent finishes a piece of work, it records what to try and what to decide here (Panoptent MCP tool save_check_topic). You tick the steps and pick the options in the panel on top of your running app.\n[$(checklist) Show on the page](command:panoptent.showChecks)"
 }

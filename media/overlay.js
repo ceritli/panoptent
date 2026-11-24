@@ -100,6 +100,54 @@
       'ov.busy.queue': 'Adding to queue…',
       'ov.edit.hint': 'Edit text · Enter saves, Esc cancels',
       'ov.truncated': '…(truncated)',
+      'ov.agent': 'Claude',
+      'ov.agent.preview': 'Claude’s preview',
+      'ov.ck.title': 'Test and Decisions',
+      'ov.ck.tabs': 'Topics',
+      'ov.ck.pick': 'Choose a topic',
+      'ov.ck.find': 'Search topics',
+      'ov.ck.prev': 'Previous topic',
+      'ov.ck.next': 'Next topic',
+      'ov.ck.noMatch': 'No topic matches.',
+      'ov.ck.tests': '1 · Test',
+      'ov.ck.decisions': '2 · Decide',
+      'ov.ck.infos': '3 · Info',
+      'ov.ck.testCount': '{0}/{1} ok',
+      'ov.ck.badCount': ' · {0} problem(s)',
+      'ov.ck.decCount': '{0}/{1} decided',
+      'ov.ck.infoNote': 'Reading is enough',
+      'ov.ck.here': 'on this page',
+      'ov.ck.agent': 'Agent tried',
+      'ov.ck.expected': 'Expected: ',
+      'ov.ck.done': 'Done',
+      'ov.ck.open': 'Open ↗',
+      'ov.ck.openTitle': 'Go to the page of this step',
+      'ov.ck.bad': 'Problem',
+      'ov.ck.badOn': 'Problem ✕',
+      'ov.ck.badTitle': 'Report a problem with this step (with a note)',
+      'ov.ck.notePh': 'What did you see?',
+      'ov.ck.toQueue': 'Also add to queue',
+      'ov.ck.toQueueTitle': 'Add this note (and the selected elements) to the Panoptent change queue',
+      'ov.ck.queueText': 'Test problem: {0} / {1}. {2}',
+      'ov.ck.queued': 'Added to the change queue.',
+      'ov.ck.noNote': 'Write a note first.',
+      'ov.ck.markedBy': '{0} · {1}',
+      'ov.ck.saving': 'Saving…',
+      'ov.ck.saveFail': 'Not saved: {0}',
+      'ov.ck.timeout': 'VS Code did not answer; this mark was not saved. Try again.',
+      'ov.ck.empty': 'No open topics. When an agent finishes a piece of work, it adds what to try and what to decide here.',
+      'ov.ck.fileErr': '{0} file(s) could not be read: {1}',
+      'ov.ck.noTests': 'No test steps.',
+      'ov.ck.noDecisions': 'No decisions.',
+      'ov.ck.moveTitle': 'Drag to move · double-click: maximize · arrow keys move, Shift+arrows resize',
+      'ov.ck.moveAria': 'Test and Decisions panel title. Arrow keys move the panel, Shift with arrow keys resizes it.',
+      'ov.ck.page': 'Open as a full page in VS Code',
+      'ov.ck.min': 'Minimize',
+      'ov.ck.unmin': 'Expand',
+      'ov.ck.max': 'Maximize',
+      'ov.ck.unmax': 'Restore size',
+      'ov.ck.sum': '{0} topic(s) · {1} waiting',
+      'ov.ck.pageAsked': 'Opening in VS Code…',
     },
     tr: {
       'ov.act.text': 'Metni yerinde düzenle (çift tık)',
@@ -159,6 +207,54 @@
       'ov.busy.queue': 'Kuyruğa ekleniyor…',
       'ov.edit.hint': 'Metni düzenle · Enter kaydeder, Esc iptal',
       'ov.truncated': '…(kısaltıldı)',
+      'ov.agent': 'Claude',
+      'ov.agent.preview': 'Claude’un önizlemesi',
+      'ov.ck.title': 'Test ve Kararlar',
+      'ov.ck.tabs': 'Konular',
+      'ov.ck.pick': 'Konu seç',
+      'ov.ck.find': 'Konu ara',
+      'ov.ck.prev': 'Önceki konu',
+      'ov.ck.next': 'Sonraki konu',
+      'ov.ck.noMatch': 'Aramaya uyan konu yok.',
+      'ov.ck.tests': '1 · Test et',
+      'ov.ck.decisions': '2 · Karar ver',
+      'ov.ck.infos': '3 · Bilgi',
+      'ov.ck.testCount': '{0}/{1} tamam',
+      'ov.ck.badCount': ' · {0} sorun',
+      'ov.ck.decCount': '{0}/{1} karar',
+      'ov.ck.infoNote': 'Okuman yeterli',
+      'ov.ck.here': 'bu sayfada',
+      'ov.ck.agent': 'Ajan denedi',
+      'ov.ck.expected': 'Beklenen: ',
+      'ov.ck.done': 'Tamam',
+      'ov.ck.open': 'Aç ↗',
+      'ov.ck.openTitle': 'Bu adımın sayfasına git',
+      'ov.ck.bad': 'Sorun',
+      'ov.ck.badOn': 'Sorun ✕',
+      'ov.ck.badTitle': 'Bu adımda sorun var (not yaz)',
+      'ov.ck.notePh': 'Ne gördün?',
+      'ov.ck.toQueue': 'Kuyruğa da ekle',
+      'ov.ck.toQueueTitle': 'Bu notu (ve seçili öğeleri) Panoptent değişiklik kuyruğuna ekle',
+      'ov.ck.queueText': 'Test sorunu: {0} / {1}. {2}',
+      'ov.ck.queued': 'Değişiklik kuyruğuna eklendi.',
+      'ov.ck.noNote': 'Önce not yaz.',
+      'ov.ck.markedBy': '{0} · {1}',
+      'ov.ck.saving': 'Kaydediliyor…',
+      'ov.ck.saveFail': 'Kaydedilmedi: {0}',
+      'ov.ck.timeout': 'VS Code yanıt vermedi; bu işaret kaydedilmedi. Yeniden dene.',
+      'ov.ck.empty': 'Açık konu yok. Ajan bir işi bitirince ne denenecek ve neye karar verilecek listesini buraya ekler.',
+      'ov.ck.fileErr': '{0} dosya okunamadı: {1}',
+      'ov.ck.noTests': 'Test adımı yok.',
+      'ov.ck.noDecisions': 'Karar yok.',
+      'ov.ck.moveTitle': 'Taşımak için sürükle · çift tık: büyüt · oklar taşır, Shift+oklar boyutlandırır',
+      'ov.ck.moveAria': 'Test ve Kararlar paneli başlığı. Ok tuşları paneli taşır, Shift ile ok tuşları boyutlandırır.',
+      'ov.ck.page': 'VS Code’da tam sayfa aç',
+      'ov.ck.min': 'Küçült',
+      'ov.ck.unmin': 'Aç',
+      'ov.ck.max': 'Büyüt',
+      'ov.ck.unmax': 'Eski ölçü',
+      'ov.ck.sum': '{0} konu · {1} bekliyor',
+      'ov.ck.pageAsked': 'VS Code’da açılıyor…',
     },
   });
 
@@ -251,8 +347,79 @@
     '.sp{width:11px;height:11px;border-radius:50%;border:2px solid #3a3f47;border-top-color:#f97316;animation:r .8s linear infinite;flex-shrink:0}' +
     '@keyframes r{to{transform:rotate(360deg)}}' +
     '.editing{outline:2px dashed #f97316!important;outline-offset:2px}' +
+    '.agent{outline:2px dashed #a855f7;outline-offset:2px;background:rgba(168,85,247,.08)}' +
+    '.alb{position:fixed;pointer-events:none;font:600 11px/1.4 ' + FONT + ';background:#7c3aed;color:#fff;padding:2px 7px;border-radius:3px;' +
+    'white-space:nowrap;max-width:50vw;overflow:hidden;text-overflow:ellipsis}' +
+    // Test ve Karar paneli
+    // yer ve ölçü satır içi stil olarak (left/top/width/height) checks.js'in sınırladığı değerlerle verilir
+    '.ck{position:fixed;pointer-events:auto;left:0;top:0;width:400px;max-width:calc(100vw - 16px);' +
+    'display:flex;flex-direction:column;background:#1f2329;color:#e6e8eb;border:1px solid #3a3f47;border-radius:10px;' +
+    'box-shadow:0 12px 32px rgba(0,0,0,.35),0 2px 6px rgba(0,0,0,.2);font:13px/1.45 ' + FONT + ';text-align:left}' +
+    '.ckHead{display:flex;align-items:center;gap:4px;padding:6px 6px 6px 12px;border-bottom:1px solid #2c3138;cursor:move;' +
+    'touch-action:none;user-select:none;-webkit-user-select:none;flex-shrink:0;min-height:38px;box-sizing:border-box}' +
+    '.ck.max .ckHead{cursor:default}.ck.min .ckHead{border-bottom:0}' +
+    '.ckH{font-weight:700;font-size:13px;margin:0;white-space:nowrap}' +
+    '.ckSum{flex:1;min-width:0;font-size:11.5px;color:#9aa4b2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-left:4px}' +
+    '.ckIc{all:unset;cursor:pointer;width:24px;height:24px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;' +
+    'color:#9aa4b2;font-size:13px;flex-shrink:0}.ckIc:hover{background:#2c3138;color:#fff}' +
+    '.ck.min .ckTabs,.ck.min .ckBody,.ck.min .ckMsg,.ck.min .ckRz,.ck.max .ckRz{display:none!important}' +
+    '.ck.drag,.ck.drag *{user-select:none!important;-webkit-user-select:none!important}' +
+    '.ckRz{position:absolute;touch-action:none;z-index:2}' +
+    '.ckRz[data-edge=e]{right:-4px;top:14px;bottom:14px;width:8px;cursor:ew-resize}' +
+    '.ckRz[data-edge=w]{left:-4px;top:14px;bottom:14px;width:8px;cursor:ew-resize}' +
+    '.ckRz[data-edge=s]{bottom:-4px;left:14px;right:14px;height:8px;cursor:ns-resize}' +
+    '.ckRz[data-edge=se]{right:-4px;bottom:-4px;width:16px;height:16px;cursor:nwse-resize}' +
+    '.ckRz[data-edge=sw]{left:-4px;bottom:-4px;width:16px;height:16px;cursor:nesw-resize}' +
+    // Konu seçici: tek satır (önceki · seçili konu · sonraki); liste tıklayınca açılır
+    '.ckTabs{position:relative;display:flex;align-items:center;gap:4px;padding:8px 10px 0;flex-shrink:0}.ckTabs[hidden]{display:none}' +
+    '.ckPick{all:unset;cursor:pointer;flex:1;min-width:0;display:flex;align-items:center;gap:6px;height:28px;padding:0 8px;border-radius:6px;' +
+    'border:1px solid #3a3f47;background:#191c21;font-size:12.5px;font-weight:600;color:#fff;box-sizing:border-box}' +
+    '.ckPick:hover,.ckPick[aria-expanded=true]{border-color:#f97316}' +
+    '.ckTabs .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.ckTabs .cn{flex-shrink:0;font-size:11.5px;font-weight:400;color:#8a93a0;font-variant-numeric:tabular-nums}' +
+    '.ckTabs .cn.done{color:#4ade80}.ckTabs .cn.bad{color:#f87171}' +
+    '.ckTabs .hd{flex-shrink:0;width:6px;height:6px;border-radius:3px;background:#f97316}' +
+    '.ckPick .ps{flex-shrink:0;font-size:10.5px;font-weight:400;color:#6b7380;font-variant-numeric:tabular-nums}' +
+    '.ckPick .ch{flex-shrink:0;font-size:9px;color:#9aa4b2;transition:transform .15s}.ckPick[aria-expanded=true] .ch{transform:rotate(180deg)}' +
+    '.ckNav{all:unset;cursor:pointer;width:28px;height:28px;border-radius:6px;border:1px solid #3a3f47;display:inline-flex;align-items:center;' +
+    'justify-content:center;color:#9aa4b2;font-size:14px;flex-shrink:0;box-sizing:border-box}.ckNav:hover{background:#2c3138;color:#fff}' +
+    '.ckList{position:absolute;left:10px;right:10px;top:100%;margin-top:4px;z-index:3;display:flex;flex-direction:column;max-height:min(60vh,340px);' +
+    'background:#1f2329;border:1px solid #3a3f47;border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,.45);overflow:hidden}.ckList[hidden]{display:none}' +
+    'input.ckFind{all:unset;display:block;box-sizing:border-box;width:100%;padding:7px 10px;border-bottom:1px solid #2c3138;font-size:12.5px;color:#e6e8eb;flex-shrink:0}' +
+    'input.ckFind::placeholder{color:#6b7380}' +
+    '.ckOpts{overflow:auto;padding:4px;overscroll-behavior:contain}.ckOpts .ckEmpty{padding:6px 8px}.ckOpts .ckEmpty[hidden]{display:none}' +
+    '.ckTab{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:6px;font-size:12.5px;' +
+    'color:#cbd2da;box-sizing:border-box}.ckTab[hidden]{display:none}.ckTab:hover,.ckTab:focus-visible{background:#2c3138;color:#fff}' +
+    '.ckTab[aria-selected=true]{background:#2c3138;color:#fff;box-shadow:inset 2px 0 0 #f97316}' +
+    '.ckBody{overflow:auto;padding:6px 10px 10px;flex:1;min-height:0;overscroll-behavior:contain}' +
+    '.ckLead{font-size:12px;color:#9aa4b2;margin:4px 0 2px;white-space:pre-wrap;word-break:break-word}' +
+    '.ckSec{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:12px 0 6px;font-size:11px;font-weight:700;' +
+    'text-transform:uppercase;letter-spacing:.04em;color:#9aa4b2}.ckSec span{font-weight:400;text-transform:none;letter-spacing:0;color:#6b7380}' +
+    '.ckRow{display:grid;grid-template-columns:20px minmax(0,1fr);gap:2px 8px;padding:8px;border:1px solid #2f343c;border-radius:7px;margin-bottom:6px;background:#191c21}' +
+    '.ckRow.here{border-color:rgba(249,115,22,.55)}.ckRow.ok .ckTt{text-decoration:line-through;color:#8a93a0}' +
+    '.ckRow.bad{border-color:rgba(248,113,113,.55);background:rgba(248,113,113,.06)}.ckRow.saving{opacity:.7}' +
+    '.ckRow input[type=checkbox]{width:16px;height:16px;margin:2px 0 0;accent-color:#22c55e;cursor:pointer}' +
+    '.ckT{font-weight:600;display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;min-width:0;word-break:break-word}' +
+    '.ckCode{font:700 10px/1.6 ' + MONO + ';color:#6b7380}' +
+    '.ckTag{font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;background:#2c3138;color:#9aa4b2}' +
+    '.ckTag.here{background:#3a2a1c;color:#fdba74}.ckTag.tried{background:rgba(34,197,94,.12);color:#4ade80}' +
+    '.ckD{grid-column:2;font-size:12px;color:#cbd2da;white-space:pre-wrap;word-break:break-word}' +
+    '.ckE{grid-column:2;font-size:12px;color:#4ade80;white-space:pre-wrap;word-break:break-word}' +
+    '.ckActs{grid-column:2;display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;align-items:center}' +
+    '.ckBtn{all:unset;cursor:pointer;font-size:11.5px;line-height:1.5;padding:2px 8px;border-radius:5px;background:#2c3138;color:#e6e8eb}' +
+    '.ckBtn:hover{background:#363c44}.ckBtn.on{background:rgba(248,113,113,.18);color:#fca5a5}.ckBtn.link{color:#93c5fd}' +
+    '.ckBy{font-size:10.5px;color:#6b7380}' +
+    'textarea.ckNote{grid-column:2;min-height:44px;margin-top:6px;font-size:12.5px}' +
+    '.ckDec{padding:8px;border:1px solid #2f343c;border-radius:7px;margin-bottom:6px;background:#191c21}' +
+    '.ckOpt{display:flex;align-items:flex-start;gap:8px;font-size:12.5px;margin-top:5px;cursor:pointer;word-break:break-word}' +
+    '.ckOpt input{margin:3px 0 0;accent-color:#f97316;flex-shrink:0}' +
+    '.ckInfo{font-size:12px;color:#cbd2da;padding:6px 0;border-top:1px solid #2c3138;white-space:pre-wrap;word-break:break-word}' +
+    '.ckInfo:first-of-type{border-top:0}.ckInfo b{color:#fff}' +
+    '.ckMsg{padding:6px 12px;font-size:12px;border-top:1px solid #2c3138;color:#9aa4b2}.ckMsg.err{color:#f87171}.ckMsg.ok{color:#4ade80}' +
+    '.ckEmpty{color:#8a93a0;font-size:12.5px;padding:6px 0}' +
+    '.ck :focus-visible{outline:2px solid #f97316;outline-offset:1px}.ckHead:focus-visible{outline-offset:-2px;border-radius:9px 9px 0 0}' +
     '</style>' +
-    '<div id="hover" class="box hover" hidden></div><div id="lbl" class="lbl" hidden></div><div id="sels"></div>' +
+    '<div id="hover" class="box hover" hidden></div><div id="lbl" class="lbl" hidden></div><div id="sels"></div><div id="agentMarks"></div>' +
     '<div id="pop" class="pop" hidden>' +
     '<div class="popHead"><span class="n" id="popN">1</span><div class="crumbs" id="crumbs"></div>' +
     '<div class="acts">' +
@@ -272,10 +439,21 @@
     '<div class="popFoot"><span class="hint" id="popHint"></span>' +
     '<button class="btn sec" id="popNow" data-i18n-title="ov.now.title" title="Kuyruğu beklemeden hemen gönder">Hemen gönder</button>' +
     '<button class="btn pri" id="popQueue" data-i18n="ov.queue">Kuyruğa ekle</button></div>' +
-    '<div class="st" id="popSt" hidden></div></div>';
+    '<div class="st" id="popSt" hidden></div></div>' +
+    '<div id="ck" class="ck" role="dialog" aria-labelledby="ckH" hidden>' +
+    '<div class="ckHead" id="ckHead" tabindex="0" data-i18n-title="ov.ck.moveTitle" data-i18n-aria="ov.ck.moveAria">' +
+    '<h2 class="ckH" id="ckH" data-i18n="ov.ck.title">Test ve Kararlar</h2><span class="ckSum" id="ckSum"></span>' +
+    '<button class="ckIc" id="ckPage" hidden data-i18n-title="ov.ck.page" data-i18n-aria="ov.ck.page">⧉</button>' +
+    '<button class="ckIc" id="ckMin">–</button><button class="ckIc" id="ckMax">□</button>' +
+    '<button class="x" id="ckX" data-i18n-title="ov.close" data-i18n-aria="ov.close" title="Kapat (Esc)">×</button></div>' +
+    '<div class="ckTabs" id="ckTabs" role="group" data-i18n-aria="ov.ck.tabs"></div>' +
+    '<div class="ckBody" id="ckBody"></div>' +
+    '<div class="ckMsg" id="ckMsg" role="status" aria-live="polite" hidden></div>' +
+    '<div class="ckRz" data-edge="e"></div><div class="ckRz" data-edge="w"></div><div class="ckRz" data-edge="s"></div>' +
+    '<div class="ckRz" data-edge="se"></div><div class="ckRz" data-edge="sw"></div></div>';
 
   var q = function (id) { return root.getElementById ? root.getElementById(id) : root.querySelector('#' + id); };
-  var hoverBox = q('hover'), label = q('lbl'), selsLayer = q('sels');
+  var hoverBox = q('hover'), label = q('lbl'), selsLayer = q('sels'), agentLayer = q('agentMarks');
   var pop = q('pop'), popN = q('popN'), crumbs = q('crumbs'), srcline = q('srcline'), popIn = q('popIn'),
     popQueue = q('popQueue'), popNow = q('popNow'), popX = q('popX'), popHint = q('popHint'), popSt = q('popSt'),
     tabAsk = q('tabAsk'), tabStyle = q('tabStyle'), styleDot = q('styleDot'),
@@ -550,6 +728,7 @@
       i++;
     });
     while (selsLayer.children.length > i * 2) selsLayer.removeChild(selsLayer.lastChild);
+    renderAgentMarks();
     placePopover();
     requestAnimationFrame(render);
   }
@@ -1144,9 +1323,16 @@
   }
 
   function setMode(on, notify) {
+    var wasOn = selectMode;
     selectMode = !!on;
     document.documentElement.style.cursor = selectMode ? 'crosshair' : '';
     if (!selectMode) hoverEl = null;
+    // Seç kapatılınca sayfada seçili bir şey kalmasın (panel/Chrome listesi de temizlensin)
+    if (wasOn && !selectMode) {
+      selected.forEach(function (_, id) { post({ type: 'unselect', id: id }); });
+      selected.clear();
+      closePopover();
+    }
     if (notify) post({ type: 'mode', on: selectMode });
   }
 
@@ -1237,9 +1423,961 @@
     }
   }, true);
 
+  // ---------- Ajan istekleri (MCP: highlight, preview_style, screenshot_element) ----------
+  // Claude, Panoptent'in MCP sunucusu üzerinden sayfada öğe gösterebilir, stil önerisini canlı önizleyebilir
+  // ve bir öğenin görüntüsünü alabilir. Hiçbiri kaynak koda dokunmaz; önizlemeler sayfa yenilenince kaybolur.
+  var agentMarks = []; // { el, label, until }
+  var agentPreviews = {}; // önizleme kimliği -> geri alma fonksiyonları
+  var agentSeq = 0;
+  var MAX_TARGETS = 50;
+
+  function reply(m, data) {
+    data.type = 'mcpResult';
+    data.reqId = m.reqId;
+    data.op = m.op;
+    post(data);
+  }
+
+  /** Hedefler: seçimdeki kimlik (yoksa seçimdeki seçici) ve/veya sayfadaki CSS seçicisi. */
+  function agentTargets(m) {
+    var els = [];
+    var add = function (el) { if (el && el.nodeType === 1 && !isOurs(el) && els.indexOf(el) < 0 && els.length < MAX_TARGETS) els.push(el); };
+    (m.targets || []).forEach(function (tg) {
+      var el = selected.get(tg.id);
+      if (!el || !el.isConnected) { try { el = tg.selector ? document.querySelector(tg.selector) : null; } catch (e) { el = null; } }
+      add(el);
+    });
+    if (m.selector) {
+      try { Array.prototype.forEach.call(document.querySelectorAll(m.selector), add); } catch (e) { return { error: 'Invalid CSS selector: ' + m.selector }; }
+    }
+    return { els: els };
+  }
+
+  function brief(el) {
+    var r = el.getBoundingClientRect();
+    var src = findSource(el);
+    return {
+      tag: el.tagName.toLowerCase(),
+      selector: selectorFor(el),
+      source: src ? src.file + (src.line ? ':' + src.line : '') : undefined,
+      size: Math.round(r.width) + '×' + Math.round(r.height),
+    };
+  }
+
+  function renderAgentMarks() {
+    var now = Date.now();
+    agentMarks = agentMarks.filter(function (k) { return k.el.isConnected && (!k.until || k.until > now); });
+    var i = 0;
+    agentMarks.forEach(function (k) {
+      var box = agentLayer.children[i * 2], lb = agentLayer.children[i * 2 + 1];
+      if (!box) {
+        box = document.createElement('div');
+        box.className = 'box agent';
+        lb = document.createElement('div');
+        lb.className = 'alb';
+        agentLayer.appendChild(box);
+        agentLayer.appendChild(lb);
+      }
+      var r = place(box, k.el);
+      box.hidden = lb.hidden = r.width === 0 && r.height === 0;
+      if (lb.textContent !== k.label) lb.textContent = k.label;
+      var top = r.top - 22;
+      if (top < 2) top = r.bottom + 4;
+      lb.style.top = top + 'px';
+      lb.style.left = Math.max(2, Math.min(r.left, window.innerWidth - 200)) + 'px';
+      i++;
+    });
+    while (agentLayer.children.length > i * 2) agentLayer.removeChild(agentLayer.lastChild);
+  }
+
+  function mark(els, label, seconds) {
+    var until = seconds > 0 ? Date.now() + seconds * 1000 : 0;
+    els.forEach(function (el) {
+      agentMarks = agentMarks.filter(function (k) { return k.el !== el; });
+      agentMarks.push({ el: el, label: label, until: until });
+    });
+    var r = els[0] && els[0].getBoundingClientRect();
+    if (r && (r.bottom < 0 || r.top > window.innerHeight)) els[0].scrollIntoView({ block: 'center' });
+  }
+
+  function agentReset(id) {
+    Object.keys(agentPreviews).forEach(function (k) {
+      if (id && id !== 'all' && k !== id) return;
+      var list = agentPreviews[k];
+      for (var i = list.length - 1; i >= 0; i--) { try { list[i](); } catch (e) { /* yok say */ } }
+      delete agentPreviews[k];
+    });
+  }
+
+  var CSS_PROP = /^(--[\w-]+|-?[a-z][a-z0-9-]*)$/;
+
+  function agentPreview(m, els) {
+    var styles = m.styles || {};
+    var props = Object.keys(styles).filter(function (p) { return CSS_PROP.test(p); });
+    var bad = Object.keys(styles).filter(function (p) { return !CSS_PROP.test(p); });
+    var undo = [];
+    els.forEach(function (el) {
+      props.forEach(function (p) { undo.push(setStyle(el, p, String(styles[p]).slice(0, 1000))); });
+      if (m.classes) undo.push(addClasses(el, String(m.classes)));
+    });
+    var id = 'pv' + (++agentSeq);
+    agentPreviews[id] = undo;
+    mark(els, m.label || t('ov.agent.preview'), 6);
+    // tarayıcının kabul etmediği değerleri bildir (ör. yazım hatası)
+    var ignored = [];
+    props.forEach(function (p) { if (!els[0].style.getPropertyValue(p)) ignored.push(p); });
+    return { previewId: id, ignored: bad.concat(ignored) };
+  }
+
+  // --- Görüntü: DOM'u SVG foreignObject içinde çizer (VS Code önizlemesi ve Chrome yedeği) ---
+  var baseStyles = {};
+  var sandbox = null;
+  function baseStyle(tag, pseudo) {
+    var key = tag + (pseudo || '');
+    if (baseStyles[key]) return baseStyles[key];
+    if (!sandbox) {
+      sandbox = document.createElement('div');
+      sandbox.style.cssText = 'all:initial;position:fixed;left:-99999px;top:0;visibility:hidden';
+      root.appendChild(sandbox);
+    }
+    var el;
+    try { el = document.createElement(tag); } catch (e) { el = document.createElement('div'); }
+    sandbox.appendChild(el);
+    var cs = getComputedStyle(el, pseudo || null), out = {};
+    for (var i = 0; i < cs.length; i++) out[cs[i]] = cs.getPropertyValue(cs[i]);
+    sandbox.removeChild(el);
+    return (baseStyles[key] = out);
+  }
+  function styleText(cs, base) {
+    var s = '';
+    for (var i = 0; i < cs.length; i++) {
+      var k = cs[i], v = cs.getPropertyValue(k);
+      if (base[k] !== v) s += k + ':' + v + ';';
+    }
+    return s;
+  }
+
+  var URL_RE = /url\((["']?)([^"')]+)\1\)/g;
+  function toDataUrl(url, cache) {
+    if (!url || /^data:/.test(url)) return Promise.resolve(url);
+    if (cache[url]) return cache[url];
+    cache[url] = fetch(url, { credentials: 'same-origin' }).then(function (r) {
+      if (!r.ok) throw new Error(r.status);
+      return r.blob();
+    }).then(function (b) {
+      if (b.size > 3e6) throw new Error('too big');
+      return new Promise(function (res, rej) {
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = rej;
+        fr.readAsDataURL(b);
+      });
+    }).catch(function () { return url; });
+    return cache[url];
+  }
+  function inlineUrls(text, base, cache) {
+    var urls = [];
+    text.replace(URL_RE, function (_, q, u) { if (u.charAt(0) !== '#') urls.push(u); return _; });
+    if (!urls.length) return Promise.resolve(text);
+    return Promise.all(urls.map(function (u) {
+      var abs;
+      try { abs = new URL(u, base).href; } catch (e) { abs = u; }
+      return toDataUrl(abs, cache);
+    })).then(function (data) {
+      var i = 0;
+      return text.replace(URL_RE, function (all, q, u) { return u.charAt(0) === '#' ? all : 'url("' + data[i++] + '")'; });
+    });
+  }
+
+  /** Aynı kökenli stil sayfalarındaki @font-face kuralları (yazı tipleri görüntüde doğru görünsün). */
+  function fontCss(cache) {
+    var jobs = [];
+    Array.prototype.forEach.call(document.styleSheets, function (sh) {
+      var rules;
+      try { rules = sh.cssRules; } catch (e) { return; } // başka kökenden: okunamaz
+      Array.prototype.forEach.call(rules || [], function (r) {
+        if (r.type === 5 && jobs.length < 30) jobs.push(inlineUrls(r.cssText, sh.href || location.href, cache));
+      });
+    });
+    return Promise.all(jobs).then(function (a) { return a.join('\n'); });
+  }
+
+  function cloneTree(src, ctx, isRoot) {
+    if (src.nodeType === 3) return document.createTextNode(src.nodeValue);
+    if (src.nodeType !== 1 || isOurs(src)) return null;
+    var tag = src.tagName;
+    if (/^(SCRIPT|NOSCRIPT|TEMPLATE|STYLE|LINK|META)$/.test(tag)) return null;
+    if (++ctx.count > 6000) throw new Error('The element is too large to render (over 6000 nodes). Pick a smaller element.');
+    var cs = getComputedStyle(src);
+    if (cs.display === 'none') return null;
+    var c;
+    if (tag === 'CANVAS') {
+      c = document.createElement('img');
+      try { c.setAttribute('src', src.toDataURL()); } catch (e) { /* kirli tuval */ }
+    } else if (tag === 'IFRAME' || tag === 'VIDEO' || tag === 'OBJECT' || tag === 'EMBED') {
+      c = document.createElement('div');
+      if (tag === 'VIDEO' && src.poster) c.style.background = 'url("' + src.poster + '") center/cover';
+    } else {
+      c = src.cloneNode(false);
+      if (tag === 'IMG' && (src.currentSrc || src.src)) {
+        c.removeAttribute('srcset');
+        c.removeAttribute('loading');
+        (function (img, url) {
+          ctx.jobs.push(toDataUrl(url, ctx.cache).then(function (d) { img.setAttribute('src', d); }));
+        })(c, src.currentSrc || src.src);
+      }
+      if (tag === 'INPUT') {
+        if (src.type === 'checkbox' || src.type === 'radio') { if (src.checked) c.setAttribute('checked', ''); else c.removeAttribute('checked'); }
+        else c.setAttribute('value', src.value);
+      }
+      if (tag === 'TEXTAREA') c.textContent = src.value;
+      if (tag === 'SELECT') {
+        Array.prototype.forEach.call(src.children, function (o) { var oc = o.cloneNode(true); if (o.selected) oc.setAttribute('selected', ''); c.appendChild(oc); });
+      }
+    }
+    var css = styleText(cs, baseStyle(tag.toLowerCase())) + 'animation:none;transition:none;';
+    if (isRoot) {
+      css += 'margin:0;' + (cs.position === 'static' ? '' : 'position:relative;inset:auto;') + 'transform:none;';
+    }
+    if (/url\(/.test(css)) {
+      (function (node, text) {
+        ctx.jobs.push(inlineUrls(text, location.href, ctx.cache).then(function (v) { node.setAttribute('style', v); }));
+      })(c, css);
+    }
+    c.setAttribute('style', css);
+    ['::before', '::after'].forEach(function (ps) {
+      var pcs = getComputedStyle(src, ps);
+      var content = pcs.getPropertyValue('content');
+      if (!content || content === 'none' || content === 'normal') return;
+      var cls = 'pt-ps' + (++ctx.pseudo);
+      c.setAttribute('class', ((c.getAttribute('class') || '') + ' ' + cls).trim());
+      ctx.rules.push('.' + cls + ps + '{' + styleText(pcs, baseStyle(tag.toLowerCase(), ps)) + 'content:' + content + ';}');
+    });
+    if (tag !== 'SELECT' && tag !== 'TEXTAREA' && tag !== 'CANVAS') {
+      var kids = src.shadowRoot ? src.shadowRoot.childNodes : src.childNodes;
+      Array.prototype.forEach.call(kids, function (n) {
+        var k = cloneTree(n, ctx, false);
+        if (k) c.appendChild(k);
+      });
+    }
+    return c;
+  }
+
+  function pageBackground(el) {
+    for (var n = el; n && n.nodeType === 1; n = n.parentElement) {
+      var bg = getComputedStyle(n).backgroundColor;
+      if (bg && bg !== 'transparent' && !/rgba\(.*,\s*0\)$/.test(bg)) return bg;
+    }
+    return '#fff';
+  }
+
+  function renderShot(el) {
+    var r = el.getBoundingClientRect();
+    var w = Math.max(1, Math.ceil(r.width)), h = Math.max(1, Math.ceil(r.height));
+    var ctx = { count: 0, pseudo: 0, jobs: [], cache: {}, rules: [] };
+    var clone = cloneTree(el, ctx, true);
+    if (!clone) return Promise.reject(new Error('The element is not visible (display: none).'));
+    return Promise.all([fontCss(ctx.cache)].concat(ctx.jobs)).then(function (a) {
+      var wrap = document.createElement('div');
+      wrap.setAttribute('style', 'width:' + w + 'px;height:' + h + 'px;overflow:hidden;background:' + pageBackground(el));
+      var st = document.createElement('style');
+      st.textContent = a[0] + '\n' + ctx.rules.join('\n');
+      wrap.appendChild(st);
+      wrap.appendChild(clone);
+      var xml = new XMLSerializer().serializeToString(wrap);
+      var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="' + w + '" height="' + h + '"><foreignObject x="0" y="0" width="100%" height="100%">' + xml + '</foreignObject></svg>';
+      return new Promise(function (res, rej) {
+        var img = new Image();
+        img.onload = function () { res(img); };
+        img.onerror = function () { rej(new Error('The browser could not render the element.')); };
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+      });
+    }).then(function (img) {
+      var scale = Math.min(Math.max(1, Math.min(window.devicePixelRatio || 1, 2)), 2000 / w, 4000 / h);
+      var cv = document.createElement('canvas');
+      cv.width = Math.max(1, Math.round(w * scale));
+      cv.height = Math.max(1, Math.round(h * scale));
+      var g = cv.getContext('2d');
+      g.drawImage(img, 0, 0, cv.width, cv.height);
+      var url = cv.toDataURL('image/png');
+      if (url.length > 6e6) url = cv.toDataURL('image/jpeg', 0.85);
+      var mime = url.slice(5, url.indexOf(';'));
+      return { data: url.slice(url.indexOf(',') + 1), mime: mime, width: cv.width, height: cv.height };
+    });
+  }
+
+  var hideTimer = null;
+  function hideUi(on) {
+    clearTimeout(hideTimer);
+    host.style.visibility = on ? 'hidden' : '';
+    if (on) hideTimer = setTimeout(function () { host.style.visibility = ''; }, 4000);
+  }
+
+  function onAgent(m) {
+    var found = m.op === 'reset' || m.op === 'show' ? { els: [] } : agentTargets(m);
+    if (found.error) return reply(m, { ok: false, error: found.error });
+    var els = found.els;
+    var need = m.op !== 'reset' && m.op !== 'show' && !(m.op === 'highlight' && m.clear && !(m.targets || []).length && !m.selector);
+    if (need && !els.length) return reply(m, { ok: false, error: 'No matching element on the page (it may have been removed or the page reloaded).' });
+    switch (m.op) {
+      case 'highlight':
+        if (m.clear) agentMarks = [];
+        if (els.length) mark(els, String(m.label || t('ov.agent')).slice(0, 120), m.seconds === 0 ? 0 : (m.seconds || 8));
+        return reply(m, { ok: true, found: els.length, elements: els.slice(0, 10).map(brief) });
+      case 'preview': {
+        if (m.reset) agentReset('all');
+        var pv = agentPreview(m, els);
+        return reply(m, { ok: true, found: els.length, previewId: pv.previewId, ignored: pv.ignored.length ? pv.ignored : undefined });
+      }
+      case 'reset':
+        agentReset(m.previewId || 'all');
+        agentMarks = [];
+        return reply(m, { ok: true });
+      case 'locate': {
+        // Chrome: sekme görüntüsü için öğeyi görünür alana getir, kendi katmanını gizle
+        var el = els[0];
+        el.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        if (m.hide) hideUi(true);
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            var r = el.getBoundingClientRect();
+            var fits = r.width > 0 && r.height > 0 && r.left >= 0 && r.top >= 0 && r.right <= window.innerWidth && r.bottom <= window.innerHeight;
+            if (!fits) hideUi(false);
+            reply(m, { ok: true, fits: fits, rect: { x: r.left, y: r.top, w: r.width, h: r.height }, vw: window.innerWidth, element: brief(el) });
+          });
+        });
+        return;
+      }
+      case 'show':
+        hideUi(false);
+        return reply(m, { ok: true });
+      case 'screenshot':
+        renderShot(els[0]).then(function (shot) {
+          shot.ok = true;
+          shot.via = 'dom';
+          shot.element = brief(els[0]);
+          reply(m, shot);
+        }, function (err) {
+          reply(m, { ok: false, error: err.message || String(err) });
+        });
+        return;
+    }
+    reply(m, { ok: false, error: 'Unknown request ' + m.op });
+  }
+
+  // ---------- Test ve Karar paneli ----------
+  // Ajanın kaydettiği konular (.panoptent/checks) VS Code'dan gelir; işaretler anında oraya yazılır. Bütün metinler
+  // düz metin olarak basılır (innerHTML yok); bilgi satırlarında yalnızca **kalın** biçimi tanınır.
+  var CK = window.PanoptentChecks || (function () {
+    // checks.js yüklenemediyse (eski Chrome eklentisi): sabit yer, taşıma / boyut yok
+    var fixed = function () { return { x: Math.max(0, window.innerWidth - 412), y: 12, w: Math.min(400, window.innerWidth - 16), h: null, min: false, max: false, prev: null }; };
+    return {
+      matchUrl: function () { return false; },
+      openUrl: function () { return null; },
+      segments: function (s) { return [{ b: false, s: String(s == null ? '' : s) }]; },
+      GEO: { head: 38, margin: 8, step: 16 },
+      clampGeom: fixed, moveGeom: fixed, resizeGeom: fixed, maximizeGeom: fixed, restoreGeom: fixed,
+      packGeom: function () { return {}; },
+    };
+  })();
+  var ck = q('ck'), ckTabs = q('ckTabs'), ckBody = q('ckBody'), ckMsgEl = q('ckMsg'), ckX = q('ckX');
+  var ckTopics = [], ckErrors = [], ckCur = null, ckOpen = false, ckSeq = 0;
+  var ckPickOpen = false, ckFindText = '';
+  var ckPending = {}; // reqId -> { key, timer }
+  var ckOptim = {}; // 'r|konu|test' -> { state, note } · 'p|konu|karar' -> index; yanıt beklenirken gösterilen değer
+  var ckMsg = null; // { kind, text }
+  var ckNoteTimers = {};
+
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = String(text);
+    return e;
+  }
+  function richText(parent, s) {
+    CK.segments(s).forEach(function (sg) {
+      parent.appendChild(sg.b ? el('b', null, sg.s) : document.createTextNode(sg.s));
+    });
+    return parent;
+  }
+  function ckTime(iso) {
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleString(I18N.lang === 'tr' ? 'tr-TR' : 'en-US', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  }
+  function ckTopic() {
+    for (var i = 0; i < ckTopics.length; i++) if (ckTopics[i].id === ckCur) return ckTopics[i];
+    return ckTopics[0] || null;
+  }
+  function here(test) { return !!test.url && CK.matchUrl(test.url, location.href); }
+  function resultOf(tp, test) {
+    var o = ckOptim['r|' + tp.id + '|' + test.id];
+    return o ? o.v : (test.result || { state: 'none' });
+  }
+  function ckCurrentResult(topicId, testId) {
+    var tp = null, x = null;
+    ckTopics.forEach(function (a) { if (a.id === topicId) tp = a; });
+    if (tp) (tp.tests || []).forEach(function (b) { if (b.id === testId) x = b; });
+    return tp && x ? resultOf(tp, x) : null;
+  }
+  function pickOf(tp, dec) {
+    var o = ckOptim['p|' + tp.id + '|' + dec.id];
+    return o ? o.v : (dec.pick ? dec.pick.index : null);
+  }
+
+  function ckSetMsg(kind, text) {
+    ckMsg = text ? { kind: kind, text: text } : null;
+    ckMsgEl.hidden = !ckMsg;
+    ckMsgEl.className = 'ckMsg' + (ckMsg ? ' ' + ckMsg.kind : '');
+    ckMsgEl.textContent = ckMsg ? ckMsg.text : '';
+  }
+
+  /** Yazma isteği: iyimser gösterim, VS Code'un yanıtı gelmezse ya da hata dönerse kullanıcı görür. */
+  function ckWrite(op, data, key, value) {
+    var reqId = 'ck' + Date.now().toString(36) + (++ckSeq);
+    ckOptim[key] = { v: value, reqId: reqId, done: false };
+    var timer = setTimeout(function () { ckDone(reqId, false, t('ov.ck.timeout')); }, 8000);
+    ckPending[reqId] = { key: key, timer: timer };
+    data.type = 'checksReq';
+    data.reqId = reqId;
+    data.op = op;
+    post(data);
+    ckSetMsg('', t('ov.ck.saving'));
+    ckRender();
+  }
+  function ckDone(reqId, ok, error) {
+    var p = ckPending[reqId];
+    if (!p) return;
+    clearTimeout(p.timer);
+    delete ckPending[reqId];
+    var o = ckOptim[p.key];
+    if (o && o.reqId === reqId) {
+      if (ok) o.done = true; // yeni hal gelene kadar iyimser değer kalsın (titreme olmasın)
+      else delete ckOptim[p.key];
+    }
+    if (!ok) ckSetMsg('err', t('ov.ck.saveFail', error || '?'));
+    else if (!Object.keys(ckPending).length && ckMsg && ckMsg.kind === '') ckSetMsg('', '');
+    ckRender();
+  }
+
+  function ckSetOpen(open, quiet) {
+    // yazılmayı bekleyen notlar kapanırken kaybolmasın
+    if (!open) Object.keys(ckNoteTimers).forEach(function (k) { var p = ckNoteTimers[k]; if (p) p.flush(); });
+    ckOpen = !!open && active;
+    if (!ckOpen) ckPickOpen = false;
+    ck.hidden = !ckOpen;
+    if (ckOpen) {
+      ckApplyGeom();
+      ckRender();
+    }
+    if (!quiet) ckSaveState();
+  }
+
+  // ---------- Panelin yeri ve ölçüsü: taşı, boyutlandır, küçült, büyüt ----------
+  // ckGeom kullanıcının istediği hal (saklanan); ekrana basılan, görünüm alanına göre sınırlanmış halidir. Pencere
+  // küçülüp büyüyünce ölçü kaybolmasın diye sınırlanmış hal geri yazılmaz. Saklama host'ta (VS Code webview durumu /
+  // Chrome eklenti deposu); buraya gelen her değer CK.packGeom ile doğrulanır.
+  var ckHead = q('ckHead'), ckSum = q('ckSum'), ckPageBtn = q('ckPage'), ckMinBtn = q('ckMin'), ckMaxBtn = q('ckMax');
+  var ckGeom = CK.packGeom({});
+  var ckShown = null;
+  var ckPageAvail = false;
+  var ckDrag = null;
+  var ckSaveTimer = null;
+
+  function vwh() { return [window.innerWidth || document.documentElement.clientWidth, window.innerHeight || document.documentElement.clientHeight]; }
+
+  function ckApplyGeom() {
+    var v = vwh();
+    var g = (ckShown = CK.clampGeom(ckGeom, v[0], v[1]));
+    ck.style.left = g.x + 'px';
+    ck.style.top = g.y + 'px';
+    ck.style.width = g.w + 'px';
+    ck.style.maxWidth = 'none';
+    if (g.min) { ck.style.height = ''; ck.style.maxHeight = ''; }
+    else if (g.h != null) { ck.style.height = g.h + 'px'; ck.style.maxHeight = ''; }
+    else { ck.style.height = ''; ck.style.maxHeight = Math.max(CK.GEO.head, v[1] - g.y - CK.GEO.margin) + 'px'; }
+    ck.classList.toggle('min', !!g.min);
+    ck.classList.toggle('max', !!g.max);
+    var label = function (b, key, glyph) { b.textContent = glyph; b.title = t(key); b.setAttribute('aria-label', t(key)); };
+    label(ckMinBtn, g.min ? 'ov.ck.unmin' : 'ov.ck.min', g.min ? '▾' : '–');
+    label(ckMaxBtn, g.max ? 'ov.ck.unmax' : 'ov.ck.max', g.max ? '❐' : '□');
+    ckMinBtn.setAttribute('aria-expanded', String(!g.min));
+    ckMaxBtn.setAttribute('aria-pressed', String(!!g.max));
+    ckPageBtn.hidden = !ckPageAvail;
+    ckRenderSum();
+  }
+
+  function ckRenderSum() {
+    var pending = 0;
+    ckTopics.forEach(function (x) { pending += (x.counts && x.counts.pending) || 0; });
+    ckSum.textContent = ckShown && ckShown.min ? t('ov.ck.sum', ckTopics.length, pending) : '';
+  }
+
+  /** Host'a bildir: açık mı ve yer / ölçü (host saklar, sayfa yenilenince geri gönderir). */
+  function ckSaveState() {
+    clearTimeout(ckSaveTimer);
+    post({ type: 'checksPanelState', open: ckOpen, geom: CK.packGeom(ckGeom) });
+  }
+  function ckSaveSoon() {
+    clearTimeout(ckSaveTimer);
+    ckSaveTimer = setTimeout(ckSaveState, 300);
+  }
+
+  function ckSetGeom(g, save) {
+    ckGeom = CK.packGeom(g);
+    ckApplyGeom();
+    if (save === 'now') ckSaveState();
+    else if (save) ckSaveSoon();
+  }
+
+  function ckToggleMin() {
+    var v = vwh();
+    var g = CK.clampGeom(ckGeom, v[0], v[1]);
+    g.min = !g.min;
+    ckSetGeom(g, 'now');
+    if (!g.min) ckRender();
+  }
+  function ckToggleMax() {
+    var v = vwh();
+    var g = ckShown && ckShown.max ? CK.restoreGeom(ckGeom, v[0], v[1]) : CK.maximizeGeom(ckGeom, v[0], v[1]);
+    g.min = false;
+    ckSetGeom(g, 'now');
+    ckRender();
+  }
+
+  ckMinBtn.addEventListener('click', ckToggleMin);
+  ckMaxBtn.addEventListener('click', ckToggleMax);
+  ckPageBtn.addEventListener('click', function () {
+    post({ type: 'checksOpenPage' });
+    ckSetMsg('', t('ov.ck.pageAsked'));
+    setTimeout(function () { if (ckMsg && ckMsg.text === t('ov.ck.pageAsked')) ckSetMsg('', ''); }, 2500);
+  });
+  ckHead.addEventListener('dblclick', function (e) {
+    if (e.target.closest && e.target.closest('button')) return;
+    ckToggleMax();
+  });
+
+  // İşaretçi (fare, dokunma, kalem): başlıktan taşı, kenar / köşeden boyutlandır. Olay başlığa / tutamağa kilitlenir
+  // (setPointerCapture): sürüklerken sayfa ya da önizleme çerçevesi olayları almaz, metin seçilmez, sayfa kaymaz.
+  function ckStartDrag(e, kind, edge, el) {
+    if (e.button !== 0 && e.pointerType === 'mouse') return;
+    if (!ckShown || (kind === 'move' && ckShown.max)) return;
+    e.preventDefault();
+    e.stopPropagation();
+    ckDrag = { kind: kind, edge: edge, el: el, id: e.pointerId, sx: e.clientX, sy: e.clientY, g: ckShown, curH: ck.getBoundingClientRect().height };
+    try { el.setPointerCapture(e.pointerId); } catch (err) { /* yok say */ }
+    ck.classList.add('drag');
+  }
+  function ckMoveDrag(e) {
+    if (!ckDrag || e.pointerId !== ckDrag.id) return;
+    e.preventDefault();
+    var v = vwh(), dx = e.clientX - ckDrag.sx, dy = e.clientY - ckDrag.sy;
+    ckSetGeom(ckDrag.kind === 'move'
+      ? CK.moveGeom(ckDrag.g, dx, dy, v[0], v[1])
+      : CK.resizeGeom(ckDrag.g, ckDrag.edge, dx, dy, v[0], v[1], ckDrag.curH), false);
+  }
+  function ckEndDrag(e) {
+    if (!ckDrag || (e && e.pointerId !== ckDrag.id)) return;
+    try { ckDrag.el.releasePointerCapture(ckDrag.id); } catch (err) { /* yok say */ }
+    ckDrag = null;
+    ck.classList.remove('drag');
+    ckSaveState();
+  }
+  ckHead.addEventListener('pointerdown', function (e) {
+    if (e.target.closest && e.target.closest('button')) return; // başlıktaki düğmeler normal tıklanır
+    ckStartDrag(e, 'move', '', ckHead);
+  });
+  Array.prototype.forEach.call(ck.querySelectorAll('.ckRz'), function (h) {
+    h.addEventListener('pointerdown', function (e) { ckStartDrag(e, 'resize', h.getAttribute('data-edge'), h); });
+  });
+  ['pointermove'].forEach(function (ev) { ck.addEventListener(ev, ckMoveDrag); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) { ck.addEventListener(ev, ckEndDrag); });
+
+  // Klavye: başlık odaktayken oklar taşır, Shift+oklar boyutlandırır (sağ / alt kenar)
+  ckHead.addEventListener('keydown', function (e) {
+    if (e.target !== ckHead) return;
+    var k = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (!k || !ckShown) return;
+    e.preventDefault();
+    var v = vwh(), s = CK.GEO.step || 16;
+    if (e.shiftKey) {
+      if (ckShown.max || ckShown.min) return;
+      ckSetGeom(CK.resizeGeom(ckShown, k[0] ? 'e' : 's', k[0] * s, k[1] * s, v[0], v[1], ck.getBoundingClientRect().height), true);
+    } else if (!ckShown.max) {
+      ckSetGeom(CK.moveGeom(ckShown, k[0] * s, k[1] * s, v[0], v[1]), true);
+    }
+  });
+
+  // Pencere boyutu değişince yeniden sınırla (saklanan ölçüye dokunmadan)
+  window.addEventListener('resize', function () { if (ckOpen) ckApplyGeom(); });
+
+  /** Odaktaki denetim yeniden çizimden sonra da odakta kalsın (klavye ve not yazarken). */
+  function ckFocusKey() {
+    var a = root.activeElement;
+    if (!a || !ck.contains(a)) return null;
+    return { key: a.getAttribute('data-k'), start: a.selectionStart, end: a.selectionEnd, value: a.tagName === 'TEXTAREA' ? a.value : null };
+  }
+
+  var ckRendering = false;
+  function ckRender() {
+    if (ck.hidden || ckRendering) return;
+    ckRendering = true;
+    try { ckDraw(); } finally { ckRendering = false; }
+  }
+
+  function ckDraw() {
+    var keep = ckFocusKey();
+    var scroll = ckBody.scrollTop;
+    var tp = ckTopic();
+    ckCur = tp ? tp.id : null;
+    ckTabs.textContent = '';
+    ckTabs.hidden = ckTopics.length < 2;
+    if (ckTabs.hidden) ckPickOpen = false;
+    // Konu seçici: ‹ [seçili konu · sayı · sıra ▾] › ; liste (arama + konular) tıklayınca açılır
+    var ckCount = function (x) {
+      var c = x.counts || {};
+      return el('span', 'cn' + (c.bad ? ' bad' : (c.complete ? ' done' : '')), (c.ok || 0) + '/' + (c.tests || 0));
+    };
+    var ckNavBtn = function (dir, text, key) {
+      var n = el('button', 'ckNav', text);
+      n.setAttribute('data-nav', String(dir));
+      n.setAttribute('data-k', 'nav|' + dir);
+      n.title = t(key);
+      n.setAttribute('aria-label', t(key));
+      return n;
+    };
+    ckTabs.appendChild(ckNavBtn(-1, '\u2039', 'ov.ck.prev'));
+    var pick = el('button', 'ckPick');
+    pick.setAttribute('data-k', 'pick');
+    pick.setAttribute('aria-haspopup', 'listbox');
+    pick.setAttribute('aria-expanded', String(ckPickOpen));
+    pick.setAttribute('aria-label', t('ov.ck.pick') + (tp ? ': ' + tp.name : ''));
+    pick.title = tp ? tp.name : t('ov.ck.pick');
+    pick.appendChild(el('span', 'nm', tp ? tp.name : t('ov.ck.pick')));
+    if (tp) {
+      if ((tp.tests || []).some(here)) pick.appendChild(el('span', 'hd'));
+      pick.appendChild(ckCount(tp));
+      pick.appendChild(el('span', 'ps', (ckTopics.indexOf(tp) + 1) + ' / ' + ckTopics.length));
+    }
+    pick.appendChild(el('span', 'ch', '\u25BC'));
+    ckTabs.appendChild(pick);
+    ckTabs.appendChild(ckNavBtn(1, '\u203A', 'ov.ck.next'));
+    var list = el('div', 'ckList');
+    list.hidden = !ckPickOpen;
+    if (ckTopics.length > 6) {
+      var find = el('input', 'ckFind');
+      find.type = 'text';
+      find.setAttribute('data-k', 'find');
+      find.placeholder = t('ov.ck.find');
+      find.setAttribute('aria-label', t('ov.ck.find'));
+      find.value = ckFindText;
+      list.appendChild(find);
+    } else ckFindText = '';
+    var opts = el('div', 'ckOpts');
+    opts.setAttribute('role', 'listbox');
+    opts.setAttribute('aria-label', t('ov.ck.tabs'));
+    ckTopics.forEach(function (x) {
+      var b = el('button', 'ckTab');
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(x === tp));
+      b.setAttribute('data-k', 'tab|' + x.id);
+      b.setAttribute('data-topic', x.id);
+      b.appendChild(el('span', 'nm', x.name));
+      if ((x.tests || []).some(here)) b.appendChild(el('span', 'hd'));
+      b.appendChild(ckCount(x));
+      b.title = x.name;
+      opts.appendChild(b);
+    });
+    var none = el('div', 'ckEmpty', t('ov.ck.noMatch'));
+    none.hidden = true;
+    opts.appendChild(none);
+    list.appendChild(opts);
+    ckTabs.appendChild(list);
+    ckFilter();
+    ckBody.textContent = '';
+    if (ckErrors.length) {
+      ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.fileErr', ckErrors.length, ckErrors.map(function (e) { return e.file + ' (' + e.error + ')'; }).join('; '))));
+    }
+    if (!tp) {
+      ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.empty')));
+      ckRestore(keep, scroll);
+      return;
+    }
+    if (tp.lead || tp.date) ckBody.appendChild(el('div', 'ckLead', [tp.date, tp.lead].filter(Boolean).join(' · ')));
+
+    // 1 · Test et — bu sayfaya ait adımlar önce
+    var tests = (tp.tests || []).map(function (x, i) { return { x: x, i: i, here: here(x) }; });
+    tests.sort(function (a, b) { return (b.here - a.here) || (a.i - b.i); });
+    var okN = 0, badN = 0;
+    tests.forEach(function (r) { var s = resultOf(tp, r.x).state; if (s === 'ok') okN++; else if (s === 'bad') badN++; });
+    var sec = el('div', 'ckSec', t('ov.ck.tests'));
+    sec.appendChild(el('span', null, t('ov.ck.testCount', okN, tests.length) + (badN ? t('ov.ck.badCount', badN) : '')));
+    ckBody.appendChild(sec);
+    if (!tests.length) ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.noTests')));
+    tests.forEach(function (r) {
+      var x = r.x, res = resultOf(tp, x), key = 'r|' + tp.id + '|' + x.id;
+      var o = ckOptim[key];
+      var row = el('div', 'ckRow' + (r.here ? ' here' : '') + (res.state === 'ok' ? ' ok' : '') + (res.state === 'bad' ? ' bad' : '') + (o && !o.done ? ' saving' : ''));
+      var cb = el('input');
+      cb.type = 'checkbox';
+      cb.checked = res.state === 'ok';
+      cb.setAttribute('aria-label', t('ov.ck.done') + ': T' + (r.i + 1) + ' ' + x.t);
+      cb.setAttribute('data-k', 'ok|' + x.id);
+      cb.addEventListener('change', function () {
+        ckWrite('result', { topic: tp.id, test: x.id, state: cb.checked ? 'ok' : 'none' }, key, { state: cb.checked ? 'ok' : 'none', note: res.note });
+      });
+      row.appendChild(cb);
+      var head = el('div', 'ckT');
+      head.appendChild(el('span', 'ckCode', 'T' + (r.i + 1)));
+      head.appendChild(el('span', 'ckTt', x.t));
+      if (r.here) head.appendChild(el('span', 'ckTag here', t('ov.ck.here')));
+      if (x.agent) head.appendChild(el('span', 'ckTag tried', t('ov.ck.agent')));
+      row.appendChild(head);
+      if (x.d) row.appendChild(el('div', 'ckD', x.d));
+      if (x.e) row.appendChild(el('div', 'ckE', t('ov.ck.expected') + x.e));
+      var acts = el('div', 'ckActs');
+      var go = CK.openUrl(x.url, location.href, !CHROME);
+      if (go && !r.here) {
+        var ob = el('button', 'ckBtn link', t('ov.ck.open'));
+        ob.title = t('ov.ck.openTitle');
+        ob.setAttribute('data-k', 'open|' + x.id);
+        ob.addEventListener('click', function () {
+          var u = new URL(go);
+          if (u.origin === location.origin) location.assign(go);
+          else window.open(go, '_blank', 'noopener');
+        });
+        acts.appendChild(ob);
+      }
+      var bb = el('button', 'ckBtn' + (res.state === 'bad' ? ' on' : ''), res.state === 'bad' ? t('ov.ck.badOn') : t('ov.ck.bad'));
+      bb.title = t('ov.ck.badTitle');
+      bb.setAttribute('aria-pressed', String(res.state === 'bad'));
+      bb.setAttribute('data-k', 'bad|' + x.id);
+      bb.addEventListener('click', function () {
+        var on = res.state !== 'bad';
+        ckWrite('result', { topic: tp.id, test: x.id, state: on ? 'bad' : 'none' }, key, { state: on ? 'bad' : 'none', note: res.note });
+        if (on) setTimeout(function () { var n = ck.querySelector('[data-k="note|' + x.id + '"]'); if (n) n.focus(); }, 0);
+      });
+      acts.appendChild(bb);
+      if (res.state === 'bad') {
+        var qb = el('button', 'ckBtn', t('ov.ck.toQueue'));
+        qb.title = t('ov.ck.toQueueTitle');
+        qb.setAttribute('data-k', 'queue|' + x.id);
+        qb.addEventListener('click', function () {
+          var nEl = ck.querySelector('[data-k="note|' + x.id + '"]');
+          var note = (nEl ? nEl.value : res.note || '').trim();
+          if (!note) { ckSetMsg('err', t('ov.ck.noNote')); if (nEl) nEl.focus(); return; }
+          post({ type: 'commit', mode: 'queue', entries: [{ token: newToken(), kind: 'prompt', text: t('ov.ck.queueText', tp.name, 'T' + (r.i + 1) + ' ' + x.t, note), items: selectedSnaps() }] });
+          ckSetMsg('ok', t('ov.ck.queued'));
+        });
+        acts.appendChild(qb);
+      }
+      if (res.by && res.state !== 'none') acts.appendChild(el('span', 'ckBy', (res.state === 'ok' ? '✓ ' : '✕ ') + t('ov.ck.markedBy', res.by, ckTime(res.at))));
+      row.appendChild(acts);
+      if (res.state === 'bad') {
+        var ta = el('textarea', 'ckNote');
+        ta.value = res.note || '';
+        ta.placeholder = t('ov.ck.notePh');
+        ta.setAttribute('aria-label', t('ov.ck.notePh') + ' T' + (r.i + 1));
+        ta.setAttribute('data-k', 'note|' + x.id);
+        ta.maxLength = 4000;
+        var flush = function () {
+          var p = ckNoteTimers[key];
+          if (p) clearTimeout(p.timer);
+          delete ckNoteTimers[key];
+          var value = p ? p.value : ta.value;
+          var cur = ckCurrentResult(tp.id, x.id); // panel bu arada yeniden çizilmiş olabilir: güncel hali al
+          if (!cur) return;
+          if (cur.state !== 'bad' || value === (cur.note || '')) return;
+          if (ckRendering) return void setTimeout(function () { ckWrite('result', { topic: tp.id, test: x.id, state: 'bad', note: value }, key, { state: 'bad', note: value, by: cur.by, at: cur.at }); }, 0);
+          ckWrite('result', { topic: tp.id, test: x.id, state: 'bad', note: value }, key, { state: 'bad', note: value, by: cur.by, at: cur.at });
+        };
+        ta.addEventListener('input', function () {
+          var p = ckNoteTimers[key];
+          if (p) clearTimeout(p.timer);
+          ckNoteTimers[key] = { value: ta.value, flush: flush, timer: setTimeout(flush, 700) };
+        });
+        ta.addEventListener('blur', function () { if (!ckRendering) flush(); });
+        row.appendChild(ta);
+      }
+      ckBody.appendChild(row);
+    });
+
+    // 2 · Karar ver
+    var decs = tp.decisions || [];
+    var decided = decs.filter(function (d) { return pickOf(tp, d) != null; }).length;
+    sec = el('div', 'ckSec', t('ov.ck.decisions'));
+    sec.appendChild(el('span', null, t('ov.ck.decCount', decided, decs.length)));
+    ckBody.appendChild(sec);
+    if (!decs.length) ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.noDecisions')));
+    decs.forEach(function (d, i) {
+      var box = el('div', 'ckDec');
+      box.setAttribute('role', 'radiogroup');
+      var dh = el('div', 'ckT');
+      dh.appendChild(el('span', 'ckCode', 'K' + (i + 1)));
+      dh.appendChild(el('span', null, d.t));
+      box.appendChild(dh);
+      box.setAttribute('aria-label', 'K' + (i + 1) + ' ' + d.t);
+      var cur = pickOf(tp, d);
+      (d.o || []).forEach(function (opt, j) {
+        var lab = el('label', 'ckOpt');
+        var rb = el('input');
+        rb.type = 'radio';
+        rb.name = 'ck-' + tp.id + '-' + d.id;
+        rb.checked = cur === j;
+        rb.setAttribute('data-k', 'pick|' + d.id + '|' + j);
+        rb.addEventListener('change', function () {
+          if (rb.checked) ckWrite('pick', { topic: tp.id, decision: d.id, index: j }, 'p|' + tp.id + '|' + d.id, j);
+        });
+        lab.appendChild(rb);
+        lab.appendChild(el('span', null, opt));
+        box.appendChild(lab);
+      });
+      if (d.pick && d.pick.by && cur === d.pick.index) box.appendChild(el('div', 'ckBy', '✓ ' + t('ov.ck.markedBy', d.pick.by, ckTime(d.pick.at))));
+      ckBody.appendChild(box);
+    });
+
+    // 3 · Bilgi
+    var infos = tp.infos || [];
+    if (infos.length) {
+      sec = el('div', 'ckSec', t('ov.ck.infos'));
+      sec.appendChild(el('span', null, t('ov.ck.infoNote')));
+      ckBody.appendChild(sec);
+      infos.forEach(function (s) { ckBody.appendChild(richText(el('div', 'ckInfo'), s)); });
+    }
+    ckRestore(keep, scroll);
+  }
+
+  function ckRestore(keep, scroll) {
+    ckBody.scrollTop = scroll;
+    if (!keep || !keep.key) return;
+    var n = ck.querySelector('[data-k="' + keep.key.replace(/["\\]/g, '\\$&') + '"]');
+    if (!n) return;
+    if (keep.value != null) n.value = keep.value;
+    n.focus({ preventScroll: true });
+    try { if (keep.start != null) n.setSelectionRange(keep.start, keep.end); } catch (e) { /* seçim yok */ }
+  }
+
+  function onChecks(m) {
+    ckTopics = Array.isArray(m.topics) ? m.topics : [];
+    ckErrors = Array.isArray(m.errors) ? m.errors : [];
+    // yanıtı gelmiş iyimser değerler artık diskteki halde
+    Object.keys(ckOptim).forEach(function (k) { if (ckOptim[k].done) delete ckOptim[k]; });
+    if (ckCur && !ckTopics.some(function (x) { return x.id === ckCur; })) ckCur = null;
+    if (!ckCur) {
+      var withHere = ckTopics.filter(function (x) { return (x.tests || []).some(here); })[0];
+      if (withHere) ckCur = withHere.id;
+    }
+    if (ckOpen) ckRenderSum();
+    ckRender();
+  }
+
+  ckX.addEventListener('click', function () { ckSetOpen(false); });
+  /** Konu listesini yeniden çizmeden açar / kapatır (gövdedeki tıklama kaybolmasın). */
+  function ckPickSet(open, focus) {
+    ckPickOpen = !!open && ckTopics.length > 1;
+    var list = ckTabs.querySelector('.ckList'), pick = ckTabs.querySelector('.ckPick');
+    if (list) list.hidden = !ckPickOpen;
+    if (pick) pick.setAttribute('aria-expanded', String(ckPickOpen));
+    if (!focus) return;
+    var target = ckPickOpen
+      ? (ckTabs.querySelector('.ckFind') || ckTabs.querySelector('.ckTab[aria-selected=true]') || ckTabs.querySelector('.ckTab'))
+      : pick;
+    if (target) target.focus({ preventScroll: true });
+    if (ckPickOpen) {
+      var sel = ckTabs.querySelector('.ckTab[aria-selected=true]');
+      if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
+    }
+  }
+  /** Arama metnine uymayan konuları gizler. */
+  function ckFilter() {
+    var needle = ckFindText.trim().toLocaleLowerCase();
+    var any = false;
+    Array.prototype.forEach.call(ckTabs.querySelectorAll('.ckTab'), function (b) {
+      var hit = !needle || (b.title || '').toLocaleLowerCase().indexOf(needle) >= 0;
+      b.hidden = !hit;
+      if (hit) any = true;
+    });
+    var none = ckTabs.querySelector('.ckOpts .ckEmpty');
+    if (none) none.hidden = any;
+  }
+  function ckVisibleTabs() {
+    return Array.prototype.filter.call(ckTabs.querySelectorAll('.ckTab'), function (b) { return !b.hidden; });
+  }
+  function ckPickTopic(id) {
+    ckCur = id;
+    ckPickOpen = false;
+    ckFindText = '';
+    ckRender();
+    var pick = ckTabs.querySelector('.ckPick');
+    if (pick) pick.focus({ preventScroll: true });
+  }
+  function ckStepTopic(dir) {
+    if (!ckTopics.length) return;
+    var i = ckTopics.findIndex(function (x) { return x.id === ckCur; });
+    var n = ckTopics[(i + dir + ckTopics.length) % ckTopics.length];
+    if (n) ckPickTopic(n.id);
+  }
+  ckTabs.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('[data-topic]');
+    if (b) { ckPickTopic(b.getAttribute('data-topic')); return; }
+    var nav = e.target.closest('[data-nav]');
+    if (nav) {
+      ckStepTopic(Number(nav.getAttribute('data-nav')));
+      var again = ckTabs.querySelector('[data-nav="' + nav.getAttribute('data-nav') + '"]');
+      if (again) again.focus({ preventScroll: true });
+      return;
+    }
+    if (e.target.closest('.ckPick')) ckPickSet(!ckPickOpen, true);
+  });
+  ckTabs.addEventListener('input', function (e) {
+    if (!e.target.classList || !e.target.classList.contains('ckFind')) return;
+    ckFindText = e.target.value;
+    ckFilter();
+  });
+  ckTabs.addEventListener('keydown', function (e) {
+    var onPick = e.target.closest && e.target.closest('.ckPick');
+    if (onPick && !ckPickOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      ckStepTopic(e.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
+    if (onPick && e.key === 'ArrowDown') { e.preventDefault(); ckPickSet(true, true); return; }
+    if (!ckPickOpen) return;
+    var vis = ckVisibleTabs();
+    var inFind = e.target.classList && e.target.classList.contains('ckFind');
+    if (e.key === 'Enter' && inFind) {
+      e.preventDefault();
+      if (vis[0]) ckPickTopic(vis[0].getAttribute('data-topic'));
+      return;
+    }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+    e.preventDefault();
+    var i = vis.indexOf(e.target.closest ? e.target.closest('.ckTab') : null);
+    var next = e.key === 'ArrowDown' ? vis[i + 1] : (i > 0 ? vis[i - 1] : ckTabs.querySelector('.ckFind'));
+    if (next) { next.focus({ preventScroll: true }); if (next.scrollIntoView) next.scrollIntoView({ block: 'nearest' }); }
+  });
+  // Liste açıkken panelin başka yerine basınca liste kapanır (yeniden çizim yok: basılan öğe yerinde kalır)
+  ck.addEventListener('pointerdown', function (e) {
+    if (ckPickOpen && !ckTabs.contains(e.target)) ckPickSet(false, false);
+  });
+  // Panelde yazarken / tıklarken sayfanın kendi kısayolları ve dinleyicileri devreye girmesin
+  ['keydown', 'keyup', 'keypress', 'input', 'beforeinput', 'paste', 'copy', 'cut'].forEach(function (ev) {
+    ck.addEventListener(ev, function (e) {
+      if (ev === 'keydown' && e.key === 'Escape') { e.preventDefault(); if (ckPickOpen) ckPickSet(false, true); else ckSetOpen(false); }
+      e.stopPropagation();
+    });
+  });
+  ['pointerdown', 'pointermove', 'pointerup', 'pointercancel', 'mousedown', 'mousemove', 'mouseup', 'click', 'dblclick', 'wheel',
+    'touchstart', 'touchmove', 'touchend'].forEach(function (ev) {
+    ck.addEventListener(ev, function (e) { e.stopPropagation(); });
+  });
+
   // ---------- Dil değişimi: açık kutuyu yeniden çevir ----------
   function relocalize() {
     localizeStatic();
+    if (ckOpen) ckApplyGeom();
+    ckRender();
     if (pop.hidden) { tabStyle.dataset.built = ''; return; }
     popTitle();
     if (activeTab === 'style' && !tabStyle.hidden) buildStylePanel(); // taslak stiller korunur
@@ -1268,9 +2406,10 @@
       case 'config':
         if (typeof m.active === 'boolean') {
           active = m.active;
-          if (!active) { setMode(false, false); selected.clear(); closePopover(); hoverEl = null; }
+          if (!active) { setMode(false, false); selected.clear(); closePopover(); hoverEl = null; ckSetOpen(false, true); }
         }
         if (typeof m.popover === 'boolean') { popEnabled = m.popover; if (!popEnabled) closePopover(); }
+        if (typeof m.checksPage === 'boolean') { ckPageAvail = m.checksPage; ckPageBtn.hidden = !ckPageAvail; }
         if (m.nowLabel) { nowLabel = m.nowLabel; popNow.textContent = m.nowLabel; }
         if (m.lang && I18N.setLang(m.lang)) relocalize();
         if (m.viewport) { viewport = String(m.viewport); if (!pop.hidden) popTitle(); }
@@ -1333,18 +2472,33 @@
         if (el3) el3.scrollIntoView({ block: 'center', behavior: 'smooth' });
         break;
       }
+      case 'mcpRequest':
+        try { onAgent(m); } catch (err) { reply(m, { ok: false, error: err.message || String(err) }); }
+        break;
       case 'openPopover': {
         var last = null;
         selected.forEach(function (_, k) { last = k; });
         if (last !== null) openPopover(last, true);
         break;
       }
+      case 'checks': // Test ve Karar: açık konuların son hali
+        onChecks(m);
+        break;
+      case 'checksRes':
+        ckDone(m.reqId, !!m.ok, m.error);
+        break;
+      case 'checksPanel':
+        // host'un sakladığı yer / ölçü (doğrulanır; sayfa betikleri bunu bozsa da yalnız panelin yeri değişir)
+        if (m.geom && typeof m.geom === 'object') ckGeom = CK.packGeom(m.geom);
+        ckSetOpen(m.toggle ? !ckOpen : m.open !== false, !!m.restore);
+        break;
     }
   });
 
   // ---------- Sayfa konumu ----------
   function reportLocation() {
     post({ type: 'location', href: location.href, title: document.title });
+    ckRender(); // "bu sayfada" adımları değişir
   }
   ['pushState', 'replaceState'].forEach(function (fn) {
     var orig = history[fn];

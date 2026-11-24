@@ -78,3 +78,13 @@ Stop `npm run dev` and run it again, then press the ↻ button in the Panoptent 
 ## Plain HTML/CSS projects
 
 Sites without a build tool don't need this step. Claude finds the element in your HTML files by its text and classes. Since there is no hot reload, the preview refreshes on its own after Claude changes the files.
+
+## Test and Decisions (optional)
+
+When an agent finishes a piece of work, it can record what you should try and what you must decide as a topic in `.panoptent/checks/` (MCP tool `save_check_topic`). A **Test** button with a badge then appears in the Panoptent bar; it opens a panel on top of your app where you tick steps, report problems and pick options. In Claude Code, `/panoptent checks` has the agent read and act on your results.
+
+- Setup: connect Claude Code once with **Panoptent: Connect Claude Code (MCP)**. Nothing else to install.
+- Commit `.panoptent/checks/` with your project so others can take over open topics. Only lock and temp files in it are ignored.
+- Your marks are signed with your **GitHub user name** (GitHub CLI, then `git config github.user`). If **Panoptent: Test and Decisions** shows a wrong name or source, set `panoptent.checks.userName`.
+- The panel runs inside the page you are developing, so scripts on that page can read the topic text: never put passwords, tokens or customer data in steps or notes.
+- It only works during local development (preview proxy or Chrome extension); nothing is added to your production build.

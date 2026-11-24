@@ -10,6 +10,14 @@ import { resolveFile, openAt, quickEditText } from './source';
 import { claudeExtensionInstalled, openInClaudePanel, cliOnPath, findBundledClaude, sendToOpenConversation } from './claudePanel';
 import { Entry, SelectedItem, buildBatchPrompt, saveImage } from './entries';
 import { ApplyRecord, RevOp, newApplyId, opsFromTranscripts, planRevert } from './revert';
+import { CHECKS_DIR, CheckError, ChecksStore, UserResolver, summarize } from './checks';
+
+/**
+ * Canlı mod: bir bekleme bittikten sonra Claude'un yenisini başlatması için tanınan süre. Claude beklemeyi
+ * düzenlemeden önce yeniden başlatır; başlatmazsa (konuşmada başka bir işe geçtiyse) paket bu süre sonunda
+ * her zamanki yoldan gönderilir, kaybolmaz.
+ */
+const LIVE_GAP_MS = 30 * 1000;
 
 addStrings({
   en: {
@@ -47,6 +55,7 @@ addStrings({
     'ext.mcp.markDone': 'When you are done, call the Panoptent MCP tool mark_applied with id {0}.',
     'ext.mcp.directOnly': 'Panoptent wrote the {0} text change(s) directly; there is nothing left to edit.',
     'ext.mcp.log.done': 'Claude finished {0} (via MCP)',
+    'ext.mcp.liveLost': 'Live mode: no Claude Code conversation picked up {0}; sent it the usual way.',
   },
   tr: {
     'ext.fileNotFound': 'Dosya bulunamadı: {0}',
@@ -83,6 +92,7 @@ addStrings({
     'ext.mcp.markDone': 'İşin bitince Panoptent MCP aracı mark_applied’ı {0} kimliğiyle çağır.',
     'ext.mcp.directOnly': 'Panoptent {0} metin değişikliğini doğrudan yazdı; düzenlenecek başka bir şey kalmadı.',
     'ext.mcp.log.done': 'Claude {0} işini bitirdi (MCP üzerinden)',
+    'ext.mcp.liveLost': 'Canlı mod: {0} hiçbir Claude Code konuşması tarafından alınmadı; her zamanki yoldan gönderildi.',
   },
 });
 
@@ -107,16 +117,25 @@ export class Engine {
   private changed = new Set<string>();
   private changeTimer?: NodeJS.Timeout;
   private pages = new Map<string, PageState>();
+  /** Test ve Karar konuları (.panoptent/checks). */
+  readonly checks: ChecksStore;
+  readonly users: UserResolver;
+  private checksWatcher: vscode.FileSystemWatcher;
+  private checksTimer?: NodeJS.Timeout;
 
   constructor(
     public readonly context: vscode.ExtensionContext,
     public readonly root: string,
     public readonly output: vscode.OutputChannel,
   ) {
+    // Kişi adı: ayar → GitHub CLI → git github.user → git user.name → işletim sistemi (checks.ts)
+    this.users = new UserResolver(root, { setting: () => this.cfg().get<string>('checks.userName') });
+    this.checks = new ChecksStore(root, { who: () => this.users.name() });
     this.watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, '**/*'));
     const onChange = (u: vscode.Uri) => {
       const rel = path.relative(this.root, u.fsPath);
-      if (/(^|[\\/])(node_modules|\.git|\.next|\.nuxt|\.output|dist|build|bin|obj|\.vs|\.claude)([\\/]|$)/.test(rel)) return;
+      // .panoptent: Test ve Karar dosyaları uygulamanın kodu değil (sayfa yenilenmesin, önizlemeler geri alınmasın)
+      if (/(^|[\\/])(node_modules|\.git|\.next|\.nuxt|\.output|dist|build|bin|obj|\.vs|\.claude|\.panoptent)([\\/]|$)/.test(rel)) return;
       this.changed.add(rel);
       clearTimeout(this.changeTimer);
       this.changeTimer = setTimeout(() => {
@@ -126,6 +145,82 @@ export class Engine {
     };
     this.watcher.onDidChange(onChange);
     this.watcher.onDidCreate(onChange);
+    // Konu dosyaları elle, git ile ya da başka bir pencereden değişince sayfalardaki paneli yenile
+    this.checksWatcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(root, CHECKS_DIR.split(path.sep).join('/') + '/**/*.json'));
+    const onChecks = () => this.checksChanged();
+    this.checksWatcher.onDidChange(onChecks);
+    this.checksWatcher.onDidCreate(onChecks);
+    this.checksWatcher.onDidDelete(onChecks);
+  }
+
+  /** Açık konuların son hali (sayfa paneli ve çubuk rozeti için). */
+  checksSnapshot() {
+    const { topics, errors } = this.checks.list('open');
+    if (topics.length) void this.users.warm(); // ilk işaretten önce gh arka planda bir kez sorulsun
+    const list = topics.map((tp) => ({ ...tp, counts: summarize(tp), file: this.checks.rel('open', tp.id) }));
+    return {
+      type: 'checks',
+      topics: list,
+      errors,
+      pending: list.reduce((n, tp) => n + tp.counts.pending, 0),
+      bad: list.reduce((n, tp) => n + tp.counts.bad, 0),
+    };
+  }
+
+  /** Konular değişti: kısa bir beklemeden sonra herkese yayınla (art arda yazmalar tek yayın olsun). */
+  checksChanged(to?: string) {
+    if (to) return this.emit(this.checksSnapshot(), to);
+    clearTimeout(this.checksTimer);
+    this.checksTimer = setTimeout(() => {
+      this.emit(this.checksSnapshot());
+      this.checksListeners.forEach((f) => f());
+    }, 150);
+  }
+
+  private checksListeners = new Set<() => void>();
+  onChecks(f: () => void): vscode.Disposable {
+    this.checksListeners.add(f);
+    return { dispose: () => this.checksListeners.delete(f) };
+  }
+
+  /**
+   * Sayfa panelinden (önizleme ya da Chrome) gelen Test ve Karar istekleri. `list`: güncel hali bu istemciye
+   * gönder; `result` / `pick`: tek alanı yaz. Yanıt (`checksRes`) yalnızca isteyene, yeni hal herkese gider.
+   */
+  checksMessage(m: any, client: string) {
+    const reply = (ok: boolean, error?: string) => this.emit({ type: 'checksRes', reqId: m.reqId, op: m.op, ok, error }, client);
+    try {
+      switch (m.op) {
+        case 'list':
+          this.checksChanged(client);
+          return reply(true);
+        case 'result':
+          this.checks.setResult(String(m.topic), String(m.test), String(m.state), m.note === undefined ? undefined : String(m.note));
+          break;
+        case 'pick':
+          this.checks.setPick(String(m.topic), String(m.decision), m.index);
+          break;
+        default:
+          return reply(false, 'Unknown request ' + m.op);
+      }
+      reply(true);
+      this.checksChanged();
+    } catch (err: any) {
+      let msg = String(err?.message || err);
+      if (!(err instanceof CheckError)) {
+        this.output.appendLine(t('ext.log.error', msg));
+        // sayfaya diskteki tam yol gitmesin: proje köküne göre göster
+        let real = this.root;
+        try {
+          real = fs.realpathSync(this.root);
+        } catch {
+          /* yok say */
+        }
+        for (const r of [this.root, real]) msg = msg.split(r + path.sep).join('');
+      }
+      reply(false, msg);
+      this.checksChanged(client); // sayfa diskteki doğru hali görsün
+    }
   }
 
   on(l: Listener): vscode.Disposable {
@@ -151,7 +246,9 @@ export class Engine {
   dispose() {
     this.runner.stop();
     this.watcher.dispose();
+    this.checksWatcher.dispose();
     clearTimeout(this.changeTimer);
+    clearTimeout(this.checksTimer);
   }
 
   settings() {
@@ -214,6 +311,38 @@ export class Engine {
   /** Bilinen sayfalar, en son güncellenen önce. */
   pageStates(): PageState[] {
     return [...this.pages.values()].sort((a, b) => b.at - a.at);
+  }
+
+  private pageReqs = new Map<string, { client: string; done: (r: any) => void }>();
+  private pageReqSeq = 0;
+
+  /**
+   * MCP araçları (highlight, preview_style, screenshot_element) için sayfaya istek gönderir; sayfadaki seçim
+   * katmanı `mcpResult` ile yanıtlar. Süre dolarsa (eski Chrome eklentisi, kapalı sayfa) `undefined`.
+   */
+  pageRequest(client: string, req: Record<string, unknown>, timeoutMs: number): Promise<any> {
+    const reqId = 'mq' + Date.now().toString(36) + ++this.pageReqSeq;
+    return new Promise((resolve) => {
+      const timer = setTimeout(() => {
+        this.pageReqs.delete(reqId);
+        resolve(undefined);
+      }, timeoutMs);
+      this.pageReqs.set(reqId, {
+        client,
+        done: (r) => {
+          clearTimeout(timer);
+          this.pageReqs.delete(reqId);
+          resolve(r);
+        },
+      });
+      this.emit({ type: 'mcpRequest', reqId, ...req }, client);
+    });
+  }
+
+  /** Sayfadan gelen yanıt; yalnızca isteğin gittiği istemciden kabul edilir. */
+  pageResult(client: string, m: any) {
+    const r = this.pageReqs.get(String(m?.reqId));
+    if (r && r.client === client) r.done(m);
   }
 
   /** Change the UI language (writes the `panoptent.language` setting; the config listener broadcasts it). */
@@ -315,6 +444,65 @@ export class Engine {
     return this.applyEntries(queue, p.pageUrl, false, true, p.client, true);
   }
 
+  /**
+   * Canlı mod (`/panoptent live`): Claude `wait_for_apply` ile bekler, kullanıcı Uygula'ya basınca paket
+   * doğrudan ona gider (komut kopyalanmaz, sekme açılmaz). Claude düzenleme yaparken gelen paketler
+   * kutuda sırasını bekler; canlı mod son bekleme ya da teslimden bir süre sonra kendiliğinden kapanır.
+   */
+  private liveWaiters: ((x: { id: string; prompt: string }) => boolean)[] = [];
+  private liveInbox: { id: string; prompt: string }[] = [];
+  private liveUntil = 0;
+
+  liveActive() {
+    return this.liveWaiters.length > 0 || Date.now() < this.liveUntil;
+  }
+
+  /** Sıradaki paketi bekler; süre dolarsa ya da istemci vazgeçerse `undefined`. */
+  waitForApply(timeoutMs: number, signal?: AbortSignal): Promise<{ id: string; prompt: string } | undefined> {
+    const next = this.liveInbox.shift();
+    if (next) {
+      this.liveUntil = Date.now() + LIVE_GAP_MS;
+      return Promise.resolve(next);
+    }
+    return new Promise((resolve) => {
+      const done = (x?: { id: string; prompt: string }) => {
+        clearTimeout(timer);
+        signal?.removeEventListener('abort', onAbort);
+        this.liveWaiters = this.liveWaiters.filter((w) => w !== waiter);
+        // istemci isteği kesse de (Esc ya da kendi zaman aşımı) kısa bir süre açık kalır: Claude birazdan yeniden bekleyebilir
+        this.liveUntil = Date.now() + LIVE_GAP_MS;
+        resolve(x);
+      };
+      // bağlantısı kopmuş bir bekleyiciye paket verilmesin (kaybolurdu)
+      const waiter = (x: { id: string; prompt: string }) => {
+        if (signal?.aborted) return false;
+        done(x);
+        return true;
+      };
+      const onAbort = () => done();
+      const timer = setTimeout(() => done(), timeoutMs);
+      if (signal?.aborted) return onAbort();
+      signal?.addEventListener('abort', onAbort);
+      this.liveWaiters.push(waiter);
+    });
+  }
+
+  /**
+   * Paketi bekleyen Claude'a verir; bekleyen yoksa kutuya koyar ve LIVE_GAP_MS içinde alınmazsa `fallback`
+   * çalışır (canlı mod kesilmiş demektir). Dönüş: hemen alındı mı.
+   */
+  private deliverLive(x: { id: string; prompt: string }, fallback: () => void): boolean {
+    for (let w = this.liveWaiters.shift(); w; w = this.liveWaiters.shift()) if (w(x)) return true;
+    this.liveInbox.push(x);
+    setTimeout(() => {
+      if (!this.liveInbox.includes(x)) return;
+      this.liveInbox = this.liveInbox.filter((y) => y !== x);
+      this.output.appendLine(t('ext.mcp.liveLost', x.id));
+      fallback();
+    }, LIVE_GAP_MS);
+    return false;
+  }
+
   records: ApplyRecord[] = [];
 
   canRollback() {
@@ -340,9 +528,11 @@ export class Engine {
     if (!entries.length) return fail(t('ext.nothingToApply'));
     if (this.runner.running) return fail(t('ext.busy'));
     // mcp: Claude değişiklikleri Panoptent'in MCP sunucusundan kendisi alır (istek dosyası yok)
-    const mcpMode = viaMcpPrompt || this.sendTo() === 'mcp';
+    // canlı mod: Claude Code `wait_for_apply` ile bekliyor, paket ona gider
+    const live = !viaMcpPrompt && this.liveActive();
+    const mcpMode = viaMcpPrompt || live || this.sendTo() === 'mcp';
     const panelMode = this.sendTo() !== 'cli';
-    if (panelMode && !viaMcpPrompt && !claudeExtensionInstalled()) {
+    if (panelMode && !viaMcpPrompt && !live && !claudeExtensionInstalled()) {
       return fail(t('ext.noClaudeExt'));
     }
 
@@ -419,7 +609,14 @@ export class Engine {
       if (this.mcpApplies.size > 15) this.mcpApplies.delete(this.mcpApplies.keys().next().value!);
       let ok = true;
       let how = 'mcpPrompt';
-      if (!viaMcpPrompt) {
+      if (live) {
+        how = this.deliverLive({ id: rec.id, prompt }, async () => {
+          const ok = await openInClaudePanel(t('ext.mcp.applyLine', rec.id));
+          emit({ type: 'handoff', ok, how: 'newTab', id: rec.id });
+        })
+          ? 'live'
+          : 'liveQueued';
+      } else if (!viaMcpPrompt) {
         const line = t('ext.mcp.applyLine', rec.id);
         if (continueSession) {
           // Açık Claude Code konuşmasının giriş kutusuna ekle (panel modundaki gibi): kullanıcı yalnızca Enter'a basar.
