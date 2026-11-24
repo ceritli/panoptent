@@ -285,25 +285,30 @@ step('MCP save_check_topic retest:["t1"] → panelde t1 yeniden "bakılmadı" (s
 const j = readTopic();
 j.name = 'Sipariş dışa aktarma (git)';
 fs.writeFileSync(topicFile(), JSON.stringify(j, null, 2) + '\n');
-// tek konuda sekme şeridi gizli ama sekme düğmesi konu adını taşır
-await until(async () => (await frame.locator('panoptent-overlay .ckTab').first().getAttribute('title')) === 'Sipariş dışa aktarma (git)', 'yeni konu adı panelde');
+// tek konuda konu seçici gizli ama seçici düğmesi konu adını taşır
+await until(async () => (await frame.locator('panoptent-overlay .ckPick').getAttribute('title')) === 'Sipariş dışa aktarma (git)', 'yeni konu adı panelde');
 assert.ok((await panel.locator('.ckLead').textContent()).includes('düzeltildi'));
 assert.equal((await mcp('get_check_topics', { id: 'siparis-aktar' })).topic.name, 'Sipariş dışa aktarma (git)');
 step('Dosya diskte değişti (git pull benzeri) → izleyici yeni hali panele gönderdi');
 
 // ---------- 13) Yazılamazsa kullanıcı görür (sessiz kayıp yok) ----------
-const openDir = path.dirname(topicFile());
-fs.chmodSync(openDir, 0o555);
-try {
-  await csvRow.locator('input[type=checkbox]').click(); // check() değil: kutu bilerek geri döner
-  await until(async () => /Kaydedilmedi/.test((await panel.locator('.ckMsg').textContent()) || ''), 'hata iletisi');
-  await until(async () => !(await csvRow.locator('input[type=checkbox]').isChecked()), 'işaret geri alındı');
-  await page.screenshot({ path: path.join(shots, '4-yazma-hatasi.png') });
-} finally {
-  fs.chmodSync(openDir, 0o755);
+// root için klasör izinleri yazmayı engellemez (ör. bulut kapsayıcıları): o durumda bu adım sınanamaz
+if (process.getuid?.() === 0) {
+  console.log('- ATLANDI (root): salt okunur klasörde yazma hatası sınanamaz');
+} else {
+  const openDir = path.dirname(topicFile());
+  fs.chmodSync(openDir, 0o555);
+  try {
+    await csvRow.locator('input[type=checkbox]').click(); // check() değil: kutu bilerek geri döner
+    await until(async () => /Kaydedilmedi/.test((await panel.locator('.ckMsg').textContent()) || ''), 'hata iletisi');
+    await until(async () => !(await csvRow.locator('input[type=checkbox]').isChecked()), 'işaret geri alındı');
+    await page.screenshot({ path: path.join(shots, '4-yazma-hatasi.png') });
+  } finally {
+    fs.chmodSync(openDir, 0o755);
+  }
+  assert.equal(readTopic().tests[0].result.state, 'none');
+  step('Klasör salt okunurken işaret: panelde "Kaydedilmedi: …", kutu eski haline döndü');
 }
-assert.equal(readTopic().tests[0].result.state, 'none');
-step('Klasör salt okunurken işaret: panelde "Kaydedilmedi: …", kutu eski haline döndü');
 
 // ---------- 14) Kapatma: eksikken reddedilir, tamamlanınca arşive taşınır ----------
 await assert.rejects(mcp('close_check_topic', { id: 'siparis-aktar' }), /not complete/);
@@ -482,4 +487,7 @@ fs.writeFileSync(path.join(out, 'steps.txt'), steps.join('\n') + '\n');
 console.log(`\nUçtan uca: ${steps.length} adım geçti. Ekran görüntüleri: ${shots}`);
 // Chrome çubuğu (chrome/content.js): çekmece ve Test paneli, taklit chrome.* ile
 const chrome = spawnSync(process.execPath, [path.join(here, 'chrome-drawer.mjs'), ...args.filter((a, i) => a !== '--out' && args[i - 1] !== '--out'), '--out', path.join(out, 'chrome')], { stdio: 'inherit' });
-process.exit(chrome.status ?? 1);
+if (chrome.status !== 0) process.exit(chrome.status ?? 1);
+// VS Code Integrated Browser yolu: aynı arayüz proxy kanalıyla, Test ve Karar + MCP sayfa araçları
+const ib = spawnSync(process.execPath, [path.join(here, 'integrated-browser.mjs'), ...args.filter((a, i) => a !== '--out' && args[i - 1] !== '--out'), '--out', path.join(out, 'integrated-browser')], { stdio: 'inherit' });
+process.exit(ib.status ?? 1);

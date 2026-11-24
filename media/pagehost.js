@@ -9,7 +9,8 @@
  *   chrome.storage.local      → localStorage of the preview origin
  *
  * It also does the few jobs chrome/background.js does in Chrome: loads the selection layer
- * on request, reports the (single) VS Code workspace as connected, and answers
+ * (checks.js + overlay.js) on request, answers `captureTab` with a failure so screenshots are
+ * drawn from the DOM, reports the (single) VS Code workspace as connected, and answers
  * `notConnected` while the socket is down.
  */
 // eslint-disable-next-line no-unused-vars
@@ -120,6 +121,12 @@ function PanoptentChromeShim(cfg) {
         case 'chooseWorkspace':
         case 'hint':
           return; // tek çalışma alanı, eşleştirme yok
+        case 'captureTab':
+          // Integrated Browser'da sekme yakalama yok: content.js öğeyi DOM'dan çizer (Chrome'da activeTab yokken olduğu gibi)
+          setTimeout(function () {
+            emit({ type: 'captureResult', reqId: m.reqId, ok: false, error: 'tab capture is not available in the VS Code Integrated Browser' });
+          }, 0);
+          return;
       }
       var data = JSON.stringify(m);
       if (ws && ws.readyState === 1) return ws.send(data);

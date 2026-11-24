@@ -336,7 +336,8 @@ class BrowserPreview {
         `\nvar chrome = PanoptentChromeShim(${JSON.stringify({ channel: proxy.channelPath, layer: LAYER_PATH })});\n` +
         fs.readFileSync(path.join(context.extensionPath, 'chrome', 'content.js'), 'utf8') +
         `\n})();\n`,
-      extraScripts: { [LAYER_PATH]: () => media('overlay.js') },
+      // Chrome'daki background.js gibi: önce Test ve Karar yardımcıları, sonra seçim katmanı
+      extraScripts: { [LAYER_PATH]: () => media('checks.js') + '\n;' + media('overlay.js') },
       onChannelOpen: (conn) => attach(conn),
       log: (m) => engine.output.appendLine(m),
     });
