@@ -68,7 +68,8 @@ Claude sessions cannot push tags, create releases or change repo settings direct
 workflows (push to `main`, or `workflow_dispatch` via the API).
 
 ## Status (keep this section current)
-- 0.14.0 (Test and Decisions: `.panoptent/checks` topics, in-page panel + bar badge, MCP tools `save_check_topic` / `get_check_topics` / `get_check_changes` / `close_check_topic`, HTTP `/checks/*`, `/panoptent checks`, `npm test`) on branch `test-ve-karar`, not committed / released yet. Chrome path not tested end to end (only the VS Code preview path).
+- 0.14.1 (Test and Decisions: one-line topic picker with search in the in-page panel, topic click in the VS Code view opens the full page on that topic, *Send now* turns Select off) pushed to `main` 2026-11-24 for the release workflow.
+- 0.14.0 (Test and Decisions: `.panoptent/checks` topics, in-page panel + bar badge, MCP tools `save_check_topic` / `get_check_topics` / `get_check_changes` / `close_check_topic`, HTTP `/checks/*`, `/panoptent checks`, `npm test`) released 2026-11-23 by the release workflow. Chrome path not tested end to end (only the VS Code preview path).
 - 0.13.1 (quiet live mode: the background wait is a shell loop that renews itself, Claude is woken only on Apply; restarts silently; PR #21) merged 2026-11-03 and released by the release workflow.
 - 0.13.0 (MCP page tools `screenshot_element`, `highlight`, `preview_style`; closes #3; PR #20) merged 2026-10-26 and released by the release workflow.
 - 0.12.0 (live mode `/panoptent live` / `/panoptent:live (MCP)`: `start_live` background `curl` wait, Apply goes straight to the waiting Claude conversation, unclaimed sets fall back after 30 s; `/panoptent` command; PR #17) merged 2026-10-25 and released by the release workflow. Next: package as a Claude Code plugin.

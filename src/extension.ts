@@ -230,13 +230,13 @@ export function activate(context: vscode.ExtensionContext) {
       if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
       return pickChecks(e, () => vscode.commands.executeCommand('panoptent.showChecks'), () => mcp?.checksApi);
     }),
-    vscode.commands.registerCommand('panoptent.checksPage', () => {
+    vscode.commands.registerCommand('panoptent.checksPage', (topicId?: unknown) => {
       const e = getEngine(context);
       if (!e) return vscode.window.showErrorMessage(t('ext.openFolder'));
       ChecksPage.show(context, e, {
         openUrl: (url) => openStepUrl(context, url),
         showOnPage: () => vscode.commands.executeCommand('panoptent.showChecks'),
-      });
+      }, typeof topicId === 'string' ? topicId : undefined);
     }),
     vscode.commands.registerCommand('panoptent.showChecks', async () => {
       const e = getEngine(context);

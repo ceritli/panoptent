@@ -1090,6 +1090,9 @@
           if (!dispatchEntries(m.entries, false)) {
             popPending = false;
             toFrame({ type: 'revert', tokens: m.entries.map((x) => x.token) });
+          } else if (selecting) {
+            // Doğrudan işleme gönderildi: Seç kapanır (kuyruğa eklemede açık kalır, sıradaki öğe seçilebilsin)
+            setSelect(false);
           }
         }
         break;

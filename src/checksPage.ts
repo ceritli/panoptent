@@ -26,13 +26,20 @@ export interface ChecksPageHost {
 export class ChecksPage {
   private static current: ChecksPage | undefined;
 
-  static show(context: vscode.ExtensionContext, engine: Engine, host: ChecksPageHost): ChecksPage {
+  /** `topicId` verilirse sayfa o konuyu seçili açar (görünümde konuya tıklama). */
+  static show(context: vscode.ExtensionContext, engine: Engine, host: ChecksPageHost, topicId?: string): ChecksPage {
     if (ChecksPage.current) {
       ChecksPage.current.panel.reveal();
+      if (topicId) ChecksPage.current.post({ type: 'topic', id: topicId });
       return ChecksPage.current;
     }
-    return (ChecksPage.current = new ChecksPage(context, engine, host));
+    const page = (ChecksPage.current = new ChecksPage(context, engine, host));
+    page.firstTopic = topicId;
+    return page;
   }
+
+  /** Sayfa hazır olunca seçilecek konu. */
+  private firstTopic: string | undefined;
 
   /** Ayar ya da dil değişince açık sekmeye bildir. */
   static refreshWho() {
@@ -87,6 +94,8 @@ export class ChecksPage {
         this.post({ type: 'init', lang: uiLang(), who: this.engine.users.known() || null });
         this.sendWho();
         this.engine.checksMessage({ op: 'list', reqId: 'init' }, CHECKS_PAGE_CLIENT);
+        if (this.firstTopic) this.post({ type: 'topic', id: this.firstTopic });
+        this.firstTopic = undefined;
         break;
       case 'checksReq':
         // yalnızca okuma ve tek alan yazma; kapatma / yeniden açma burada yok (ajan ya da HTTP API)

@@ -343,6 +343,14 @@
   }
 
   // ---------- mesajlar ----------
+  var wantTopic = '';
+  function applyWantTopic() {
+    if (!wantTopic || !S.topics.some(function (x) { return x.id === wantTopic; })) return false;
+    S.topic = wantTopic;
+    wantTopic = '';
+    save();
+    return true;
+  }
   window.addEventListener('message', function (e) {
     var m = e.data;
     if (!m || typeof m !== 'object') return;
@@ -365,7 +373,11 @@
         S.pending = m.pending || 0;
         S.bad = m.bad || 0;
         Object.keys(optim).forEach(function (k) { if (optim[k].done) delete optim[k]; });
+        applyWantTopic();
         render();
+        break;
+      case 'topic': // VS Code görünümünde tıklanan konu (liste henüz gelmediyse gelince seçilir)
+        if (typeof m.id === 'string') { wantTopic = m.id; if (applyWantTopic()) { render(); window.scrollTo(0, 0); } }
         break;
       case 'checksRes':
         done(m.reqId, !!m.ok, m.error);

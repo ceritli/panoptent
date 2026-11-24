@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.14.0 — unreleased (branch `test-ve-karar`)
+## 0.14.1 — 2026-11-24
+
+- **Topic picker.** With two or more topics the panel shows a one-line **topic picker** instead of a wrapping row of tabs: previous / next buttons and the current topic with its count and position; clicking it opens a list with search (shown above six topics), counts in green when a topic is complete and red when a step has a problem. Arrow keys step through topics, Esc closes the list first
+- **Topic click opens the page.** Clicking a topic in the VS Code **Test and Decisions** view opens the full page on that topic (it used to open the JSON file; the JSON is still one step away in *Panoptent: Test and Decisions*)
+- **Select turns off after a direct send.** *Send now* in the element popover switches Select off once the request is handed over (VS Code preview and Chrome). *Add to queue* leaves Select on, so you can pick the next element
+
+## 0.14.0 — 2026-11-23
 
 - **Test and Decisions.** An agent records what you should try and what you must decide as one topic in your project (`.panoptent/checks/open/<id>.json`, plain JSON, meant to be committed; closed topics move to `.panoptent/checks/archive/`). Format: [docs/checks.md](docs/checks.md)
   - A **Test** button with a badge in the Panoptent bar (VS Code preview and Chrome) opens a panel on top of your app: tick steps, report a **Problem** with a note, pick options, read the info lines. Steps for the page you are on come first (**on this page**). Every mark is saved to the file immediately with who and when; a failed save is shown and the mark goes back

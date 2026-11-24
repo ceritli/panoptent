@@ -110,7 +110,8 @@ export class ChecksTree implements vscode.TreeDataProvider<vscode.TreeItem> {
       it.iconPath = new vscode.ThemeIcon(c.bad ? 'warning' : c.complete ? 'pass' : 'checklist');
       const uri = vscode.Uri.file(e.checks.file('open', tp.id));
       it.resourceUri = uri;
-      it.command = { command: 'vscode.open', title: tp.name, arguments: [uri] };
+      // Tıklayınca konu Test ve Kararlar sayfasında açılır (JSON dosyası komut listesinden açılır)
+      it.command = { command: 'panoptent.checksPage', title: tp.name, arguments: [tp.id] };
       return it;
     })];
   }

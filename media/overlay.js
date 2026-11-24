@@ -104,6 +104,11 @@
       'ov.agent.preview': 'Claude’s preview',
       'ov.ck.title': 'Test and Decisions',
       'ov.ck.tabs': 'Topics',
+      'ov.ck.pick': 'Choose a topic',
+      'ov.ck.find': 'Search topics',
+      'ov.ck.prev': 'Previous topic',
+      'ov.ck.next': 'Next topic',
+      'ov.ck.noMatch': 'No topic matches.',
       'ov.ck.tests': '1 · Test',
       'ov.ck.decisions': '2 · Decide',
       'ov.ck.infos': '3 · Info',
@@ -206,6 +211,11 @@
       'ov.agent.preview': 'Claude’un önizlemesi',
       'ov.ck.title': 'Test ve Kararlar',
       'ov.ck.tabs': 'Konular',
+      'ov.ck.pick': 'Konu seç',
+      'ov.ck.find': 'Konu ara',
+      'ov.ck.prev': 'Önceki konu',
+      'ov.ck.next': 'Sonraki konu',
+      'ov.ck.noMatch': 'Aramaya uyan konu yok.',
       'ov.ck.tests': '1 · Test et',
       'ov.ck.decisions': '2 · Karar ver',
       'ov.ck.infos': '3 · Bilgi',
@@ -360,11 +370,27 @@
     '.ckRz[data-edge=s]{bottom:-4px;left:14px;right:14px;height:8px;cursor:ns-resize}' +
     '.ckRz[data-edge=se]{right:-4px;bottom:-4px;width:16px;height:16px;cursor:nwse-resize}' +
     '.ckRz[data-edge=sw]{left:-4px;bottom:-4px;width:16px;height:16px;cursor:nesw-resize}' +
-    '.ckTabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px 0}' +
-    '.ckTab{all:unset;cursor:pointer;padding:4px 8px;border-radius:6px;border:1px solid #3a3f47;font-size:12px;color:#9aa4b2;max-width:100%;' +
-    'overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-sizing:border-box}' +
-    '.ckTab[aria-selected=true]{border-color:#f97316;color:#fff;background:#2c3138}.ckTab .cn{margin-left:6px;color:#6b7380;font-variant-numeric:tabular-nums}' +
-    '.ckTab .hd{display:inline-block;width:6px;height:6px;border-radius:3px;background:#f97316;margin-left:6px;vertical-align:1px}' +
+    // Konu seçici: tek satır (önceki · seçili konu · sonraki); liste tıklayınca açılır
+    '.ckTabs{position:relative;display:flex;align-items:center;gap:4px;padding:8px 10px 0;flex-shrink:0}.ckTabs[hidden]{display:none}' +
+    '.ckPick{all:unset;cursor:pointer;flex:1;min-width:0;display:flex;align-items:center;gap:6px;height:28px;padding:0 8px;border-radius:6px;' +
+    'border:1px solid #3a3f47;background:#191c21;font-size:12.5px;font-weight:600;color:#fff;box-sizing:border-box}' +
+    '.ckPick:hover,.ckPick[aria-expanded=true]{border-color:#f97316}' +
+    '.ckTabs .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
+    '.ckTabs .cn{flex-shrink:0;font-size:11.5px;font-weight:400;color:#8a93a0;font-variant-numeric:tabular-nums}' +
+    '.ckTabs .cn.done{color:#4ade80}.ckTabs .cn.bad{color:#f87171}' +
+    '.ckTabs .hd{flex-shrink:0;width:6px;height:6px;border-radius:3px;background:#f97316}' +
+    '.ckPick .ps{flex-shrink:0;font-size:10.5px;font-weight:400;color:#6b7380;font-variant-numeric:tabular-nums}' +
+    '.ckPick .ch{flex-shrink:0;font-size:9px;color:#9aa4b2;transition:transform .15s}.ckPick[aria-expanded=true] .ch{transform:rotate(180deg)}' +
+    '.ckNav{all:unset;cursor:pointer;width:28px;height:28px;border-radius:6px;border:1px solid #3a3f47;display:inline-flex;align-items:center;' +
+    'justify-content:center;color:#9aa4b2;font-size:14px;flex-shrink:0;box-sizing:border-box}.ckNav:hover{background:#2c3138;color:#fff}' +
+    '.ckList{position:absolute;left:10px;right:10px;top:100%;margin-top:4px;z-index:3;display:flex;flex-direction:column;max-height:min(60vh,340px);' +
+    'background:#1f2329;border:1px solid #3a3f47;border-radius:8px;box-shadow:0 12px 32px rgba(0,0,0,.45);overflow:hidden}.ckList[hidden]{display:none}' +
+    'input.ckFind{all:unset;display:block;box-sizing:border-box;width:100%;padding:7px 10px;border-bottom:1px solid #2c3138;font-size:12.5px;color:#e6e8eb;flex-shrink:0}' +
+    'input.ckFind::placeholder{color:#6b7380}' +
+    '.ckOpts{overflow:auto;padding:4px;overscroll-behavior:contain}.ckOpts .ckEmpty{padding:6px 8px}.ckOpts .ckEmpty[hidden]{display:none}' +
+    '.ckTab{all:unset;cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:6px;font-size:12.5px;' +
+    'color:#cbd2da;box-sizing:border-box}.ckTab[hidden]{display:none}.ckTab:hover,.ckTab:focus-visible{background:#2c3138;color:#fff}' +
+    '.ckTab[aria-selected=true]{background:#2c3138;color:#fff;box-shadow:inset 2px 0 0 #f97316}' +
     '.ckBody{overflow:auto;padding:6px 10px 10px;flex:1;min-height:0;overscroll-behavior:contain}' +
     '.ckLead{font-size:12px;color:#9aa4b2;margin:4px 0 2px;white-space:pre-wrap;word-break:break-word}' +
     '.ckSec{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin:12px 0 6px;font-size:11px;font-weight:700;' +
@@ -420,7 +446,7 @@
     '<button class="ckIc" id="ckPage" hidden data-i18n-title="ov.ck.page" data-i18n-aria="ov.ck.page">⧉</button>' +
     '<button class="ckIc" id="ckMin">–</button><button class="ckIc" id="ckMax">□</button>' +
     '<button class="x" id="ckX" data-i18n-title="ov.close" data-i18n-aria="ov.close" title="Kapat (Esc)">×</button></div>' +
-    '<div class="ckTabs" id="ckTabs" role="tablist" data-i18n-aria="ov.ck.tabs"></div>' +
+    '<div class="ckTabs" id="ckTabs" role="group" data-i18n-aria="ov.ck.tabs"></div>' +
     '<div class="ckBody" id="ckBody"></div>' +
     '<div class="ckMsg" id="ckMsg" role="status" aria-live="polite" hidden></div>' +
     '<div class="ckRz" data-edge="e"></div><div class="ckRz" data-edge="w"></div><div class="ckRz" data-edge="s"></div>' +
@@ -1748,6 +1774,7 @@
   })();
   var ck = q('ck'), ckTabs = q('ckTabs'), ckBody = q('ckBody'), ckMsgEl = q('ckMsg'), ckX = q('ckX');
   var ckTopics = [], ckErrors = [], ckCur = null, ckOpen = false, ckSeq = 0;
+  var ckPickOpen = false, ckFindText = '';
   var ckPending = {}; // reqId -> { key, timer }
   var ckOptim = {}; // 'r|konu|test' -> { state, note } · 'p|konu|karar' -> index; yanıt beklenirken gösterilen değer
   var ckMsg = null; // { kind, text }
@@ -1829,6 +1856,7 @@
     // yazılmayı bekleyen notlar kapanırken kaybolmasın
     if (!open) Object.keys(ckNoteTimers).forEach(function (k) { var p = ckNoteTimers[k]; if (p) p.flush(); });
     ckOpen = !!open && active;
+    if (!ckOpen) ckPickOpen = false;
     ck.hidden = !ckOpen;
     if (ckOpen) {
       ckApplyGeom();
@@ -1996,19 +2024,68 @@
     ckCur = tp ? tp.id : null;
     ckTabs.textContent = '';
     ckTabs.hidden = ckTopics.length < 2;
+    if (ckTabs.hidden) ckPickOpen = false;
+    // Konu seçici: ‹ [seçili konu · sayı · sıra ▾] › ; liste (arama + konular) tıklayınca açılır
+    var ckCount = function (x) {
+      var c = x.counts || {};
+      return el('span', 'cn' + (c.bad ? ' bad' : (c.complete ? ' done' : '')), (c.ok || 0) + '/' + (c.tests || 0));
+    };
+    var ckNavBtn = function (dir, text, key) {
+      var n = el('button', 'ckNav', text);
+      n.setAttribute('data-nav', String(dir));
+      n.setAttribute('data-k', 'nav|' + dir);
+      n.title = t(key);
+      n.setAttribute('aria-label', t(key));
+      return n;
+    };
+    ckTabs.appendChild(ckNavBtn(-1, '\u2039', 'ov.ck.prev'));
+    var pick = el('button', 'ckPick');
+    pick.setAttribute('data-k', 'pick');
+    pick.setAttribute('aria-haspopup', 'listbox');
+    pick.setAttribute('aria-expanded', String(ckPickOpen));
+    pick.setAttribute('aria-label', t('ov.ck.pick') + (tp ? ': ' + tp.name : ''));
+    pick.title = tp ? tp.name : t('ov.ck.pick');
+    pick.appendChild(el('span', 'nm', tp ? tp.name : t('ov.ck.pick')));
+    if (tp) {
+      if ((tp.tests || []).some(here)) pick.appendChild(el('span', 'hd'));
+      pick.appendChild(ckCount(tp));
+      pick.appendChild(el('span', 'ps', (ckTopics.indexOf(tp) + 1) + ' / ' + ckTopics.length));
+    }
+    pick.appendChild(el('span', 'ch', '\u25BC'));
+    ckTabs.appendChild(pick);
+    ckTabs.appendChild(ckNavBtn(1, '\u203A', 'ov.ck.next'));
+    var list = el('div', 'ckList');
+    list.hidden = !ckPickOpen;
+    if (ckTopics.length > 6) {
+      var find = el('input', 'ckFind');
+      find.type = 'text';
+      find.setAttribute('data-k', 'find');
+      find.placeholder = t('ov.ck.find');
+      find.setAttribute('aria-label', t('ov.ck.find'));
+      find.value = ckFindText;
+      list.appendChild(find);
+    } else ckFindText = '';
+    var opts = el('div', 'ckOpts');
+    opts.setAttribute('role', 'listbox');
+    opts.setAttribute('aria-label', t('ov.ck.tabs'));
     ckTopics.forEach(function (x) {
-      var b = el('button', 'ckTab', x.name);
-      b.setAttribute('role', 'tab');
+      var b = el('button', 'ckTab');
+      b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', String(x === tp));
       b.setAttribute('data-k', 'tab|' + x.id);
       b.setAttribute('data-topic', x.id);
-      b.tabIndex = x === tp ? 0 : -1;
-      var c = x.counts || {};
-      b.appendChild(el('span', 'cn', (c.ok || 0) + '/' + (c.tests || 0)));
+      b.appendChild(el('span', 'nm', x.name));
       if ((x.tests || []).some(here)) b.appendChild(el('span', 'hd'));
+      b.appendChild(ckCount(x));
       b.title = x.name;
-      ckTabs.appendChild(b);
+      opts.appendChild(b);
     });
+    var none = el('div', 'ckEmpty', t('ov.ck.noMatch'));
+    none.hidden = true;
+    opts.appendChild(none);
+    list.appendChild(opts);
+    ckTabs.appendChild(list);
+    ckFilter();
     ckBody.textContent = '';
     if (ckErrors.length) {
       ckBody.appendChild(el('div', 'ckEmpty', t('ov.ck.fileErr', ckErrors.length, ckErrors.map(function (e) { return e.file + ' (' + e.error + ')'; }).join('; '))));
@@ -2187,27 +2264,99 @@
   }
 
   ckX.addEventListener('click', function () { ckSetOpen(false); });
-  ckTabs.addEventListener('click', function (e) {
-    var b = e.target.closest ? e.target.closest('[data-topic]') : null;
-    if (!b) return;
-    ckCur = b.getAttribute('data-topic');
+  /** Konu listesini yeniden çizmeden açar / kapatır (gövdedeki tıklama kaybolmasın). */
+  function ckPickSet(open, focus) {
+    ckPickOpen = !!open && ckTopics.length > 1;
+    var list = ckTabs.querySelector('.ckList'), pick = ckTabs.querySelector('.ckPick');
+    if (list) list.hidden = !ckPickOpen;
+    if (pick) pick.setAttribute('aria-expanded', String(ckPickOpen));
+    if (!focus) return;
+    var target = ckPickOpen
+      ? (ckTabs.querySelector('.ckFind') || ckTabs.querySelector('.ckTab[aria-selected=true]') || ckTabs.querySelector('.ckTab'))
+      : pick;
+    if (target) target.focus({ preventScroll: true });
+    if (ckPickOpen) {
+      var sel = ckTabs.querySelector('.ckTab[aria-selected=true]');
+      if (sel && sel.scrollIntoView) sel.scrollIntoView({ block: 'nearest' });
+    }
+  }
+  /** Arama metnine uymayan konuları gizler. */
+  function ckFilter() {
+    var needle = ckFindText.trim().toLocaleLowerCase();
+    var any = false;
+    Array.prototype.forEach.call(ckTabs.querySelectorAll('.ckTab'), function (b) {
+      var hit = !needle || (b.title || '').toLocaleLowerCase().indexOf(needle) >= 0;
+      b.hidden = !hit;
+      if (hit) any = true;
+    });
+    var none = ckTabs.querySelector('.ckOpts .ckEmpty');
+    if (none) none.hidden = any;
+  }
+  function ckVisibleTabs() {
+    return Array.prototype.filter.call(ckTabs.querySelectorAll('.ckTab'), function (b) { return !b.hidden; });
+  }
+  function ckPickTopic(id) {
+    ckCur = id;
+    ckPickOpen = false;
+    ckFindText = '';
     ckRender();
+    var pick = ckTabs.querySelector('.ckPick');
+    if (pick) pick.focus({ preventScroll: true });
+  }
+  function ckStepTopic(dir) {
+    if (!ckTopics.length) return;
+    var i = ckTopics.findIndex(function (x) { return x.id === ckCur; });
+    var n = ckTopics[(i + dir + ckTopics.length) % ckTopics.length];
+    if (n) ckPickTopic(n.id);
+  }
+  ckTabs.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var b = e.target.closest('[data-topic]');
+    if (b) { ckPickTopic(b.getAttribute('data-topic')); return; }
+    var nav = e.target.closest('[data-nav]');
+    if (nav) {
+      ckStepTopic(Number(nav.getAttribute('data-nav')));
+      var again = ckTabs.querySelector('[data-nav="' + nav.getAttribute('data-nav') + '"]');
+      if (again) again.focus({ preventScroll: true });
+      return;
+    }
+    if (e.target.closest('.ckPick')) ckPickSet(!ckPickOpen, true);
+  });
+  ckTabs.addEventListener('input', function (e) {
+    if (!e.target.classList || !e.target.classList.contains('ckFind')) return;
+    ckFindText = e.target.value;
+    ckFilter();
   });
   ckTabs.addEventListener('keydown', function (e) {
-    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
-    var i = ckTopics.findIndex(function (x) { return x.id === ckCur; });
-    var n = ckTopics[(i + (e.key === 'ArrowRight' ? 1 : -1) + ckTopics.length) % ckTopics.length];
-    if (!n) return;
+    var onPick = e.target.closest && e.target.closest('.ckPick');
+    if (onPick && !ckPickOpen && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+      e.preventDefault();
+      ckStepTopic(e.key === 'ArrowRight' ? 1 : -1);
+      return;
+    }
+    if (onPick && e.key === 'ArrowDown') { e.preventDefault(); ckPickSet(true, true); return; }
+    if (!ckPickOpen) return;
+    var vis = ckVisibleTabs();
+    var inFind = e.target.classList && e.target.classList.contains('ckFind');
+    if (e.key === 'Enter' && inFind) {
+      e.preventDefault();
+      if (vis[0]) ckPickTopic(vis[0].getAttribute('data-topic'));
+      return;
+    }
+    if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
     e.preventDefault();
-    ckCur = n.id;
-    ckRender();
-    var b = ckTabs.querySelector('[data-topic="' + n.id + '"]');
-    if (b) b.focus();
+    var i = vis.indexOf(e.target.closest ? e.target.closest('.ckTab') : null);
+    var next = e.key === 'ArrowDown' ? vis[i + 1] : (i > 0 ? vis[i - 1] : ckTabs.querySelector('.ckFind'));
+    if (next) { next.focus({ preventScroll: true }); if (next.scrollIntoView) next.scrollIntoView({ block: 'nearest' }); }
+  });
+  // Liste açıkken panelin başka yerine basınca liste kapanır (yeniden çizim yok: basılan öğe yerinde kalır)
+  ck.addEventListener('pointerdown', function (e) {
+    if (ckPickOpen && !ckTabs.contains(e.target)) ckPickSet(false, false);
   });
   // Panelde yazarken / tıklarken sayfanın kendi kısayolları ve dinleyicileri devreye girmesin
   ['keydown', 'keyup', 'keypress', 'input', 'beforeinput', 'paste', 'copy', 'cut'].forEach(function (ev) {
     ck.addEventListener(ev, function (e) {
-      if (ev === 'keydown' && e.key === 'Escape') { e.preventDefault(); ckSetOpen(false); }
+      if (ev === 'keydown' && e.key === 'Escape') { e.preventDefault(); if (ckPickOpen) ckPickSet(false, true); else ckSetOpen(false); }
       e.stopPropagation();
     });
   });

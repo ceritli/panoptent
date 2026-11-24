@@ -881,6 +881,8 @@
         } else {
           popPending = true;
           if (!dispatch(m.entries, false)) toOverlay({ type: 'revert', tokens: m.entries.map((x) => x.token) });
+          // Doğrudan işleme gönderildi: Seç kapanır (kuyruğa eklemede açık kalır, sıradaki öğe seçilebilsin)
+          else if (selecting) setSelect(false);
         }
         break;
       case 'openSourceReq':
