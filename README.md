@@ -14,6 +14,7 @@
   <a href="https://marketplace.visualstudio.com/items?itemName=ceritli.panoptent">Marketplace</a> ·
   <a href="https://github.com/ceritli/panoptent/releases/latest">Download</a> ·
   <a href="CONTRIBUTING.md">Contributing</a> ·
+  <a href="https://www.instagram.com/panoptent.dev">Instagram</a> ·
   <a href="#türkçe">Türkçe</a>
 </p>
 
