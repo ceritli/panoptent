@@ -6,6 +6,8 @@ import * as http from 'http';
 import * as https from 'https';
 import * as net from 'net';
 import * as zlib from 'zlib';
+import * as crypto from 'crypto';
+import { WebSocketServer, WebSocket } from 'ws';
 import { addStrings, t, uiLang } from './i18n';
 
 addStrings({
@@ -24,17 +26,37 @@ addStrings({
 });
 
 export const OVERLAY_PATH = '/__panoptent__/overlay.js';
+/** Integrated Browser'daki overlay'in panelle konuştuğu WebSocket yolu (proxy'nin kendi adresinde). */
+export const CHANNEL_PATH = '/__panoptent__/ws';
 
 export interface ProxyOptions {
   target: string; // örn. http://localhost:3000
   overlayScript: () => string; // her istekte güncel overlay kaynağı
   log?: (msg: string) => void;
+  /** Proxy'nin ayrıca sunduğu betikler (yol → kaynak), örn. sayfa içi arayüzün istediği seçim katmanı */
+  extraScripts?: Record<string, () => string>;
+  /** Sayfadan (WebSocket kanalı) yeni bağlantı: dönen nesne o bağlantının mesajlarını alır */
+  onChannelOpen?: (conn: ChannelConn) => ChannelHandler | undefined;
+}
+
+/** Kanala bağlı tek bir sayfa */
+export interface ChannelConn {
+  send(msg: any): void;
+  close(): void;
+}
+export interface ChannelHandler {
+  onMessage(msg: any): void;
+  onClose(): void;
 }
 
 export class DevProxy {
   private server?: http.Server;
   private target: URL;
   private sockets = new Set<net.Socket>();
+  private wss = new WebSocketServer({ noServer: true, maxPayload: 64 * 1024 * 1024 });
+  private channel = new Set<WebSocket>();
+  /** Kanal anahtarı: yalnızca proxy'nin enjekte ettiği overlay bilir */
+  readonly channelToken = crypto.randomBytes(16).toString('hex');
   port = 0;
 
   constructor(private opts: ProxyOptions) {
@@ -70,8 +92,83 @@ export class DevProxy {
   }
 
   stop() {
+    for (const c of this.channel) c.terminate();
+    this.channel.clear();
+    this.wss.close();
     for (const s of this.sockets) s.destroy();
     this.server?.close();
+  }
+
+  /** Overlay'in WebSocket adresi (yol + anahtar); overlay betiğinin başına yazılır. */
+  get channelPath(): string {
+    return `${CHANNEL_PATH}?t=${this.channelToken}`;
+  }
+
+  get channelCount(): number {
+    return this.channel.size;
+  }
+
+  /** Kanala bağlı tüm sayfalara (Integrated Browser) mesaj gönderir. */
+  sendToChannel(msg: any): boolean {
+    const data = JSON.stringify(msg);
+    let sent = false;
+    for (const c of this.channel) {
+      if (c.readyState === WebSocket.OPEN) {
+        c.send(data);
+        sent = true;
+      }
+    }
+    return sent;
+  }
+
+  private acceptChannel(req: http.IncomingMessage, socket: net.Socket, head: Buffer) {
+    let ok = false;
+    try {
+      const u = new URL(req.url || '/', 'http://x');
+      const token = u.searchParams.get('t') || '';
+      const origin = String(req.headers.origin || '');
+      // yalnızca proxy'nin kendi sayfaları (aynı köken) ve doğru anahtar
+      const sameOrigin = !!origin && new URL(origin).host === String(req.headers.host || '');
+      ok =
+        sameOrigin &&
+        token.length === this.channelToken.length &&
+        crypto.timingSafeEqual(Buffer.from(token), Buffer.from(this.channelToken));
+    } catch {
+      ok = false;
+    }
+    if (!ok) {
+      socket.end('HTTP/1.1 403 Forbidden\r\n\r\n');
+      return;
+    }
+    this.wss.handleUpgrade(req, socket, head, (ws) => {
+      this.channel.add(ws);
+      const conn: ChannelConn = {
+        send: (msg) => {
+          if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+        },
+        close: () => ws.close(),
+      };
+      const handler = this.opts.onChannelOpen?.(conn);
+      if (!handler) {
+        ws.close(4004, 'no handler');
+        this.channel.delete(ws);
+        return;
+      }
+      ws.on('message', (data) => {
+        let m: any;
+        try {
+          m = JSON.parse(String(data));
+        } catch {
+          return;
+        }
+        if (m && typeof m === 'object' && typeof m.type === 'string') handler.onMessage(m);
+      });
+      ws.on('close', () => {
+        this.channel.delete(ws);
+        handler.onClose();
+      });
+      ws.on('error', () => ws.terminate());
+    });
   }
 
   private log(msg: string) {
@@ -95,12 +192,14 @@ export class DevProxy {
   private handle(req: http.IncomingMessage, res: http.ServerResponse) {
     const url = req.url || '/';
 
-    if (url.startsWith(OVERLAY_PATH)) {
+    const pathOnly = url.split('?')[0];
+    const extra = this.opts.extraScripts?.[pathOnly];
+    if (url.startsWith(OVERLAY_PATH) || extra) {
       res.writeHead(200, {
         'content-type': 'application/javascript; charset=utf-8',
         'cache-control': 'no-store',
       });
-      res.end(this.opts.overlayScript());
+      res.end(extra ? extra() : this.opts.overlayScript());
       return;
     }
 
@@ -185,6 +284,7 @@ export class DevProxy {
   }
 
   private handleUpgrade(req: http.IncomingMessage, socket: net.Socket, head: Buffer) {
+    if ((req.url || '').startsWith(CHANNEL_PATH)) return this.acceptChannel(req, socket, head);
     const headers = this.rewriteRequestHeaders(req.headers);
     const proxyReq = this.client().request({
       protocol: this.target.protocol,

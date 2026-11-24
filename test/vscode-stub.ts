@@ -101,25 +101,65 @@ function globRe(pattern: string) {
   return new RegExp('^' + s + '$');
 }
 
-const watchers = new Set<fs.FSWatcher>();
+const watchers = new Set<{ close(): void }>();
 function createFileSystemWatcher(p: RelativePattern) {
   const change = new Emitter<Uri>(), create = new Emitter<Uri>(), del = new Emitter<Uri>();
   const re = globRe(p.pattern);
+  const fire = (rel: string) => {
+    if (!re.test(rel)) return;
+    const abs = path.join(p.base, ...rel.split('/'));
+    const uri = Uri.file(abs);
+    if (fs.existsSync(abs)) change.fire(uri);
+    else del.fire(uri);
+  };
   let w: fs.FSWatcher | undefined;
   try {
     w = fs.watch(p.base, { recursive: true }, (_ev, name) => {
-      if (!name) return;
-      const rel = String(name).split(path.sep).join('/');
-      if (!re.test(rel)) return;
-      const abs = path.join(p.base, String(name));
-      const uri = Uri.file(abs);
-      if (fs.existsSync(abs)) change.fire(uri);
-      else del.fire(uri);
+      if (name) fire(String(name).split(path.sep).join('/'));
     });
     watchers.add(w);
   } catch {
     /* klasör yok */
   }
+  // Linux'ta Node'un recursive fs.watch'ı, yerine rename edilen (tmp + rename) dosyanın sonraki değişikliklerini
+  // kaçırabiliyor. Sahte izleyici bu yüzden kalıbın sabit önekini ayrıca 100 ms'de bir tarar (yalnız testler için).
+  const prefix = p.pattern.slice(0, Math.max(0, p.pattern.indexOf('*'))).replace(/\/[^/]*$/, '');
+  const seen = new Map<string, number>();
+  const scan = (first: boolean) => {
+    const now = new Map<string, number>();
+    const walk = (dir: string, rel: string) => {
+      let list: fs.Dirent[] = [];
+      try {
+        list = fs.readdirSync(dir, { withFileTypes: true });
+      } catch {
+        return;
+      }
+      for (const d of list) {
+        if (d.name === '.git' || d.name === 'node_modules') continue;
+        const r = rel ? rel + '/' + d.name : d.name;
+        if (d.isDirectory()) walk(path.join(dir, d.name), r);
+        else if (re.test(r)) {
+          try {
+            const st = fs.statSync(path.join(dir, d.name));
+            now.set(r, st.mtimeMs * 1e3 + st.ino + st.size);
+          } catch {
+            /* silindi */
+          }
+        }
+      }
+    };
+    walk(prefix ? path.join(p.base, ...prefix.split('/')) : p.base, prefix);
+    if (!first) {
+      for (const [r, v] of now) if (seen.get(r) !== v) fire(r);
+      for (const r of seen.keys()) if (!now.has(r)) fire(r);
+    }
+    seen.clear();
+    now.forEach((v, r) => seen.set(r, v));
+  };
+  scan(true);
+  const timer = setInterval(() => scan(false), 100);
+  const poll = { close: () => clearInterval(timer) };
+  watchers.add(poll);
   return {
     onDidChange: change.event,
     onDidCreate: create.event,
@@ -127,6 +167,8 @@ function createFileSystemWatcher(p: RelativePattern) {
     dispose: () => {
       w?.close();
       if (w) watchers.delete(w);
+      poll.close();
+      watchers.delete(poll);
     },
   };
 }

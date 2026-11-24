@@ -913,6 +913,14 @@
     popAnchor = null;
   }
 
+  /** Kullanıcı kutuyu kapattı (× ya da Esc): kutuyla birlikte seçimi de bırak. */
+  function dismissPopover() {
+    closePopover();
+    var ids = [];
+    selected.forEach(function (_, id) { ids.push(id); });
+    ids.forEach(function (id) { selected.delete(id); post({ type: 'unselect', id: id }); });
+  }
+
   // Yerel (çevrilebilir) durum: dil değişince yeniden çizilir. 'edit' = döndürücüsüz bilgi satırı
   function setLocalStatus(state, key) {
     setPopStatus(state === 'edit' ? 'busy' : state, t(key));
@@ -1187,7 +1195,7 @@
 
   popQueue.addEventListener('click', function () { commit('queue'); });
   popNow.addEventListener('click', function () { commit('now'); });
-  popX.addEventListener('click', closePopover);
+  popX.addEventListener('click', dismissPopover);
   actCode.addEventListener('click', function () {
     var s = snaps.get(popAnchor);
     if (s) post({ type: 'openSourceReq', item: s });
@@ -1294,7 +1302,7 @@
       if (ev === 'keydown') {
         if (navKey(e)) { e.stopPropagation(); return; }
         if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); commit(e.shiftKey ? 'now' : 'queue'); }
-        else if (e.key === 'Escape') { e.preventDefault(); closePopover(); }
+        else if (e.key === 'Escape') { e.preventDefault(); dismissPopover(); }
       }
       e.stopPropagation();
     });
@@ -1408,7 +1416,7 @@
     if (navKey(e)) return;
     if (e.key === 'Escape' && !pop.hidden) {
       e.preventDefault();
-      closePopover();
+      dismissPopover();
     } else if (e.key === 'Escape' && selectMode) {
       e.preventDefault();
       setMode(false, true);
